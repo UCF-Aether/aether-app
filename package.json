@@ -1,0 +1,25 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "",
+    "deploy": ""
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/UCF-Aether/App.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/UCF-Aether/App/issues"
+  },
+  "homepage": "https://github.com/UCF-Aether/App",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "cdk"
+  ]
+}
