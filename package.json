@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build-frontend": "npm install -w frontend && npm run build -w frontend",
-    "synth": "npm install -w cdk && npm run build -w cdk && npx -w cdk cdk synth"
+    "build-frontend": "cd frontend && npm install && npm run build",
+    "synth": "cd cdk && npm install && npx cdk synth"
 
   },
   "repository": {
