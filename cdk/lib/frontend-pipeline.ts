@@ -21,6 +21,7 @@ export class FrontendPipeline extends Stack {
       pipelineName: 'MyPipeline',
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub(props.ghRepo, 'main'),
+        primaryOutputDirectory: 'cdk/cdk.out',
         commands: [
           'npm run build-frontend',
           'npm run synth',
