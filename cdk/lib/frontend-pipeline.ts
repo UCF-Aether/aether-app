@@ -22,6 +22,7 @@ export class FrontendPipeline extends Stack {
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub(props.ghRepo, 'main'),
         commands: [
+          'npm install -g typescript',
           'npm install',
           'npm ci',
           'npm run build-frontend',

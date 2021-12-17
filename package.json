@@ -5,7 +5,6 @@
   "scripts": {
     "build-frontend": "cd frontend && npm install && npm run build",
     "synth": "cd cdk && npm install && npx cdk synth"
-
   },
   "repository": {
     "type": "git",
@@ -21,5 +20,9 @@
     "frontend",
     "backend",
     "cdk"
-  ]
+  ],
+  "dependencies": {
+    "aether": "file:cdk",
+    "frontend": "file:frontend"
+  }
 }
