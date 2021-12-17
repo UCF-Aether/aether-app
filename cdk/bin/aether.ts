@@ -18,8 +18,8 @@ new FrontendPipeline(app, 'FrontendPipeline', {
   domainName: 'aether-sensor',
   stackDir: '../frontend',
   env: { 
-    account: process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION,
+    account: '831841410317',
+    region: 'us-east-1',
   },
 
   /* If you don't specify 'env', this stack will be environment-agnostic.
