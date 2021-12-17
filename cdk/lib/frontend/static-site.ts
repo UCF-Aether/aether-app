@@ -1,17 +1,18 @@
+import { RemovalPolicy, CfnOutput } from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-import { Stack, StackProps, RemovalPolicy, CfnOutput } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import { Construct } from "constructs";
 
-export interface AetherStackProps extends StackProps {
+export interface StaticSiteProps {
   domainName: string;
+  buildPath: string;
 }
 
-export class AetherStack extends Stack {
-  constructor(scope: Construct, id: string, props: AetherStackProps) {
-    super(scope, id, props);
+export class StaticSite extends Construct {
+  constructor(scope: Construct, id: string, props: StaticSiteProps) {
+    super(scope, id);
 
     const siteDomain = props.domainName;
     const cloudfrontOAI = new cloudfront.OriginAccessIdentity(this, 'cloudfront-OAI', {
@@ -69,10 +70,11 @@ export class AetherStack extends Stack {
 
     // Deploy site contents to S3 bucket
     new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
-      sources: [s3deploy.Source.asset('../frontend/build')],
+      sources: [s3deploy.Source.asset(props.buildPath)],
       destinationBucket: siteBucket,
       distribution,
       distributionPaths: ['/*'],
     });
+
   }
 }

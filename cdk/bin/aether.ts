@@ -1,12 +1,27 @@
 #!/usr/bin/env node
-// import '../environment.d'
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { AetherStack } from '../lib/aether-stack';
+import { FrontendPipeline } from '../lib/frontend-pipeline';
+
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv {
+      CDK_DEFAULT_ACCOUNT: string;
+      CDK_DEFAULT_REGION: string;
+    }
+  }
+}
 
 const app = new cdk.App();
-new AetherStack(app, 'AetherStack', {
+new FrontendPipeline(app, 'FrontendPipeline', {
+  ghRepo: 'UCF-Aether/App',
   domainName: 'aether-sensor',
+  stackDir: '../frontend',
+  env: { 
+    account: process.env.CDK_DEPLOY_ACCOUNT || process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_DEPLOY_REGION || process.env.CDK_DEFAULT_REGION,
+  },
+
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
