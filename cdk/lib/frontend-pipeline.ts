@@ -25,6 +25,7 @@ export class FrontendPipeline extends Stack {
           'npm install',
           'npm ci',
           'npm run build-frontend',
+          'npm install -w cdk',
           'cd cdk && npx cdk synth'
         ]
       }),
