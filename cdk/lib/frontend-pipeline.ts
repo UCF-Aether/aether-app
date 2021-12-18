@@ -23,7 +23,7 @@ export class FrontendPipeline extends Stack {
         input: CodePipelineSource.gitHub(props.ghRepo, 'main'),
         primaryOutputDirectory: 'cdk/cdk.out',
         commands: [
-          'npm run build-frontend',
+          'npm run build',
           'npm run synth',
         ]
       }),
