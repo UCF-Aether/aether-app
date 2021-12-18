@@ -18,11 +18,12 @@ export class FrontendPipeline extends Stack {
     super(scope, id, props);
 
     const pipeline = new CodePipeline(this, 'Pipeline', {
-      pipelineName: 'MyPipeline',
+      pipelineName: 'AetherClientPipeline',
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.gitHub(props.ghRepo, 'main'),
         primaryOutputDirectory: 'cdk/cdk.out',
         commands: [
+          'npm install',
           'npm run build',
           'npm run synth',
         ]
