@@ -14,7 +14,7 @@ declare global {
 
 const app = new cdk.App();
 new FrontendPipeline(app, 'FrontendPipeline', {
-  ghRepo: 'UCF-Aether/App',
+  ghRepo: 'UCF-Aether/Aether-Client',
   domainName: 'aether-sensor.network',
   stackDir: '../',
   env: { 
