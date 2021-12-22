@@ -9,6 +9,7 @@ import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import { Construct } from "constructs";
 import { Aws, RemovalPolicy, CfnOutput, Stack } from 'aws-cdk-lib';
 import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 
 export interface StaticSiteProps {
   domainName: string;
@@ -56,53 +57,23 @@ export class StaticSite extends Construct {
     new CfnOutput(this, 'Bucket', { value: siteBucket.bucketName });
 
     // TLS certificate
-    const certificateArn = new acm.DnsValidatedCertificate(this, 'SiteCertificate', {
+    const dnsCertificate = new acm.DnsValidatedCertificate(this, 'SiteCertificate', {
       domainName: siteDomain,
       hostedZone: zone,
       region: 'us-east-1', // Cloudfront only checks this region for certificates.
-    }).certificateArn;
-    new CfnOutput(this, 'Certificate', { value: certificateArn });
-
-    // Specifies you want viewers to use HTTPS & TLS v1.1 to request your objects
-    const viewerCertificate = cloudfront.ViewerCertificate.fromAcmCertificate(
-      {
-        env: {
-          region: Aws.REGION,
-          account: Aws.ACCOUNT_ID
-        },
-        node: this.node,
-        stack: scope,
-        metricDaysToExpiry: () =>
-          new cloudwatch.Metric({
-            namespace: "TLS Viewer Certificate Validity",
-            metricName: "TLS Viewer Certificate Expired",
-          }),
-      } as ICertificate,
-      {
-        sslMethod: cloudfront.SSLMethod.SNI,
-        securityPolicy: cloudfront.SecurityPolicyProtocol.TLS_V1_1_2016,
-        aliases: [siteDomain]
-      }
-    )
-
-    // CloudFront distribution
-    const distribution = new cloudfront.CloudFrontWebDistribution(this, 'SiteDistribution', {
-      // viewerCertificate,
-      originConfigs: [
-        {
-          s3OriginSource: {
-            s3BucketSource: siteBucket,
-            originAccessIdentity: cloudfrontOAI
-          },
-          behaviors: [{
-            isDefaultBehavior: true,
-            compress: true,
-            allowedMethods: cloudfront.CloudFrontAllowedMethods.GET_HEAD_OPTIONS,
-          }],
-        }
-      ]
     });
-    new CfnOutput(this, 'DistributionId', { value: distribution.distributionId });
+    new CfnOutput(this, 'Certificate', { value: dnsCertificate.certificateArn });
+    
+    const distribution = new cloudfront.Distribution(this, 'SiteDistribution', {
+      defaultBehavior: { 
+        origin: new S3Origin(siteBucket),
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+      },
+      domainNames: [siteDomain],
+      certificate: dnsCertificate,
+    });
 
     // Route53 alias record for the CloudFront distribution
     new route53.ARecord(this, 'SiteAliasRecord', {
