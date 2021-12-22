@@ -57,14 +57,14 @@ export class StaticSite extends Construct {
 
     // TLS certificate
     const dnsCertificate = Certificate.fromCertificateArn(this, 'Certificate', props.dnsCertificateArn);
-    // new CfnOutput(this, 'CertificateARN', { value: dnsCertificate.certificateArn });
+    new CfnOutput(this, 'CertificateARN', { value: dnsCertificate.certificateArn });
     
     const distribution = new cloudfront.Distribution(this, 'SiteDistribution', {
       defaultBehavior: { 
-        origin: new S3Origin(siteBucket),
+        origin: new S3Origin(siteBucket, { originAccessIdentity: cloudfrontOAI }),
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
-        // viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-        // originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
       },
       domainNames: [siteDomain],
       certificate: dnsCertificate,
