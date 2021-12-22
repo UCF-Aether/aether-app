@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "author": "Paul Wood",
-  "homepage": "aethersensor.network",
   "bugs": {
     "url": "https://github.com/UCF-Aether/Aether-Client/issues"
   },
