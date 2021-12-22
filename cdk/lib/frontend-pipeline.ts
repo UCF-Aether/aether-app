@@ -1,6 +1,7 @@
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { CodePipeline, ShellStep, CodePipelineSource } from "aws-cdk-lib/pipelines";
+import { CodePipeline, CodeBuildStep, CodePipelineSource } from "aws-cdk-lib/pipelines";
 import { FrontendProdStage } from "./frontend/deploy";
 
 export interface FrontendProps extends StackProps {
@@ -18,15 +19,28 @@ export class FrontendPipeline extends Stack {
     super(scope, id, props);
 
     const pipeline = new CodePipeline(this, 'Pipeline', {
+      // Uncomment line below to develop pipeline w/o committing to git
+      selfMutation: false,
       pipelineName: 'AetherClientPipeline',
-      synth: new ShellStep('Synth', {
+      synth: new CodeBuildStep('Synth', {
         input: CodePipelineSource.gitHub(props.ghRepo, 'main'),
         primaryOutputDirectory: 'cdk/cdk.out',
         commands: [
           'npm install',
           'npm run build',
           'npm run synth',
-        ]
+        ],
+        rolePolicyStatements: [
+          new iam.PolicyStatement({
+            actions: ['sts:AssumeRole'],
+            resources: ['*'],
+            conditions: {
+              StringEquals: {
+                'iam:ResourceTag/aws-cdk:bootstrap-role': 'lookup',
+              },
+            },
+          }),
+        ],
       }),
     });
 

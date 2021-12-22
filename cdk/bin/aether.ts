@@ -22,6 +22,6 @@ new FrontendPipeline(app, 'FrontendPipeline', {
     region: 'us-east-1',
   },
   tags: {
-    application: 'AetherClient',
+    application: 'Aether-Client',
   },
 });
