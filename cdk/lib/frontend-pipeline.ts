@@ -20,7 +20,7 @@ export class FrontendPipeline extends Stack {
 
     const pipeline = new CodePipeline(this, 'Pipeline', {
       // Uncomment line below to develop pipeline w/o committing to git
-      selfMutation: false,
+      // selfMutation: false,
       pipelineName: 'AetherClientPipeline',
       synth: new CodeBuildStep('Synth', {
         input: CodePipelineSource.gitHub(props.ghRepo, 'main'),
