@@ -15,13 +15,13 @@ declare global {
 const app = new cdk.App();
 new FrontendPipeline(app, 'FrontendPipeline', {
   ghRepo: 'UCF-Aether/Aether-Client',
-  domainName: 'aether-sensor.network',
+  domainName: 'aethersensor.network',
   stackDir: '../',
   env: { 
     account: '831841410317',
     region: 'us-east-1',
   },
   tags: {
-    application: 'Aether-Client',
+    application: 'AetherClient',
   },
 });
