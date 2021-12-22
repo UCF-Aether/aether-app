@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { FrontendPipeline } from '../lib/frontend-pipeline';
+import { ClientPipeline } from '../lib/ClientPipeline';
 
 declare global {
   namespace NodeJS {
@@ -13,7 +13,8 @@ declare global {
 }
 
 const app = new cdk.App();
-new FrontendPipeline(app, 'FrontendPipeline', {
+new ClientPipeline(app, 'ClientPipeline', {
+  clientCertificateArn: 'arn:aws:acm:us-east-1:831841410317:certificate/59c87649-994b-4808-b6aa-b8939b459223',
   ghRepo: 'UCF-Aether/Aether-Client',
   domainName: 'aethersensor.network',
   stackDir: '../',
@@ -25,3 +26,5 @@ new FrontendPipeline(app, 'FrontendPipeline', {
     application: 'Aether-Client',
   },
 });
+
+app.synth();

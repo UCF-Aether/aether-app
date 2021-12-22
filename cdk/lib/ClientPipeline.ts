@@ -1,21 +1,22 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Stack, StackProps } from "aws-cdk-lib";
-import { Construct } from "constructs";
-import { CodePipeline, CodeBuildStep, CodePipelineSource } from "aws-cdk-lib/pipelines";
-import { FrontendProdStage } from "./frontend/deploy";
+import { Construct } from 'constructs';
+import { CodePipeline, CodeBuildStep, CodePipelineSource } from 'aws-cdk-lib/pipelines';
+import { ClientProdStage } from './ClientProdStage';
 
-export interface FrontendProps extends StackProps {
+export interface ClientProps extends StackProps {
   ghRepo: string;
   domainName: string;
   stackDir: string;
+  clientCertificateArn: string;
   env: {
     account: string;
     region: string;
   };
 }
 
-export class FrontendPipeline extends Stack {
-  constructor(scope: Construct, id: string, props: FrontendProps) {
+export class ClientPipeline extends Stack {
+  constructor(scope: Construct, id: string, props: ClientProps) {
     super(scope, id, props);
 
     const pipeline = new CodePipeline(this, 'Pipeline', {
@@ -44,7 +45,7 @@ export class FrontendPipeline extends Stack {
       }),
     });
 
-   const prodStage = new FrontendProdStage(this, 'ProdStage', props);
+    const prodStage = new ClientProdStage(this, 'ClientProd', props);
     pipeline.addStage(prodStage);
   }
 }

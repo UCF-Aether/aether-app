@@ -2,18 +2,17 @@ import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
-import * as cloudwatch from "aws-cdk-lib/aws-cloudwatch";
 import * as route53 from 'aws-cdk-lib/aws-route53';
-import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import { Construct } from "constructs";
-import { Aws, RemovalPolicy, CfnOutput, Stack } from 'aws-cdk-lib';
-import { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { RemovalPolicy, CfnOutput, Stack } from 'aws-cdk-lib';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { S3Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
 
 export interface StaticSiteProps {
   domainName: string;
   buildPath: string;
+  dnsCertificateArn: string;
 }
 
 export class StaticSite extends Construct {
@@ -57,12 +56,8 @@ export class StaticSite extends Construct {
     new CfnOutput(this, 'Bucket', { value: siteBucket.bucketName });
 
     // TLS certificate
-    const dnsCertificate = new acm.DnsValidatedCertificate(this, 'SiteCertificate', {
-      domainName: siteDomain,
-      hostedZone: zone,
-      region: 'us-east-1', // Cloudfront only checks this region for certificates.
-    });
-    new CfnOutput(this, 'Certificate', { value: dnsCertificate.certificateArn });
+    const dnsCertificate = Certificate.fromCertificateArn(this, 'Certificate', props.dnsCertificateArn);
+    // new CfnOutput(this, 'CertificateARN', { value: dnsCertificate.certificateArn });
     
     const distribution = new cloudfront.Distribution(this, 'SiteDistribution', {
       defaultBehavior: { 
