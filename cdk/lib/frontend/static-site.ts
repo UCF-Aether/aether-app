@@ -3,6 +3,8 @@ import * as s3 from 'aws-cdk-lib/aws-s3'
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as targets from 'aws-cdk-lib/aws-route53-targets';
 import { Construct } from "constructs";
 
 export interface StaticSiteProps {
@@ -15,6 +17,7 @@ export class StaticSite extends Construct {
     super(scope, id);
 
     const siteDomain = props.domainName;
+    const zone = route53.HostedZone.fromLookup(this, 'Zone', { domainName: props.domainName });
     const cloudfrontOAI = new cloudfront.OriginAccessIdentity(this, 'cloudfront-OAI', {
       comment: `OAI for ${id}`
     });
@@ -67,6 +70,13 @@ export class StaticSite extends Construct {
       ]
     });
     new CfnOutput(this, 'DistributionId', { value: distribution.distributionId });
+
+    // Route53 alias record for the CloudFront distribution
+    new route53.ARecord(this, 'SiteAliasRecord', {
+      recordName: siteDomain,
+      target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      zone
+    });
 
     // Deploy site contents to S3 bucket
     new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
