@@ -59,9 +59,11 @@ export class StaticSite extends Construct {
     const dnsCertificate = Certificate.fromCertificateArn(this, 'Certificate', props.dnsCertificateArn);
     new CfnOutput(this, 'CertificateARN', { value: dnsCertificate.certificateArn });
     
+    const s3origin = new S3Origin(siteBucket, { originAccessIdentity: cloudfrontOAI });
     const distribution = new cloudfront.Distribution(this, 'SiteDistribution', {
+      defaultRootObject: 'index.html',
       defaultBehavior: { 
-        origin: new S3Origin(siteBucket, { originAccessIdentity: cloudfrontOAI }),
+        origin: s3origin,
         allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
         originRequestPolicy: cloudfront.OriginRequestPolicy.CORS_S3_ORIGIN,
