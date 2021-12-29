@@ -74,6 +74,7 @@ export class MonoRepoPipeline extends Stack {
     const gitHubSource = codebuild.Source.gitHub({
       owner: props.repo.owner,
       repo: props.repo.name,
+      branchOrRef: props.repo.branch,
       webhook: true, // optional, default: true if `webhookFilters` were provided, false otherwise
       fetchSubmodules: true,
       webhookTriggersBatchBuild: false,

@@ -20,7 +20,7 @@ new MonoRepoPipeline(app, 'ClientPipeline', {
   repo: {
     owner: 'UCF-Aether',
     name: 'Aether-Client',
-    branch: 'main',
+    branch: 'mono',
   },
   project: {
     name: 'client',

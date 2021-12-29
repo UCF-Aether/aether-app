@@ -13,10 +13,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "npx jest",
+    "test-watch": "react-scripts test",
     "eject": "react-scripts eject",
-    "synth": "cd cdk && npm install && npx cdk synth",
-    "manual-deploy": "git push && cd cdk && cdk deploy"
   },
   "workspaces": [
     "cdk"
