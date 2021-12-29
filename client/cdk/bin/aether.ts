@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as cdk from 'aws-cdk-lib';
-import { ClientPipeline } from '../lib/ClientPipeline';
+import { MonoRepoPipeline } from '../lib/ClientPipeline';
 
 declare global {
   namespace NodeJS {
@@ -13,11 +14,21 @@ declare global {
 }
 
 const app = new cdk.App();
-new ClientPipeline(app, 'ClientPipeline', {
+
+new MonoRepoPipeline(app, 'ClientPipeline', {
   clientCertificateArn: 'arn:aws:acm:us-east-1:831841410317:certificate/59c87649-994b-4808-b6aa-b8939b459223',
-  ghRepo: 'UCF-Aether/Aether-Client',
+  repo: {
+    owner: 'UCF-Aether',
+    name: 'Aether-Client',
+    branch: 'main',
+  },
+  project: {
+    name: 'client',
+    path: 'client',
+  },
   domainName: 'aethersensor.network',
   stackDir: '../',
+  selfMutation: false,
   env: { 
     account: '831841410317',
     region: 'us-east-1',

@@ -1,10 +1,10 @@
 import { Stack, StackProps, ContextProvider } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { StaticSite, StaticSiteProps } from './StaticSite'
-import { ClientProps } from './ClientPipeline';
+import { MonoRepoPipelineProps } from './ClientPipeline';
 
 export class ClientStack extends Stack {
-  constructor(scope: Construct, id: string, props: ClientProps) {
+  constructor(scope: Construct, id: string, props: MonoRepoPipelineProps) {
     super(scope, id, props);
 
     const siteProps: StaticSiteProps = {
