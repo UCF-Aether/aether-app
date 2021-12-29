@@ -22,14 +22,15 @@
   "dependencies": {
     "@types/jest": "^26.0.10",
     "@types/node": "10.17.27",
+    "@types/source-map-support": "^0.5.4",
     "aws-cdk": "2.2.0",
+    "aws-cdk-lib": "^2.2.0",
+    "constructs": "^10.0.17",
+    "infra-common": "file:../../common/infra",
     "jest": "^26.4.2",
+    "source-map-support": "^0.5.16",
     "ts-jest": "^26.2.0",
     "ts-node": "^9.0.0",
-    "typescript": "~3.9.7",
-    "@types/source-map-support": "^0.5.4",
-    "aws-cdk-lib": "^2.2.0",
-    "constructs": "^10.0.0",
-    "source-map-support": "^0.5.16"
+    "typescript": "~3.9.7"
   }
 }

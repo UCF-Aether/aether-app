@@ -2,7 +2,7 @@
 import 'source-map-support/register';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as cdk from 'aws-cdk-lib';
-import { MonoRepoPipeline } from '../lib/ClientPipeline';
+import {mono} from 'infra-common';
 
 declare global {
   namespace NodeJS {
@@ -15,11 +15,11 @@ declare global {
 
 const app = new cdk.App();
 
-new MonoRepoPipeline(app, 'ClientPipeline', {
+new mono.MonoRepoPipeline(app, 'ClientPipeline', {
   clientCertificateArn: 'arn:aws:acm:us-east-1:831841410317:certificate/59c87649-994b-4808-b6aa-b8939b459223',
   repo: {
     owner: 'UCF-Aether',
-    name: 'Aether-Client',
+    name: 'Aether-App',
     branch: 'mono',
   },
   project: {
