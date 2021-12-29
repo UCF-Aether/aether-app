@@ -25,6 +25,9 @@ new MonoRepoPipeline(app, 'ClientPipeline', {
   project: {
     name: 'client',
     path: 'client',
+    additionalPaths: [
+      'common/infra',
+    ],
   },
   domainName: 'aethersensor.network',
   stackDir: '../',

@@ -20,6 +20,7 @@ export interface MonoRepoPipelineProps extends StackProps {
   project: {
     name: string;   
     path?: string;  // Defaults to repo root directory
+    additionalPaths?: [string];   // Local dependencies to include in the source-build artifact
     installCommands?: [string];
     buildCommands?: [string];
     testCommands?: [string];
@@ -56,6 +57,9 @@ export class MonoRepoPipeline extends Stack {
     const projectCdkPath = `${projectPath}/${props.project.cdkDir || 'cdk'}`
     const codebuildComputeType = codebuild.ComputeType.SMALL;
     const codebuildBuildImage = codebuild.LinuxBuildImage.STANDARD_5_0;
+    const sourcePaths = [`${projectPath}/**/*`];
+
+    if (props.project.additionalPaths) sourcePaths.concat(props.project.additionalPaths);
 
     // Credentials are global - only one per region allowed
     new codebuild.GitHubSourceCredentials(this, 'CodeBuildGitHubCreds', {
@@ -91,15 +95,15 @@ export class MonoRepoPipeline extends Stack {
     const sourceBuildSpec = codebuild.BuildSpec.fromObject({
       version: 0.2,
       artifacts: {
-        files: '**/*',
-        'base-directory': projectPath,
+        files: sourcePaths,
+        // 'base-directory': projectPath,
       },
       phases: {
         build: {
           commands: [
             'ls',
             `cd ${projectPath}`,
-            'npm install',
+            'npm ci',
             'npm run build',
             'npm run test',
           ],
@@ -133,8 +137,10 @@ export class MonoRepoPipeline extends Stack {
         }),
         primaryOutputDirectory: `${projectCdkPath}/cdk.out`,
         commands: [
+          'ls',
           `cd ${projectCdkPath}`,
-          'cdk synth',
+          'npm ci',
+          'npx cdk synth',
         ],
         rolePolicyStatements: [
           new iam.PolicyStatement({
