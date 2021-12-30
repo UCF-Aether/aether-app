@@ -6,7 +6,11 @@ import { Stack, StackProps, SecretValue, aws_codepipeline_actions as codepipelin
 import { Construct } from 'constructs';
 import { CodePipeline, CodeBuildStep, CodePipelineSource } from 'aws-cdk-lib/pipelines';
 
-// TODO: rename cdk/ to infra
+// TODO: trigger off of deploy
+// TODO: write script to manually trigger build & print build badge url
+// TODO: caching
+// TODO: cfn outputs
+// TODO: test reporting
 // TODO: accept commands prop w/ defaults (auto cd to pathFilter)
 // TODO: accept cdk deploy config props
 // TODO: write proper docs for interface
@@ -21,22 +25,17 @@ export interface MonoRepoPipelineProps extends StackProps {
     name: string;   
     path?: string;  // Defaults to repo root directory
     additionalPaths?: [string];   // Local dependencies to include in the source-build artifact
-    installCommands?: [string];
-    buildCommands?: [string];
-    testCommands?: [string];
-    synthCommands?: [string];
-    cdkTestCommands?: [string];
+    testReportFile?: string;
+    // installCommands?: [string];
+    // buildCommands?: [string];
+    // testCommands?: [string];
+    // synthCommands?: [string];
+    // cdkTestCommands?: [string];
     cdkDir?: string;  // Relative to project.path, defaults 'cdk/'
   };
-  // codebuild?: {
-  //   env?: {
-  //     computeType?: codebuild.ComputeType;
-  //     buildImage?: codebuild.LinuxBuildImage;
-  //   };
-  // };
-  domainName: string;
-  stackDir: string;
-  clientCertificateArn: string;
+  // domainName: string;
+  // stackDir: string;
+  // clientCertificateArn: string;
   selfMutation: boolean;
   env: {
     account: string;
@@ -48,6 +47,7 @@ export interface MonoRepoPipelineProps extends StackProps {
 // TODO: separate codebuild for each build source (from filter group)
 export class MonoRepoPipeline extends Stack {
   readonly pipeline: CodePipeline;
+  readonly codebuildProject: codebuild.Project;
 
   constructor(scope: Construct, id: string, props: MonoRepoPipelineProps) {
     super(scope, id, props);
@@ -58,6 +58,7 @@ export class MonoRepoPipeline extends Stack {
     const codebuildComputeType = codebuild.ComputeType.SMALL;
     const codebuildBuildImage = codebuild.LinuxBuildImage.STANDARD_5_0;
     const sourcePaths = [`${projectPath}/**/*`];
+    const jestReportFile = props.project.testReportFile || 'reports/jest-report.xml';
 
     if (props.project.additionalPaths) sourcePaths.concat(props.project.additionalPaths);
 
@@ -108,12 +109,19 @@ export class MonoRepoPipeline extends Stack {
             'npm run test',
           ],
         },
-      }
+      },
+      reports: {
+        jest_reports: {
+          files: [jestReportFile],
+          'file-format': 'JUNITXML'
+        },
+      },
     });
 
     const project = new codebuild.Project(this, 'SourceBuild', {
       source: gitHubSource,
       buildSpec: sourceBuildSpec,
+      badge: true,
       artifacts: codebuild.Artifacts.s3({
         bucket: artifactBucket,
         includeBuildId: false,
@@ -126,6 +134,7 @@ export class MonoRepoPipeline extends Stack {
         computeType: codebuildComputeType,
       },
     });
+    this.codebuildProject = project;
     artifactBucket.grantPut(project);
 
     // TODO: trigger synth input with s3 event instead of polling

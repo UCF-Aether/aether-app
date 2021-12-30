@@ -105,3 +105,6 @@ dist
 
 # build files
 build/
+
+# test reports
+reports/

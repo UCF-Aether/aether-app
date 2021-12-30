@@ -16,7 +16,7 @@ declare global {
 const app = new cdk.App();
 
 new mono.MonoRepoPipeline(app, 'ClientPipeline', {
-  clientCertificateArn: 'arn:aws:acm:us-east-1:831841410317:certificate/59c87649-994b-4808-b6aa-b8939b459223',
+  // clientCertificateArn: 'arn:aws:acm:us-east-1:831841410317:certificate/59c87649-994b-4808-b6aa-b8939b459223',
   repo: {
     owner: 'UCF-Aether',
     name: 'Aether-App',
@@ -28,9 +28,10 @@ new mono.MonoRepoPipeline(app, 'ClientPipeline', {
     additionalPaths: [
       'common/infra',
     ],
+    cdkDir: 'infra/',
   },
-  domainName: 'aethersensor.network',
-  stackDir: '../',
+  // domainName: 'aethersensor.network',
+  // stackDir: '../',
   selfMutation: false,
   env: { 
     account: '831841410317',
