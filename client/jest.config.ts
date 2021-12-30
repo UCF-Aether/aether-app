@@ -6,7 +6,7 @@ const config: Config.InitialOptions = {
   reporters: [
     'default',
     ['jest-junit', {
-      outputDirectory: './',
+      outputDirectory: 'reports/',
       outputName: 'jest-report.xml',
     }],
   ],

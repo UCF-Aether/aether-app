@@ -57,8 +57,12 @@ export class MonoRepoPipeline extends Stack {
     const projectCdkPath = `${projectPath}/${props.project.cdkDir || 'cdk'}`
     const codebuildComputeType = codebuild.ComputeType.SMALL;
     const codebuildBuildImage = codebuild.LinuxBuildImage.STANDARD_5_0;
-    const sourcePaths = [`${projectPath}/**/*`];
-    const jestReportFile = props.project.testReportFile || 'reports/jest-report.xml';
+    const sourcePaths = [
+      `${projectPath}/build/**/*`,
+      `${projectCdkPath}/**/*`,
+    ];
+    const relativeJestReportFile = props.project.testReportFile || 'reports/jest-report.xml';
+    const jestReportFile = `${projectPath}/${relativeJestReportFile}`;
 
     if (props.project.additionalPaths) sourcePaths.concat(props.project.additionalPaths);
 
@@ -119,6 +123,7 @@ export class MonoRepoPipeline extends Stack {
     });
 
     const project = new codebuild.Project(this, 'SourceBuild', {
+      // projectName: id + props.project.name + 'SourceBuild',
       source: gitHubSource,
       buildSpec: sourceBuildSpec,
       badge: true,
