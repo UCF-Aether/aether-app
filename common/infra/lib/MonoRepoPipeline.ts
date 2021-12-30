@@ -10,7 +10,6 @@ import { CodePipeline, CodeBuildStep, CodePipelineSource } from 'aws-cdk-lib/pip
 // TODO: write script to manually trigger build & print build badge url
 // TODO: caching
 // TODO: cfn outputs
-// TODO: test reporting
 // TODO: accept commands prop w/ defaults (auto cd to pathFilter)
 // TODO: accept cdk deploy config props
 // TODO: write proper docs for interface
