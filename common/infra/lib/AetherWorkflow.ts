@@ -47,7 +47,7 @@ export class AetherWorkflow extends Construct {
           ...repo,
         },
         project,
-        selfMutation: props.selfMutation || true,
+        selfMutation: (props.selfMutation || false) && true,
         config: pipelineConfig,
         env: {
           region: infraSettings.region,

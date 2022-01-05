@@ -75,9 +75,9 @@ export class MonoRepoPipeline extends Stack {
   static readonly PNPM_COMMANDS = {
     preBuild: [],
     install: ['npm install -g pnpm'],
-    build: ['pnpm install -w -r', 'npm build -w -r'],
+    build: ['pnpm install -w -r', 'pnpm build -w -r'],
     test: ['pnpm test -w -r'],
-    synth: ['pnpm synth'],
+    synth: ['pnpm synth -w -r'],
     cdkTest: [],
   };
 
@@ -104,20 +104,17 @@ export class MonoRepoPipeline extends Stack {
     const jestReportFile = `${projectPath}/${relativeJestReportFile}`;
 
     const defaultCommands = MonoRepoPipeline.PNPM_COMMANDS;
-    const sbCommands = props.project.commands || defaultCommands;
+    const commands = props.project.commands || defaultCommands;
 
     const sourceBuildCommands: Array<string> = [
       `cd ${projectPath}`,
-      ...sbCommands.build,
-      ...sbCommands.test,
-      // 'npx nx run-many --target=build --all',
-      // 'npx nx run-many --target=test --all',
-      // 'npx nx run-many --target=synth --all',
+      ...commands.build,
+      ...commands.test,
     ];
     const cdkBuildCommands: Array<string> = [
       `cd ${projectCdkPath}`,
-      ...sbCommands.synth,
-      ...sbCommands.cdkTest,
+      ...commands.synth,
+      ...commands.cdkTest,
     ];
 
     // Credentials are global - only one per region allowed
@@ -161,10 +158,10 @@ export class MonoRepoPipeline extends Stack {
       },
       phases: {
         install: {
-          commands: sbCommands.install,
+          commands: commands.install,
         },
         pre_build: {
-          commands: sbCommands.preBuild,
+          commands: commands.preBuild,
         },
         build: {
           commands: sourceBuildCommands,
@@ -206,6 +203,7 @@ export class MonoRepoPipeline extends Stack {
           trigger: codepipeline_actions.S3Trigger.POLL,
         }),
         primaryOutputDirectory: `${projectCdkPath}/cdk.out`,
+        installCommands: commands.install,
         commands: cdkBuildCommands,
         rolePolicyStatements: [
           new iam.PolicyStatement({
