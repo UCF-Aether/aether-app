@@ -103,8 +103,12 @@ dist
 # TernJS port file
 .tern-port
 
+# TurboRepo
+.turbo
+
 # build files
 build/
+dist/
 
 # test reports
 reports/

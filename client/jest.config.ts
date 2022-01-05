@@ -6,8 +6,8 @@ const config: Config.InitialOptions = {
   passWithNoTests: true,
   testPathIgnorePatterns: [
     '<rootDir>/build/',
-    '<rootDir>/infra/',
     '<rootDir>/node_modules',
+    '<rootDir>/infra',
   ],
   reporters: [
     'default',

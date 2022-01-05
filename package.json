@@ -1,0 +1,30 @@
+{
+  "name": "Aether-App",
+  "scripts": {
+    "build": "",
+    "test": "",
+    "synth": "",
+    "deploy": ""
+  },
+  "devDependencies": {
+    "turbo": "^1.0.24"
+  },
+  "compilerOptions": {
+    "resolveJsonModule": true
+  },
+  "turbo": {
+    "baseBranch": "origin/main",
+    "pipeline": {
+      "build": {
+        "dependsOn": ["^build"]
+      },
+      "test": {
+        "dependsOn": ["build"]
+      },
+      "lint": {},
+      "synth": {
+        "dependsOn": ["build"]
+      }
+    }
+  }
+}
