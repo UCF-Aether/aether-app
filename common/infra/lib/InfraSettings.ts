@@ -5,6 +5,7 @@ export interface IInfraConfiguration{
   siteUrl: string;
   apiUrl: string;
   branch?: string;
+  tagFilter?: string;
 }
 
 export interface IInfraSettings {

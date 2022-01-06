@@ -15,7 +15,8 @@
       "siteUrl": "dev.aethersensor.network",
       "apiUrl": "dev.api.aethersensor.network",
       "account": "831841410317",
-      "branch": "mono"
+      "branch": "mono",
+      "tagFilter": "v\\d+\\.\\d+(\\.\\d+)?"
     },
     "prod": {
       "siteUrl": "aethersensor.network",
