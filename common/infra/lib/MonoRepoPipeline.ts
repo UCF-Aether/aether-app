@@ -14,21 +14,21 @@ import { IInfraConfiguration } from './InfraSettings';
 // TODO: accept cdk deploy config props
 // TODO: write proper docs for interface
 
-export interface ProjectCommandProps {
-  preBuild: Array<string>;
-  install: [string];
-  build: [string];
-  test: [string];
-  synth: [string];
-  cdkTest: [string];
-}
+// export interface ProjectCommandProps {
+//   preBuild: Array<string>;
+//   install: [string];
+//   build: [string];
+//   test: [string];
+//   synth: [string];
+//   cdkTest: [string];
+// }
 
 export interface ProjectProps {
   name: string;   
   path?: string;  // Defaults to repo root directory
   additionalPaths?: [string];   // Local dependencies to include in the source-build artifact
   testReportFile?: string;
-  commands?: ProjectCommandProps;
+  // commands?: ProjectCommandProps;
   cdkDir?: string;  // Relative to project.path, defaults 'cdk/'
 }
 
@@ -63,24 +63,24 @@ export class MonoRepoPipeline extends Stack {
   readonly config: IInfraConfiguration;
 
   // TODO: make pnpm commands and migrate
-  static readonly NPM_COMMANDS = {
-    preBuild: [],
-    install: ['npm ci'],
-    build: ['npm run build'],
-    test: ['npm test'],
-    synth: ['cdk synth'],
-    cdkTest: ['npm test'],
-  };
-
-  static readonly PNPM_COMMANDS = {
-    preBuild: [],
-    install: ['npm install -g pnpm'],
-    build: ['pnpm install -w -r', 'pnpm build -w -r'],
-    test: ['pnpm test -w -r'],
-    synth: ['pnpm synth -w -r'],
-    cdkTest: [],
-  };
-
+  // static readonly NPM_COMMANDS = {
+  //   preBuild: [],
+  //   install: ['npm ci'],
+  //   build: ['npm run build'],
+  //   test: ['npm test'],
+  //   synth: ['cdk synth'],
+  //   cdkTest: ['npm test'],
+  // };
+  //
+  // static readonly PNPM_COMMANDS = {
+  //   preBuild: [],
+  //   install: ['npm install -g pnpm'],
+  //   build: ['pnpm install', 'pnpm build -w -r'],
+  //   test: ['pnpm test -w -r'],
+  //   synth: ['pnpm synth -w -r'],
+  //   cdkTest: [],
+  // };
+  //
   static readonly RELEASE_TAGS = /^v\d+\.\d+(\.\d+)?$/.source;
 
   constructor(scope: Construct, id: string, props: MonoRepoPipelineProps) {
@@ -103,19 +103,32 @@ export class MonoRepoPipeline extends Stack {
     const relativeJestReportFile = props.project.testReportFile || 'reports/jest-report.xml';
     const jestReportFile = `${projectPath}/${relativeJestReportFile}`;
 
-    const defaultCommands = MonoRepoPipeline.PNPM_COMMANDS;
-    const commands = props.project.commands || defaultCommands;
+    // const defaultCommands = MonoRepoPipeline.PNPM_COMMANDS;
+    // const commands = props.project.commands || defaultCommands;
+    const commands = {
+      install: [
+        'npm i -g pnpm',
+        'pnpm i -g aws-cdk',
+      ],
+      build: [
+        'pnpm install',
+        'pnpm build -r --filter ./common',
+        `pnpm build -r --filter ./${projectPath}`,
+        `pnpm synth -r --filter ./${projectPath}`,
+        `pnpm test -r --filter ./${projectPath}`,
+      ],
+    };
 
-    const sourceBuildCommands: Array<string> = [
-      `cd ${projectPath}`,
-      ...commands.build,
-      ...commands.test,
-    ];
-    const cdkBuildCommands: Array<string> = [
-      `cd ${projectCdkPath}`,
-      ...commands.synth,
-      ...commands.cdkTest,
-    ];
+    // const sourceBuildCommands: Array<string> = [
+    //   `cd ${projectPath}`,
+    //   ...commands.build,
+    //   ...commands.test,
+    // ];
+    // const cdkBuildCommands: Array<string> = [
+    //   `cd ${projectCdkPath}`,
+    //   ...commands.synth,
+    //   ...commands.cdkTest,
+    // ];
 
     // Credentials are global - only one per region allowed
     // TODO: make part of bootstrap command with aws CLI
@@ -160,11 +173,8 @@ export class MonoRepoPipeline extends Stack {
         install: {
           commands: commands.install,
         },
-        pre_build: {
-          commands: commands.preBuild,
-        },
         build: {
-          commands: sourceBuildCommands,
+          commands: commands.build,
         },
       },
       reports: {
@@ -203,8 +213,7 @@ export class MonoRepoPipeline extends Stack {
           trigger: codepipeline_actions.S3Trigger.POLL,
         }),
         primaryOutputDirectory: `${projectCdkPath}/cdk.out`,
-        installCommands: commands.install,
-        commands: cdkBuildCommands,
+        commands: [],
         rolePolicyStatements: [
           new iam.PolicyStatement({
             actions: ['sts:AssumeRole'],
