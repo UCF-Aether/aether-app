@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "resolveJsonModule": true,
     "target": "ES2018",
     "module": "commonjs",
     "lib": [
@@ -19,6 +18,7 @@
     "inlineSourceMap": true,
     "inlineSources": true,
     "experimentalDecorators": true,
+    "resolveJsonModule": true,
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"

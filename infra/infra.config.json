@@ -1,0 +1,18 @@
+{
+  "dnsCertificates": {
+    "aethersensor.network": "arn:aws:acm:us-east-1:831841410317:certificate/59c87649-994b-4808-b6aa-b8939b459223",
+    "api.aethersensor.network": "arn:aws:acm:us-east-1:831841410317:certificate/87f104b5-0f13-4ecf-a275-74c15170f533"
+  },
+  "environments": {
+    "prod": {
+      "account": "831841410317",
+      "region": "us-east-1",
+      "branch": "main",
+      "domains": {
+        "type": "route53",
+        "siteUrl": "aethersensor.network",
+        "apiUrl": "api.aethersensor.network"
+      }
+    }
+  }
+}

@@ -1,7 +1,4 @@
 packages:
-  - common/**
-  # - client
-  # - services
   - client/**
-  - services/**
   - api/**
+  - infra/**

@@ -1,0 +1,30 @@
+{
+  "name": "aether-client-infra",
+  "version": "0.1.0",
+  "bin": {
+    "aether": "bin/aether.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy --all"
+  },
+  "devDependencies": {
+    "@types/jest": "^26.0.10",
+    "@types/node": "10.17.27",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.5.6",
+    "ts-node": "^9.1.1",
+    "typescript": "~3.9.10"
+  },
+  "dependencies": {
+    "@types/jest": "^26.0.24",
+    "@types/node": "10.17.27",
+    "@types/source-map-support": "^0.5.4",
+    "aws-cdk-lib": "^2.4.0",
+    "constructs": "^10.0.27",
+    "source-map-support": "^0.5.21"
+  }
+}
