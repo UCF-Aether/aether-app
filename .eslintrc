@@ -1,0 +1,16 @@
+
+{
+  "plugins": ["@typescript-eslint"],
+  "extends": ["airbnb-typescript", "react-app"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    }
+  }
+}

@@ -1,3 +1,6 @@
 {
-  "name": "Aether-App"
+  "name": "Aether-App",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  }
 }
