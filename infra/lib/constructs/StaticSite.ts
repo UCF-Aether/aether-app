@@ -171,7 +171,7 @@ export class StaticSite extends Construct {
     const distribution = this.domain.getDistribution(this, {origin: s3origin, errorResponses: props.errorResponses});
 
     // Deploy site contents to S3 bucket
-    new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
+    new s3deploy.BucketDeployment(this, 'StaticSiteBucket', {
       sources: [s3deploy.Source.asset(props.buildPath)],
       destinationBucket: siteBucket,
       distribution,

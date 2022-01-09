@@ -10,21 +10,23 @@ export enum DomainType {
 export interface IInfraEnvironment extends Environment {
   account: string;
   region: string;
+  cicd: boolean;
   domains: {
     type: DomainType;
     siteUrl?: string;   // Required if route53, must have dnsCertificateArn
     apiUrl?: string;    // Required if route53, must have dnsCertificateArn
   }
-  branch?: string;
+  branch: string;
 }
 
 export interface IInfraConfig {
   [key: string]: string | number | boolean | {} | [];
   dnsCertificates: {[key: string]: string};
   environments: {[key: string]: IInfraEnvironment};
+  repo: string;
 }
 
-const infraConfig = config as IInfraConfig;
+const infraConfig: IInfraConfig = config as IInfraConfig;
 validateConfig(infraConfig);
 export { infraConfig };
 
@@ -38,15 +40,16 @@ export function getInfraEnv(app: App): { name: string, infraEnv: IInfraEnvironme
 }
 
 function createDefaultConfig() {
+  const config = infraConfig.environments.default;
   const region = process.env.CDK_DEFAULT_REGION;
   const account = process.env.CDK_DEFAULT_ACCOUNT;
-  const branch = process.env.DEPLOY_BRANCH || 'main';
+  const branch = process.env.DEPLOY_BRANCH;
 
   infraConfig.environments.default = {
+    ...config,
     region,
     account,
-    domains: { type: DomainType.CloudFront },
-    branch,
+    branch: branch || config.branch,
   };
 }
 

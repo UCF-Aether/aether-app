@@ -1,21 +1,19 @@
-import { Stack, StackProps, Environment } from "aws-cdk-lib";
+import { StackProps, Stack } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { ClientStack } from "./ClientStack";
-import { DomainType, IInfraEnvironment, getDnsCertificateArn } from "../InfraConfig";
-import { Route53Domain, CloudFrontDomain, StaticSiteDomain, StaticSiteProps, StaticSite } from "../constructs/StaticSite";
+import { IInfraEnvironment, DomainType, getDnsCertificateArn } from "../InfraConfig";
+import { StaticSiteDomain, Route53Domain, CloudFrontDomain, StaticSiteProps, StaticSite } from "../constructs/StaticSite";
 
-export interface AetherStackProps extends StackProps {
+export interface ClientStackProps extends StackProps {
   env: IInfraEnvironment;
 }
 
-export class AetherStack extends Stack {
+export class ClientStack extends Stack {
   readonly site: StaticSite;
 
-  constructor(scope: Construct, id: string, props: AetherStackProps) {
+  constructor(scope: Construct, id: string, props: ClientStackProps) {
     super(scope, id, props);
 
     const domains = props.env.domains;
-
     let domain: StaticSiteDomain;
     switch(domains.type) {
       case DomainType.Route53:
