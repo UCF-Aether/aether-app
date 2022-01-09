@@ -1,7 +1,14 @@
-import { StackProps, Stack } from "aws-cdk-lib";
+import { Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { IInfraEnvironment, DomainType, getDnsCertificateArn } from "../InfraConfig";
-import { StaticSiteDomain, Route53Domain, CloudFrontDomain, StaticSiteProps, StaticSite } from "../constructs/StaticSite";
+
+import {
+  CloudFrontDomain,
+  Route53Domain,
+  StaticSite,
+  StaticSiteDomain,
+  StaticSiteProps,
+} from "../constructs/StaticSite";
+import { DomainType, getDnsCertificateArn, IInfraEnvironment } from "../InfraConfig";
 
 export interface ClientStackProps extends StackProps {
   env: IInfraEnvironment;
@@ -13,23 +20,28 @@ export class ClientStack extends Stack {
   constructor(scope: Construct, id: string, props: ClientStackProps) {
     super(scope, id, props);
 
-    const domains = props.env.domains;
+    const { domains } = props.env;
     let domain: StaticSiteDomain;
-    switch(domains.type) {
-      case DomainType.Route53:
-        const url = domains.siteUrl as string;
+    switch (domains.type) {
+      case DomainType.Route53: {
+        const url = domains.siteUrl!;
         domain = new Route53Domain(url, getDnsCertificateArn(url));
         break;
-      case DomainType.CloudFront:
+      }
+      case DomainType.CloudFront: {
         domain = new CloudFrontDomain();
         break;
+      }
+      default: {
+        throw new Error(`No case for DomainType: ${domains.type}`);
+      }
     }
 
     const siteProps: StaticSiteProps = {
       domain,
-      buildPath: '../client/build',
+      buildPath: "../client/build",
     };
 
-    this.site = new StaticSite(this, 'StaticSite', siteProps);
+    this.site = new StaticSite(this, "StaticSite", siteProps);
   }
 }

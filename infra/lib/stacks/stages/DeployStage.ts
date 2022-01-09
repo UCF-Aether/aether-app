@@ -1,10 +1,11 @@
-import { Stack, StackProps, Environment, Stage, StageProps } from "aws-cdk-lib";
+import { Stage, StageProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
+
 import { IInfraEnvironment } from "../../InfraConfig";
-import { ClientStack } from "../ClientStack";
-import { IotStack } from "../IotStack";
-import { DatabaseStack } from "../DatabaseStack";
 import { ApiStack } from "../ApiStack";
+import { ClientStack } from "../ClientStack";
+import { DatabaseStack } from "../DatabaseStack";
+import { IotStack } from "../IotStack";
 
 export interface DeployStageProps extends StageProps {
   env: IInfraEnvironment;
@@ -22,7 +23,9 @@ export class DeployStage extends Stage {
   constructor(scope: Construct, id: string, props: DeployStageProps) {
     super(scope, id, props);
 
-    this.client = new ClientStack(this, 'ClientStack', { env: props.env });
+    this.client = new ClientStack(this, "ClientStack", {
+      env: props.env,
+    });
 
     // this.api = new ApiStack(this, 'APIStack', {});
     //

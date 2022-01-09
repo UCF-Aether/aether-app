@@ -8,7 +8,9 @@
     "default": {
       "account": "from env",
       "region": "from env",
-      "cicd": false,
+      "pipeline": {
+        "selfMutation": false
+      },
       "branch": "main",
       "domains": {
         "type": "cloudfront"
@@ -18,7 +20,9 @@
       "account": "345803776198",
       "region": "us-east-1",
       "branch": "main",
-      "cicd": true,
+      "pipeline": {
+        "selfMutation": true
+      },
       "domains": {
         "type": "route53",
         "siteUrl": "aethersensor.network",

@@ -2,5 +2,12 @@
   "name": "Aether-App",
   "scripts": {
     "preinstall": "npx only-allow pnpm"
+  },
+  "devDependencies": {
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.7"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }

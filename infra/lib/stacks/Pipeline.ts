@@ -1,6 +1,6 @@
 import { Stack, StackProps } from "aws-cdk-lib";
+import { CodePipeline, CodePipelineSource, ShellStep } from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
-import { CodePipeline, ShellStep, CodePipelineSource } from "aws-cdk-lib/pipelines";
 import { IInfraEnvironment, infraConfig } from "../InfraConfig";
 import { DeployStage } from "./stages/DeployStage";
 
@@ -9,27 +9,29 @@ export interface PipelineStackProps extends StackProps {
 }
 
 export class PipelineStack extends Stack {
+  static readonly commands = [
+    "pnpm install",
+    "pnpm build -r",
+    "pnpm test -r",
+    "pnpm synth --filter ./infra",
+  ];
+
   constructor(scope: Construct, id: string, props: PipelineStackProps) {
     super(scope, id, props);
 
-    const pipeline = new CodePipeline(this, 'CodePipeline', {
-      selfMutation: false,  // TODO: configure from config manager
-      synth: new ShellStep('Synth', {
+    const pipeline = new CodePipeline(this, "CodePipeline", {
+      selfMutation: props.env.pipeline.selfMutation,
+      synth: new ShellStep("Synth", {
         input: CodePipelineSource.gitHub(infraConfig.repo, props.env.branch),
-        installCommands: [
-          'npm i -g pnpm',
-        ],
-        commands: [
-          'pnpm install',
-          'pnpm build -r',
-          'pnpm test -r',
-          'pnpm synth --filter ./infra',
-        ],
+        installCommands: ["npm i -g pnpm"],
+        commands: PipelineStack.commands,
       }),
     });
 
-    pipeline.addStage(new DeployStage(this, 'DeployStage', {
-      env: props.env,
-    }));
+    pipeline.addStage(
+      new DeployStage(this, "DeployStage", {
+        env: props.env,
+      })
+    );
   }
 }
