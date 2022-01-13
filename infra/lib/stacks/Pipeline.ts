@@ -25,6 +25,7 @@ export class PipelineStack extends Stack {
         input: CodePipelineSource.gitHub(infraConfig.repo, props.env.branch),
         installCommands: ["npm i -g pnpm"],
         commands: PipelineStack.commands,
+        primaryOutputDirectory: "infra/cdk.out",
       }),
     });
 
