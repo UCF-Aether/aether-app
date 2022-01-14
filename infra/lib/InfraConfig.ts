@@ -22,6 +22,7 @@ export interface IInfraEnvironment extends Environment {
     apiUrl?: string; // Required if route53, must have dnsCertificateArn
   };
   branch: string;
+  // This is messy lol
 }
 
 export interface IInfraConfig {
@@ -98,19 +99,24 @@ function validateEnvironmentName(name: string): void {
   }
 }
 
-function getCurrentEnvironment(scope: Construct): string {
+export function getCurrentEnvironment(scope: Construct): string {
   const envContext = scope.node.tryGetContext("env");
+  // Try to see if the env variable was set
   if (envContext === undefined) {
-    return "default";
+    const fromEnv = process.env.DEPLOY_ENV;
+    if (fromEnv === undefined) {
+      return "default";
+    }
+    return fromEnv;
   }
 
   return envContext as string;
 }
 
 export function getInfraEnv(app: App): { name: string; infraEnv: IInfraEnvironment } {
-  createDefaultConfig();
   const infraEnvName = getCurrentEnvironment(app);
   if (infraEnvName === "default") {
+    createDefaultConfig();
     console.log("Using default account");
   }
   validateEnvironmentName(infraEnvName);

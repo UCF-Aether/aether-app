@@ -152,8 +152,6 @@ export class StaticSite extends Construct {
       // *.s3-website-<region>.amazonaws.com URL to be available. But, that URL
       // is only available if the bucket is publically readable. 2-3 fucking
       // hours wasted on this bullshit!
-      // TODO: create test for this
-      // TODO: test to verify OAI is added to bucket AND distribution origin
       // websiteIndexDocument: 'index.html',
       // websiteErrorDocument: 'error.html',
       publicReadAccess: false,
