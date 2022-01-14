@@ -40,6 +40,9 @@ build/Release
 # Dependency directories
 node_modules/
 jspm_packages/
+*.js
+!jest.config.js
+*.d.ts
 
 # TypeScript v1 declaration files
 typings/
@@ -103,5 +106,16 @@ dist
 # TernJS port file
 .tern-port
 
+# TurboRepo
+.turbo
+
 # build files
 build/
+dist/
+
+# test reports
+reports/
+
+# CDK asset staging directory
+.cdk.staging
+cdk.out

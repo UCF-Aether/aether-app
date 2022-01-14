@@ -1,0 +1,8 @@
+# Ignore artifacts:
+build
+coverage
+cdk.out
+dist
+node_modules
+
+# vim: ft=conf
