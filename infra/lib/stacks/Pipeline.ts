@@ -6,6 +6,7 @@ import { DeployStage } from "./stages/DeployStage";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export interface PipelineStackProps extends StackProps {
+  envName: string;
   env: IInfraEnvironment;
 }
 
@@ -23,6 +24,7 @@ export class PipelineStack extends Stack {
         buildEnvironment: {
           environmentVariables: {
             DEPLOY_BRANCH: { value: props.env.branch },
+            DEPLOY_ENV: { value: props.envName },
           },
         },
         rolePolicyStatements: [

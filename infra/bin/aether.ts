@@ -14,10 +14,10 @@ declare global {
 }
 
 const app = new cdk.App();
-const { infraEnv } = getInfraEnv(app);
+const { name, infraEnv } = getInfraEnv(app);
 console.log(infraEnv);
 
 // new GitHubBoostrapStack(app, 'GitHubBootstrap', {});
-new PipelineStack(app, "AetherApp", { env: infraEnv });
+new PipelineStack(app, "AetherApp", { env: infraEnv, envName: name });
 
 app.synth();
