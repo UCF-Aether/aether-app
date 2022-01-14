@@ -6,12 +6,12 @@
   },
   "environments": {
     "default": {
-      "account": "from env",
-      "region": "from env",
+      "account": "$CDK_DEFAULT_ACCOUNT",
+      "region": "$CDK_DEFAULT_REGION",
       "pipeline": {
         "selfMutation": false
       },
-      "branch": "main",
+      "branch": "$DEPLOY_BRANCH",
       "domains": {
         "type": "cloudfront"
       }

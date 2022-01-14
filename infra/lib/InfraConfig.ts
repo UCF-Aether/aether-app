@@ -26,12 +26,8 @@ export interface IInfraEnvironment extends Environment {
 
 export interface IInfraConfig {
   [key: string]: string | number | boolean | {} | [];
-  dnsCertificates: {
-    [key: string]: string;
-  };
-  environments: {
-    [key: string]: IInfraEnvironment;
-  };
+  dnsCertificates: { [key: string]: string };
+  environments: { [key: string]: IInfraEnvironment };
   repo: string;
 }
 
@@ -59,21 +55,39 @@ export function validateConfig(config: IInfraConfig): void {
   });
 }
 
+function useOrGetEnv(value: string): string {
+  if (value.charAt(0) === "$") {
+    const envValue = process.env[value.slice(1)];
+    // Throw if empty string, too.
+    if (!envValue) {
+      throw new Error(`Environment variable ${value} is undefined.`);
+    }
+    return envValue;
+  } else {
+    return value;
+  }
+}
+
 const infraConfig: IInfraConfig = _infraConfig as IInfraConfig;
 validateConfig(infraConfig);
 export { infraConfig };
 
 function createDefaultConfig() {
   const config = infraConfig.environments.default;
-  const region = process.env.CDK_DEFAULT_REGION;
-  const account = process.env.CDK_DEFAULT_ACCOUNT;
-  const branch = process.env.DEPLOY_BRANCH;
+  // CDK_DEFAULT_REGION & CDK_DEFAULT_ACCOUNT are set by the CDK CLI.
+  // These variables are set based on the AWS profile specified using the
+  // --profile option, or the default AWS profile if you don't specify one.
+  const region = useOrGetEnv(config.region);
+  const account = useOrGetEnv(config.account);
+
+  // MUST be set
+  let branch = useOrGetEnv(config.branch);
 
   infraConfig.environments.default = {
     ...config,
     region,
     account,
-    branch: branch || config.branch,
+    branch,
   };
 }
 
@@ -93,12 +107,12 @@ function getCurrentEnvironment(scope: Construct): string {
   return envContext as string;
 }
 
-export function getInfraEnv(app: App): {
-  name: string;
-  infraEnv: IInfraEnvironment;
-} {
+export function getInfraEnv(app: App): { name: string; infraEnv: IInfraEnvironment } {
   createDefaultConfig();
   const infraEnvName = getCurrentEnvironment(app);
+  if (infraEnvName === "default") {
+    console.log("Using default account");
+  }
   validateEnvironmentName(infraEnvName);
   const infraEnv = infraConfig.environments[infraEnvName];
 
