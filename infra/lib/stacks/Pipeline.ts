@@ -4,6 +4,7 @@ import { Construct } from "constructs";
 import { IInfraEnvironment, infraConfig } from "../InfraConfig";
 import { DeployStage } from "./stages/DeployStage";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
+import { ComputeType } from "aws-cdk-lib/aws-codebuild";
 
 export interface PipelineStackProps extends StackProps {
   envName: string;
@@ -22,6 +23,7 @@ export class PipelineStack extends Stack {
         commands: ["pnpm install", "pnpm build -r", "pnpm test -r", "pnpm synth --filter ./infra"],
         primaryOutputDirectory: "infra/cdk.out",
         buildEnvironment: {
+          computeType: ComputeType.MEDIUM,
           environmentVariables: {
             DEPLOY_BRANCH: { value: props.env.branch },
             DEPLOY_ENV: { value: props.envName },
