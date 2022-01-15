@@ -64,9 +64,9 @@ function useOrGetEnv(value: string): string {
       throw new Error(`Environment variable ${value} is undefined.`);
     }
     return envValue;
-  } else {
-    return value;
   }
+
+  return value;
 }
 
 const infraConfig: IInfraConfig = _infraConfig as IInfraConfig;
@@ -82,7 +82,7 @@ function createDefaultConfig() {
   const account = useOrGetEnv(config.account);
 
   // MUST be set
-  let branch = useOrGetEnv(config.branch);
+  const branch = useOrGetEnv(config.branch);
 
   infraConfig.environments.default = {
     ...config,
@@ -117,6 +117,7 @@ export function getInfraEnv(app: App): { name: string; infraEnv: IInfraEnvironme
   const infraEnvName = getCurrentEnvironment(app);
   if (infraEnvName === "default") {
     createDefaultConfig();
+    /* eslint no-console: off */
     console.log("Using default account");
   }
   validateEnvironmentName(infraEnvName);

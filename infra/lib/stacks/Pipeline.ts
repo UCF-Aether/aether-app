@@ -1,10 +1,10 @@
 import { Stack, StackProps } from "aws-cdk-lib";
-import { CodePipeline, CodePipelineSource, ShellStep, CodeBuildStep } from "aws-cdk-lib/pipelines";
+import { CodePipeline, CodePipelineSource, CodeBuildStep } from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
-import { IInfraEnvironment, infraConfig } from "../InfraConfig";
-import { DeployStage } from "./stages/DeployStage";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
 import { ComputeType } from "aws-cdk-lib/aws-codebuild";
+import { IInfraEnvironment, infraConfig } from "../InfraConfig";
+import { DeployStage } from "./stages/DeployStage";
 
 export interface PipelineStackProps extends StackProps {
   envName: string;

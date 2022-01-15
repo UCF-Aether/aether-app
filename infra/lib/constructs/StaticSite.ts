@@ -145,7 +145,7 @@ export class StaticSite extends Construct {
     });
 
     // Content bucket
-    let siteBucket = new s3.Bucket(this, "SiteBucket", {
+    const siteBucket = new s3.Bucket(this, "SiteBucket", {
       bucketName: siteBucketName,
       // Use cloudfront redirects...if s3 is configured as a website, it expects
       // the

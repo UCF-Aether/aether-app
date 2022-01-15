@@ -1,7 +1,7 @@
 import { App } from "aws-cdk-lib";
+import { Template, Match } from "aws-cdk-lib/assertions";
 import { ClientStack } from "../lib/stacks/ClientStack";
 import { DomainType } from "../lib/InfraConfig";
-import { Template, Match } from "aws-cdk-lib/assertions";
 
 describe("ClientStack", () => {
   test("Site bucket is not website", () => {

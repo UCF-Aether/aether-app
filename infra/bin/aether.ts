@@ -15,6 +15,7 @@ declare global {
 
 const app = new cdk.App();
 const { name, infraEnv } = getInfraEnv(app);
+/* eslint no-console: off */
 console.log(infraEnv);
 
 // new GitHubBoostrapStack(app, 'GitHubBootstrap', {});
