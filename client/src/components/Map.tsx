@@ -5,8 +5,11 @@ let map: google.maps.Map;
 
 export function DataMap() {
   useEffect(() => {
+    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+    if (!apiKey) throw new Error("REACT_APP_GOOGLE_MAPS_API_KEY not defined");
+
     const loader = new Loader({
-      apiKey: "AIzaSyBHLIerlhwZrYaJV-fgUtBd4VCq082qBYs",
+      apiKey,
       version: "weekly",
     });
 
