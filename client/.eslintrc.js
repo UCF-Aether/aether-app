@@ -23,4 +23,7 @@ module.exports = {
       version: "17.0.2",
     },
   },
+  rules: {
+    "@typescript-eslint/no-unused-vars": "warn",
+  },
 };
