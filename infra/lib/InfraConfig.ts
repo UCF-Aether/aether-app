@@ -11,7 +11,7 @@ export enum DomainType {
 
 export interface PipelineConfig {
   selfMutation: boolean;
-  env: {[key: string]: string};
+  env?: {[key: string]: string};
 }
 
 export interface IInfraEnvironment extends Environment {
@@ -76,6 +76,7 @@ function processPipelineEnvVars(config: IInfraConfig) {
   Object.entries(config.environments).map(([ envName, envConfig ]) => {
     if (!envConfig.pipeline || !envConfig.pipeline.env)
       return;
+
     Object.entries(envConfig.pipeline.env).map(([ key, val ]) => {
       console.log(key, val);
       if (val.charAt(0) === "$") {
@@ -85,7 +86,7 @@ function processPipelineEnvVars(config: IInfraConfig) {
         if (!envVal)
           throw new Error(`${envKey} is not defined`);
 
-        envConfig.pipeline.env[envKey] = envVal;
+        envConfig.pipeline.env![envKey] = envVal;
       }
       // } else if (val.startsWith("arn:")) {
       //   console.log('Retrieving secret');

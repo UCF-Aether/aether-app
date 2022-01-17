@@ -16,7 +16,7 @@ export class PipelineStack extends Stack {
     super(scope, id, props);
 
     let pipelineEnv: { [key: string]: BuildEnvironmentVariable } = {};
-    Object.entries(props.env.pipeline.env).forEach(([key, val]) => {
+    Object.entries(props.env.pipeline.env || {}).forEach(([key, val]) => {
       if (val.startsWith("arn:")) {
         pipelineEnv[key] = { value: val, type: BuildEnvironmentVariableType.SECRETS_MANAGER };
       }
