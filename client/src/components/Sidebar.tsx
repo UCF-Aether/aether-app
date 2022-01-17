@@ -23,10 +23,9 @@ export default function ResponsiveDrawer() {
 
   const drawer = (
     <div>
-      <Toolbar>
+      <Toolbar sx={{ p: 2 }}>
         <img width="100%" src={logo} alt="Logo" />
       </Toolbar>
-      <Divider />
       <List>
         <ListItem button key="Map">
           <ListItemText primary="Map" />
@@ -58,7 +57,7 @@ export default function ResponsiveDrawer() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Responsive drawer
+            Data Overlays
           </Typography>
         </Toolbar>
       </AppBar>
