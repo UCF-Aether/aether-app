@@ -212,6 +212,7 @@ export class StaticSite extends Construct {
       destinationBucket: siteBucket,
       distribution,
       distributionPaths: ["/*"],
+      memoryLimit: 1024,
     });
   }
 }
