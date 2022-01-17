@@ -2,7 +2,7 @@ import { Stack, StackProps } from "aws-cdk-lib";
 import { CodePipeline, CodePipelineSource, CodeBuildStep } from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
 import { PolicyStatement } from "aws-cdk-lib/aws-iam";
-import { ComputeType } from "aws-cdk-lib/aws-codebuild";
+import { ComputeType, BuildEnvironmentVariable, BuildEnvironmentVariableType } from "aws-cdk-lib/aws-codebuild";
 import { IInfraEnvironment, infraConfig } from "../InfraConfig";
 import { DeployStage } from "./stages/DeployStage";
 
@@ -14,6 +14,16 @@ export interface PipelineStackProps extends StackProps {
 export class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props: PipelineStackProps) {
     super(scope, id, props);
+
+    let pipelineEnv: { [key: string]: BuildEnvironmentVariable } = {};
+    Object.entries(props.env.pipeline.env).forEach(([key, val]) => {
+      if (val.startsWith("arn:")) {
+        pipelineEnv[key] = { value: val, type: BuildEnvironmentVariableType.SECRETS_MANAGER };
+      }
+      else {
+        pipelineEnv[key] = { value: val };
+      }
+    });
 
     const pipeline = new CodePipeline(this, "CodePipeline", {
       selfMutation: props.env.pipeline.selfMutation,
@@ -27,6 +37,7 @@ export class PipelineStack extends Stack {
           environmentVariables: {
             DEPLOY_BRANCH: { value: props.env.branch },
             DEPLOY_ENV: { value: props.envName },
+            ...pipelineEnv,
           },
         },
         rolePolicyStatements: [
