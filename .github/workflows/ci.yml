@@ -4,10 +4,9 @@
 name: CI
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
+    types:
+      - opened
 
 jobs:
   build:
@@ -43,8 +42,8 @@ jobs:
             args: [--frozen-lockfile]
     - name: Build
       run: pnpm build -r
-    - name: Lint
-      run: pnpm lint -r
+#     - name: Lint
+#       run: pnpm lint -r
     - name: Test
       run: pnpm test -r
 
