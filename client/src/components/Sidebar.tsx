@@ -24,7 +24,7 @@ export default function ResponsiveDrawer() {
   const drawer = (
     <div>
       <Toolbar>
-        <img src={logo} alt="Logo" />
+        <img width="100%" src={logo} alt="Logo" />
       </Toolbar>
       <Divider />
       <List>
