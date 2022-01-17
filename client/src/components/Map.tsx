@@ -15,8 +15,8 @@ export function DataMap() {
 
     loader.load().then(() => {
       map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
-        center: { lat: -34.397, lng: 150.644 },
-        zoom: 8,
+        center: { lat: 28.603053295127882, lng: -81.19995194984672 },
+        zoom: 12,
       });
     });
   });
