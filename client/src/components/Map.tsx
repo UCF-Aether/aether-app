@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 let map: google.maps.Map;
 
 export function DataMap() {
