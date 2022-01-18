@@ -9,7 +9,7 @@
       "account": "$CDK_DEFAULT_ACCOUNT",
       "region": "$CDK_DEFAULT_REGION",
       "pipeline": {
-        "selfMutation": false,
+        "selfMutation": true,
         "env": {
           "REACT_APP_GOOGLE_MAPS_API_KEY": "arn:aws:secretsmanager:us-east-1:831841410317:secret:GoogleMapsApiKey-5ndXcu"
         }
