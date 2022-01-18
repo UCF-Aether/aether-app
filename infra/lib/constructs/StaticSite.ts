@@ -186,12 +186,13 @@ export class StaticSite extends Construct {
         ],
       })
     );
-    new CfnOutput(this, "Bucket", {
+    console.log((new CfnOutput(this, "Bucket", {
       value: siteBucket.bucketName,
-    });
-    new CfnOutput(this, "BucketURL", {
+    })).value);
+
+    console.log((new CfnOutput(this, "BucketWebsiteURL", {
       value: siteBucket.bucketWebsiteUrl,
-    });
+    })).value);
 
     const s3origin = new S3Origin(siteBucket, {
       originAccessIdentity: cloudfrontOAI,
@@ -201,12 +202,17 @@ export class StaticSite extends Construct {
       errorResponses: props.errorResponses,
     });
 
+    console.log((new CfnOutput(this, "DistributionURL", {
+      value: distribution.domainName,
+    })).value);
+
     // Deploy site contents to S3 bucket
     new s3deploy.BucketDeployment(this, "StaticSiteBucket", {
       sources: [s3deploy.Source.asset(props.buildPath)],
       destinationBucket: siteBucket,
       distribution,
       distributionPaths: ["/*"],
+      memoryLimit: 1024,
     });
   }
 }

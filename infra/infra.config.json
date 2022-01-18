@@ -9,7 +9,10 @@
       "account": "$CDK_DEFAULT_ACCOUNT",
       "region": "$CDK_DEFAULT_REGION",
       "pipeline": {
-        "selfMutation": false
+        "selfMutation": true,
+        "env": {
+          "REACT_APP_GOOGLE_MAPS_API_KEY": "arn:aws:secretsmanager:us-east-1:831841410317:secret:GoogleMapsApiKey-5ndXcu"
+        }
       },
       "branch": "$DEPLOY_BRANCH",
       "domains": {
@@ -21,7 +24,10 @@
       "region": "us-east-1",
       "branch": "main",
       "pipeline": {
-        "selfMutation": true
+        "selfMutation": true,
+        "env": {
+          "REACT_APP_GOOGLE_MAPS_API_KEY": "arn:aws:secretsmanager:us-east-1:345803776198:secret:GoogleMapsApiKey-vlYBXw"
+        }
       },
       "domains": {
         "type": "route53",
