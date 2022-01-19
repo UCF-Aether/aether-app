@@ -8,12 +8,13 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import logo from "../aether.png";
 import { List, ListItem, ListItemText } from "@mui/material";
-import { DataMap } from "./Map";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
 export default function ResponsiveDrawer() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -25,10 +26,10 @@ export default function ResponsiveDrawer() {
         <img width="100%" src={logo} alt="Logo" />
       </Toolbar>
       <List>
-        <ListItem button key="Map">
+        <ListItem button key="Map" onClick={() => {navigate("/")}}>
           <ListItemText primary="Map" />
         </ListItem>
-        <ListItem button key="Logs">
+        <ListItem button key="Logs" onClick={() => {navigate("logs")}}>
           <ListItemText primary="Logs" />
         </ListItem>
       </List>
@@ -102,7 +103,7 @@ export default function ResponsiveDrawer() {
         }}
       >
         <Toolbar />
-        <DataMap />
+        <Outlet />
       </Box>
     </Box>
   );
