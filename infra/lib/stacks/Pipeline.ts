@@ -30,7 +30,7 @@ export class PipelineStack extends Stack {
       synth: new CodeBuildStep("Synth", {
         input: CodePipelineSource.gitHub(infraConfig.repo, props.env.branch),
         installCommands: ["npm i -g pnpm"],
-        commands: ["pnpm install", "pnpm build -r", "pnpm test -r", "pnpm synth --filter ./infra"],
+        commands: ["pnpm install", "pnpm build -r", "pnpm synth --filter ./infra"],
         primaryOutputDirectory: "infra/cdk.out",
         buildEnvironment: {
           computeType: ComputeType.MEDIUM,
