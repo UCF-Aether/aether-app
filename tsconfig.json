@@ -19,7 +19,11 @@
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "strictPropertyInitialization": false,
-    "typeRoots": ["./node_modules/@types"]
+    "typeRoots": ["node_modules/@types"],
+    "types": [
+      "@types/node",
+      "@types/graphql"
+    ]
   },
   "exclude": ["node_modules", "cdk.out"]
 }
