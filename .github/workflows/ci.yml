@@ -5,6 +5,8 @@ name: CI
 
 on:
   pull_request:
+    branches:
+    - main
     types:
       - opened
 
@@ -40,10 +42,21 @@ jobs:
         run_install: |
           - recursive: true
             args: [--frozen-lockfile]
-    - name: Build
-      run: pnpm build -r
-  #     - name: Lint
-  #       run: pnpm lint -r
+            
     - name: Test
-      run: pnpm test -r
+      run: pnpm test:prod 
+      
+    - name: Lint
+      run: pnpm lint -r
+      
+    - name: Build
+      run: pnpm build:prod
+      
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
 
+    - name: Deploy to AWS
+      run: pnpm sst deploy --stage prod --region us-east-1
