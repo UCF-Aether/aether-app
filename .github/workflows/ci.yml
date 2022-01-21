@@ -55,6 +55,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
 
     - name: Deploy to AWS
-      run: pnpm sst deploy --stage prod --region us-east-1
+      run: pnpm sst deploy --stage prod 
