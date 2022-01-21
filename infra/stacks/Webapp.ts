@@ -16,7 +16,7 @@ export class WebappStack extends sst.Stack {
     let siteProps: StaticSiteProps = {
       path,
       buildOutput: "build",
-      buildCommand: `pnpm build --filter ./${path}`,
+      buildCommand: `pnpm build --filter ${path}`,
       s3Bucket: {
         removalPolicy: scope.stage === "prod" ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
         autoDeleteObjects: scope.stage !== "prod",
