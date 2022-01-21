@@ -1,7 +1,7 @@
 import * as sst from "@serverless-stack/resources";
-import { InfraConfig, StageConfig } from "./util/InfraConfig";
-import { WebappStack } from "./stacks/Webapp";
-import { ApiStack } from "./stacks/Api";
+import { InfraConfig, StageConfig } from "./infra/util/InfraConfig";
+import { WebappStack } from "./infra/stacks/Webapp";
+import { ApiStack } from "./infra/stacks/Api";
 
 import * as _config from "./infra.config.json";
 const config = _config as InfraConfig;

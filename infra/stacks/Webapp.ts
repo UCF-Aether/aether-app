@@ -13,7 +13,7 @@ export class WebappStack extends sst.Stack {
     super (scope, id, props);
 
     let siteProps: StaticSiteProps = {
-      path: "../client",
+      path: "client",
       buildOutput: "build",
       buildCommand: "pnpm build -r",
       s3Bucket: {

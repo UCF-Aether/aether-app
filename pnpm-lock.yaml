@@ -5,11 +5,21 @@ importers:
   .:
     specifiers:
       '@serverless-stack/cli': 0.60.4
+      '@serverless-stack/resources': 0.60.4
+      '@tsconfig/node14': ^1.0.1
+      '@types/aws-lambda': ^8.10.70
+      '@types/node': <15.0.0
+      aws-cdk-lib: 2.7.0
       husky: ^7.0.4
       lint-staged: ^12.1.7
     dependencies:
       '@serverless-stack/cli': 0.60.4
+      '@serverless-stack/resources': 0.60.4
+      aws-cdk-lib: 2.7.0
     devDependencies:
+      '@tsconfig/node14': 1.0.1
+      '@types/aws-lambda': 8.10.90
+      '@types/node': 14.18.9
       husky: 7.0.4
       lint-staged: 12.1.7
 
@@ -93,23 +103,6 @@ importers:
       lint-staged: 12.1.7
       prettier: 2.5.1
       serve: 13.0.2
-
-  infra:
-    specifiers:
-      '@serverless-stack/cli': 0.60.4
-      '@serverless-stack/resources': 0.60.4
-      '@tsconfig/node14': ^1.0.1
-      '@types/aws-lambda': ^8.10.70
-      '@types/node': <15.0.0
-      aws-cdk-lib: 2.7.0
-    dependencies:
-      '@serverless-stack/cli': 0.60.4
-      '@serverless-stack/resources': 0.60.4
-      aws-cdk-lib: 2.7.0
-    devDependencies:
-      '@tsconfig/node14': 1.0.1
-      '@types/aws-lambda': 8.10.90
-      '@types/node': 10.17.60
 
 packages:
 
@@ -3875,7 +3868,7 @@ packages:
       fs-extra: 9.1.0
       get-stream: 6.0.1
       is-animated: 2.0.2
-      node-fetch: 2.6.1
+      node-fetch: 2.6.7
       normalize-path: 3.0.0
       path-to-regexp: 6.2.0
       send: 0.17.2
@@ -3910,7 +3903,7 @@ packages:
       fs-extra: 9.1.0
       get-stream: 6.0.1
       is-animated: 2.0.2
-      node-fetch: 2.6.1
+      node-fetch: 2.6.7
       normalize-path: 3.0.0
       path-to-regexp: 6.2.0
       send: 0.17.2
@@ -4491,10 +4484,10 @@ packages:
 
   /@types/node/10.17.60:
     resolution: {integrity: sha512-F0KIgDJfy2nA3zMLmWGKxcH2ZVEtCZXHHdOQs2gSaQ27+lNeEfGxzkIw90aXswATX7AZ33tahPbzy6KAfUreVw==}
+    dev: false
 
   /@types/node/14.18.9:
     resolution: {integrity: sha512-j11XSuRuAlft6vLDEX4RvhqC0KxNxx6QIyMXNb0vHHSNPXTPeiy3algESWmOOIzEtiEL0qiowPU3ewW9hHVa7Q==}
-    dev: false
 
   /@types/node/16.11.19:
     resolution: {integrity: sha512-BPAcfDPoHlRQNKktbsbnpACGdypPFBuX4xQlsWDE7B8XXcfII+SpOLay3/qZmCLb39kV5S1RTYwXdkx2lwLYng==}
