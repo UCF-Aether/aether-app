@@ -24,6 +24,8 @@
     "esModuleInterop": true
   },
   "include": [
+    "index.ts",
+    "graphql.ts",
     "src/*.ts",
     "src/**/*.ts",
     "src/**/*.js"

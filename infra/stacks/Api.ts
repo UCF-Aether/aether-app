@@ -1,13 +1,36 @@
 import * as sst from "@serverless-stack/resources";
-import { ApolloApi } from "@serverless-stack/resources";
-import { WebappStackProps } from "./Webapp";
+import { ApolloApi, ApolloApiProps } from "@serverless-stack/resources";
+import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
+import { CfnOutput } from "aws-cdk-lib";
+
+export interface ApiStackProps extends sst.StackProps {
+  domain?: string;
+  certificateArn?: string;
+}
 
 export class ApiStack extends sst.Stack {
-  constructor(scope: sst.App, id: string, props: WebappStackProps) {
+  constructor(scope: sst.App, id: string, props: ApiStackProps) {
     super (scope, id, props);
 
-    new ApolloApi(this, "ApolloGraphQLAPI", {
-      server: "../api"
-    });
+    let apolloProps: ApolloApiProps = {
+      server: {
+        handler: "api/graphql.handler",
+        runtime: "nodejs14.x",
+      },
+    };
+
+    if (props.domain) {
+      apolloProps = {
+        ...apolloProps,
+        customDomain: {
+          domainName: props.domain,
+          certificate: Certificate.fromCertificateArn(this, "APICertificate", props.certificateArn!)
+        }
+      }
+    }
+
+    const apolloApi = new ApolloApi(this, "ApolloGraphQLAPI", apolloProps);
+    console.info("Apollo API Lambda Invocation URL: " + apolloApi.url);
+    new CfnOutput(this, "ApolloApiURL", { value: apolloApi.url });
   }
 }

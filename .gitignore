@@ -120,4 +120,7 @@ reports/
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+
+# SST
 .build/
+.sst
