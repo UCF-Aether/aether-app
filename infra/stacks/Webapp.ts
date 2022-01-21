@@ -11,11 +11,12 @@ export interface WebappStackProps extends sst.StackProps {
 export class WebappStack extends sst.Stack {
   constructor(scope: sst.App, id: string, props: WebappStackProps) {
     super (scope, id, props);
+    const path = "client";
 
     let siteProps: StaticSiteProps = {
-      path: "client",
+      path,
       buildOutput: "build",
-      buildCommand: "pnpm build -r",
+      buildCommand: `pnpm build --filter ./${path}`,
       s3Bucket: {
         removalPolicy: scope.stage === "prod" ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
         autoDeleteObjects: scope.stage !== "prod",

@@ -31,8 +31,11 @@ export default function main(app: sst.App) {
 
   new WebappStack(app, "Webapp", {
     domain: siteDomain,
-    certificateArn: stageConfig ? config.dnsCertificates[stageConfig.domain] : undefined,
+    certificateArn: stageConfig ? config.dnsCertificates[siteDomain!] : undefined,
   });
 
-  // new ApiStack(app, "Api", {});
+  new ApiStack(app, "Api", {
+    domain: apiDomain,
+    certificateArn: stageConfig ? config.dnsCertificates[apiDomain!] : undefined,
+  });
 }
