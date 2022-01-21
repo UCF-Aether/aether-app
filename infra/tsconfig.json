@@ -1,6 +1,5 @@
 {
   "extends": "@tsconfig/node14",
-  "include": ["stacks", "src"],
   "compilerOptions": {
     "target": "ES2018",
     "module": "commonjs",
@@ -23,5 +22,4 @@
     "typeRoots": ["./node_modules/@types"]
   },
   "exclude": ["node_modules", "cdk.out"]
-
 }
