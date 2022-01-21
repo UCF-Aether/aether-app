@@ -7,8 +7,7 @@ on:
   pull_request:
     branches:
     - main
-
-
+    
 jobs:
   ci:
     concurrency: ci_staging_environment
@@ -49,10 +48,6 @@ jobs:
     - name: Lint
       run: pnpm lint -r
       
-# Gets done in sst deploy 
-#     - name: Build
-#       run: pnpm build:prod
-      
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -60,5 +55,5 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
 
-    - name: Deploy to AWS
-      run: pnpm sst deploy --stage prod 
+    - name: Build
+      run: pnpm build:prod
