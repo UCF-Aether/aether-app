@@ -1,0 +1,12 @@
+{
+  "repo": "UCF-Aether/Aether-App",
+  "dnsCertificates": {
+    "aethersensor.network": "arn:aws:acm:us-east-1:345803776198:certificate/6f0f995a-de15-4876-b090-3b716a61f76e",
+    "api.aethersensor.network": "arn:aws:acm:us-east-1:345803776198:certificate/a188c397-4309-45e5-8118-28afd5d7ebee"
+  },
+  "stages": {
+    "prod": {
+      "domain": "aethersensor.network"
+    }
+  }
+}

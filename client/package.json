@@ -4,7 +4,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:prod": "react-scripts build",
     "test": "react-scripts test --watchAll=false --passWithNoTests",
+    "test:prod": "react-scripts test --watchAll=false --passWithNoTests",
     "test:watch": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
@@ -70,6 +72,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.7",
-    "prettier": "2.5.1"
+    "prettier": "2.5.1",
+    "serve": "^13.0.2"
   }
 }
