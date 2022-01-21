@@ -9,13 +9,19 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { DataMap } from "./components/Map";
+import LogTable from "./components/LogTable";
 
 ReactDOM.render(
   <React.StrictMode>
     <CssBaseline enableColorScheme />
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/" element={<App />} >
+          <Route index element={<DataMap />} />
+          <Route path="logs" element={<LogTable />} />
+        </Route>
+          
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
