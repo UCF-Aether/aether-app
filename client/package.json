@@ -70,6 +70,7 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "husky": "^7.0.4",
     "lint-staged": "^12.1.7",
-    "prettier": "2.5.1"
+    "prettier": "2.5.1",
+    "serve": "^13.0.2"
   }
 }

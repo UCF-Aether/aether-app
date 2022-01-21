@@ -1,7 +1,6 @@
 {
   "name": "Aether-App",
   "scripts": {
-    "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
     "husky": "^7.0.4",
@@ -9,5 +8,12 @@
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
-  }
+  },
+  "dependencies": {
+    "@serverless-stack/cli": "0.60.4"
+  },
+  "workspaces": [
+    "infra",
+    "client"
+  ]
 }

@@ -1,0 +1,7 @@
+{
+  "name": "aether-app",
+  "region": "us-east-1",
+  "lint": true,
+  "typeCheck": true,
+  "main": "index.ts"
+}
