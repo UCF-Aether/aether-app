@@ -47,8 +47,9 @@ jobs:
     - name: Lint
       run: pnpm lint -r
       
-    - name: Build
-      run: pnpm build:prod
+# Gets done in sst deploy 
+#     - name: Build
+#       run: pnpm build:prod
       
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
