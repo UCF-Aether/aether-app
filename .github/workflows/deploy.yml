@@ -1,14 +1,13 @@
-name: CI
+name: Deploy
 
 on:
-  pull_request:
+  push:
     branches:
     - main
 
-
 jobs:
-  ci:
-    concurrency: ci_staging_environment
+  deploy:
+    concurrency: deploy_prod_staging_environment
     env:
       REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY }}
 
