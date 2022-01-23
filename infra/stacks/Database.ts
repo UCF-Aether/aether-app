@@ -1,3 +1,4 @@
+import * as cdk from "aws-cdk-lib";
 import * as sst from "@serverless-stack/resources";
 import * as rds from "aws-cdk-lib/aws-rds";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
@@ -28,5 +29,10 @@ export class DatabaseStack extends sst.Stack {
       allocatedStorage: 20,
       publiclyAccessible: true,
     });
+
+    const endpoint = dbInst.instanceEndpoint;
+    new cdk.CfnOutput(this, "DBInstHostname", { value: endpoint.hostname });
+    new cdk.CfnOutput(this, "DBInstPort", { value: endpoint.port.toString() });
+    new cdk.CfnOutput(this, "DBInstSocketAddress", { value: endpoint.socketAddress });
   }
 }
