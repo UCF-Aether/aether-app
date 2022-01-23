@@ -6,5 +6,13 @@
   "hosted-zone:account=831841410317:domainName=aethersensor.network:region=us-east-1": {
     "Id": "/hostedzone/Z0807911YHEBJM0JWQWT",
     "Name": "aethersensor.network."
-  }
+  },
+  "availability-zones:account=831841410317:region=us-east-1": [
+    "us-east-1a",
+    "us-east-1b",
+    "us-east-1c",
+    "us-east-1d",
+    "us-east-1e",
+    "us-east-1f"
+  ]
 }
