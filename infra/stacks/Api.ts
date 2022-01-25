@@ -13,6 +13,7 @@ export class ApiStack extends sst.Stack {
     super (scope, id, props);
 
     let apolloProps: ApolloApiProps = {
+      rootPath: "/graphql",
       server: {
         handler: "api/graphql.handler",
         runtime: "nodejs14.x",
@@ -30,7 +31,6 @@ export class ApiStack extends sst.Stack {
     }
 
     const apolloApi = new ApolloApi(this, "ApolloGraphQLAPI", apolloProps);
-    console.info("Apollo API Lambda Invocation URL: " + apolloApi.url);
-    new CfnOutput(this, "ApolloApiURL", { value: apolloApi.url });
+    new CfnOutput(this, "ApolloApiURL", { value: `${apolloApi.url}/graphql` });
   }
 }

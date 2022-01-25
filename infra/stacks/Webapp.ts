@@ -2,6 +2,7 @@ import { StaticSite, StaticSiteProps } from "@serverless-stack/resources";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import * as sst from "@serverless-stack/resources";
 import { RemovalPolicy } from "aws-cdk-lib";
+import { CfnOutput } from "aws-cdk-lib";
 
 export interface WebappStackProps extends sst.StackProps {
   domain?: string;
@@ -33,6 +34,8 @@ export class WebappStack extends sst.Stack {
         }
       }
     }
-    new StaticSite(this, "Site", siteProps);
+    const site = new StaticSite(this, "Site", siteProps);
+
+    new CfnOutput(this, "WebappURL", { value: site.url });
   }
 }

@@ -4,6 +4,7 @@ import { WebappStack } from "./infra/stacks/Webapp";
 import { ApiStack } from "./infra/stacks/Api";
 
 import * as _config from "./infra.config.json";
+import { DatabaseStack } from "./infra/stacks/Database";
 const config = _config as InfraConfig;
 
 export default function main(app: sst.App) {
@@ -38,4 +39,6 @@ export default function main(app: sst.App) {
     domain: apiDomain,
     certificateArn: stageConfig ? config.dnsCertificates[apiDomain!] : undefined,
   });
+
+  new DatabaseStack(app, "Database");
 }
