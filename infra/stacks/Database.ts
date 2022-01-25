@@ -13,6 +13,16 @@ export class DatabaseStack extends sst.Stack {
     super(scope, id, props);
 
     const vpc = new ec2.Vpc(this, "VPC");
+    const dbSecurityGroup = new ec2.SecurityGroup(this, "DBSecurityGroup", {
+      vpc,
+      description: "Allow db external, inbound postgres connections",
+      securityGroupName: "postgres",
+    });
+
+    dbSecurityGroup.addIngressRule(
+      ec2.Peer.anyIpv4(),
+      ec2.Port.tcp(5432)
+    );
 
     const dbInst = new rds.DatabaseInstance(this, "PostgresQLInst", {
       engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_13_4 }),
@@ -24,6 +34,7 @@ export class DatabaseStack extends sst.Stack {
       vpcSubnets: {
         subnetType: ec2.SubnetType.PUBLIC,
       },
+      securityGroups: [dbSecurityGroup],
       cloudwatchLogsRetention: logs.RetentionDays.ONE_WEEK,
       databaseName: "AetherDB",
       allocatedStorage: 20,
