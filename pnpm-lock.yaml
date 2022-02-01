@@ -160,12 +160,14 @@ importers:
       '@supabase/supabase-js': ^1.29.4
       '@types/aws-lambda': ^8.10.70
       '@types/node': ^17.0.13
+      '@types/pg': ^8.6.4
       pg: ^8.7.1
       typescript: ^4.5.5
     dependencies:
       '@supabase/supabase-js': 1.29.4
       '@types/aws-lambda': 8.10.90
       '@types/node': 17.0.13
+      '@types/pg': 8.6.4
       pg: 8.7.1
       typescript: 4.5.5
 
@@ -5132,6 +5134,14 @@ packages:
 
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
+
+  /@types/pg/8.6.4:
+    resolution: {integrity: sha512-uYA7UMVzDFpJobCrqwW/iWkFmvizy6knIUgr0Quaw7K1Le3ZnF7hI3bKqFoxPZ+fju1Sc7zdTvOl9YfFZPcmeA==}
+    dependencies:
+      '@types/node': 17.0.13
+      pg-protocol: 1.5.0
+      pg-types: 2.2.0
+    dev: false
 
   /@types/picomatch/2.3.0:
     resolution: {integrity: sha512-O397rnSS9iQI4OirieAtsDqvCj4+3eY1J+EPdNTKuHuRWIfUoGyzX294o8C4KJYaLqgSrd2o60c5EqCU8Zv02g==}

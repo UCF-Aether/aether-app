@@ -16,9 +16,11 @@ export class VpcStack extends sst.Stack {
 
     this.vpc = new ec2.Vpc(this, "AetherVPC",);
 
-    this.sgs.lambda = new ec2.SecurityGroup(this, "LambdaSG", {
-      vpc: this.vpc,
-      description: "Security group for outbound lambda traffic",
-    });
+    this.sgs = {
+      lambda: new ec2.SecurityGroup(this, "LambdaSG", {
+        vpc: this.vpc,
+        description: "Security group for outbound lambda traffic",
+      })
+    };
   }
 }

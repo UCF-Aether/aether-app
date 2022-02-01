@@ -21,8 +21,7 @@
     "strictPropertyInitialization": false,
     "typeRoots": ["node_modules/@types"],
     "types": [
-      "@types/node",
-      "@types/graphql"
+      "@types/node"
     ]
   },
   "exclude": ["node_modules", "cdk.out"]
