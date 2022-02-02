@@ -30,6 +30,22 @@ export default function main(app: sst.App) {
     console.log("Using cloudfront api domain");
   }
 
+  // Check for environment variables needed for lambdas
+  const missingEnv: Array<string> = [];
+  [
+    "PGUSER",
+    "PGHOST",
+    "PGDATABASE",
+    "PGPASSWORD",
+    "PGPORT",
+    "REACT_APP_GOOGLE_MAPS_API_KEY",
+  ].forEach((env) => {
+    if (!process.env[env]) missingEnv.push(env);
+  });
+
+  if (missingEnv.length > 0)
+    throw new Error(`Missing environment variables: ${missingEnv}`);
+
   const vpcStack = new VpcStack(app, "Vpc");
 
   app.setDefaultFunctionProps((stack) => {
