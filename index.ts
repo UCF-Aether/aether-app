@@ -20,15 +20,13 @@ export default function main(app: sst.App) {
 
   if (siteDomain) {
     console.log(`Using domain: ${siteDomain}`);
-  }
-  else {
+  } else {
     console.log("Using cloudfront domain");
   }
 
   if (apiDomain) {
     console.log(`Using api domain: ${apiDomain}`);
-  }
-  else {
+  } else {
     console.log("Using cloudfront api domain");
   }
 
@@ -59,17 +57,19 @@ export default function main(app: sst.App) {
 
   new WebappStack(app, "Webapp", {
     domain: siteDomain,
-    certificateArn: stageConfig ? config.dnsCertificates[siteDomain!] : undefined,
+    certificateArn: stageConfig
+      ? config.dnsCertificates[siteDomain!]
+      : undefined,
   });
 
   new ApiStack(app, "Api", {
     domain: apiDomain,
-    certificateArn: stageConfig ? config.dnsCertificates[apiDomain!] : undefined,
+    certificateArn: stageConfig
+      ? config.dnsCertificates[apiDomain!]
+      : undefined,
   });
 
   // Using supabase - plugin other postgres rds // new DatabaseStack(app, "Database");
 
-  new IotStack(app, "IoT", {
-
-  });
+  new IotStack(app, "IoT", {});
 }
