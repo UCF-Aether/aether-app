@@ -55,7 +55,7 @@ export class IotStack extends sst.Stack {
 
     this.destinations = {
       default: new iotwireless.CfnDestination(this, "DefaultDestination", {
-        name: "DefaultLoRaWANDestination",
+        name: `${scope.stage}-DefaultDestination`,
         expression: storeEventFun.topicRule.topicRuleName,
         expressionType: "RuleName",
         roleArn: iotDestinationRole.roleArn,
