@@ -4,7 +4,7 @@
     "test": "sst test",
     "test:prod": "sst test --stage=prod",
     "test:client": "pnpm test --filter ./client",
-    "start": "sst start",
+    "start": "sst start --console",
     "start:client": "pnpm start --filter ./client",
     "build": "sst build",
     "build:prod": "sst build --stage=prod",
