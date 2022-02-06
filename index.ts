@@ -3,14 +3,10 @@ import { InfraConfig, StageConfig } from "./infra/util/InfraConfig";
 import { WebappStack } from "./infra/stacks/Webapp";
 import { ApiStack } from "./infra/stacks/Api";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
-import { Secret } from "aws-cdk-lib/aws-secretsmanager";
-import { SecretValue } from "aws-cdk-lib";
 
 import * as _config from "./infra.config.json";
-import { DatabaseStack } from "./infra/stacks/Database";
 import { IotStack } from "./infra/stacks/Iot";
 import { VpcStack } from "./infra/stacks/Vpc";
-import { FunctionProps } from "@serverless-stack/resources";
 const config = _config as InfraConfig;
 
 export default function main(app: sst.App) {
@@ -38,6 +34,7 @@ export default function main(app: sst.App) {
     "PGDATABASE",
     "PGPASSWORD",
     "PGPORT",
+    "DATABASE_URL",
     "REACT_APP_GOOGLE_MAPS_API_KEY",
   ].forEach((env) => {
     if (!process.env[env]) missingEnv.push(env);
@@ -67,11 +64,12 @@ export default function main(app: sst.App) {
       },
       bundle: {
         externalModules: ["pg-native"],
+        installCommands: ["pnpm install"]
       },
     };
   });
 
-  new WebappStack(app, "Webapp", {
+  const webapp = new WebappStack(app, "Webapp", {
     domain: siteDomain,
     certificateArn: stageConfig
       ? config.dnsCertificates[siteDomain!]
@@ -79,7 +77,9 @@ export default function main(app: sst.App) {
   });
 
   new ApiStack(app, "Api", {
+    vpc: vpcStack.vpc,
     domain: apiDomain,
+    hostedZone: webapp.site.hostedZone,
     certificateArn: stageConfig
       ? config.dnsCertificates[apiDomain!]
       : undefined,
