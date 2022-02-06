@@ -10,6 +10,8 @@ export interface WebappStackProps extends sst.StackProps {
 }
 
 export class WebappStack extends sst.Stack {
+  site: StaticSite;
+
   constructor(scope: sst.App, id: string, props: WebappStackProps) {
     super (scope, id, props);
     const path = "client";
@@ -34,8 +36,8 @@ export class WebappStack extends sst.Stack {
         }
       }
     }
-    const site = new StaticSite(this, "Site", siteProps);
+    this.site = new StaticSite(this, "Site", siteProps);
 
-    new CfnOutput(this, "WebappURL", { value: site.url });
+    new CfnOutput(this, "WebappURL", { value: this.site.url });
   }
 }

@@ -9,6 +9,7 @@ export class VpcStack extends sst.Stack {
   vpc: ec2.Vpc;
   sgs: {
     lambda: ec2.SecurityGroup;
+    api: ec2.SecurityGroup;
   }
 
   constructor(scope: sst.App, id: string, props?: VpcStackProps) {
@@ -20,7 +21,11 @@ export class VpcStack extends sst.Stack {
       lambda: new ec2.SecurityGroup(this, "LambdaSG", {
         vpc: this.vpc,
         description: "Security group for outbound lambda traffic",
-      })
+      }),
+      api: new ec2.SecurityGroup(this, "ApiEc2SG", {
+        vpc: this.vpc,
+        description: "Security group for the API EC2 instance",
+      }),
     };
   }
 }
