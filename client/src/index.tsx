@@ -11,19 +11,28 @@ import "@fontsource/roboto/700.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { DataMap } from "./components/Map";
 import LogTable from "./components/LogTable";
+import { createClient, Provider as UrqlProvider } from "urql";
+
+console.log('hi');
+console.log(process.env.REACT_APP_API_DEV_URL);
+const client = createClient({
+  url: 'http://localhost:6969/graphql'
+});
 
 ReactDOM.render(
   <React.StrictMode>
-    <CssBaseline enableColorScheme />
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<App />} >
-          <Route index element={<DataMap />} />
-          <Route path="logs" element={<LogTable />} />
-        </Route>
-          
-      </Routes>
-    </BrowserRouter>
+    <UrqlProvider value={client}>
+      <CssBaseline enableColorScheme />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<App />} >
+            <Route index element={<DataMap />} />
+            <Route path="logs" element={<LogTable />} />
+          </Route>
+            
+        </Routes>
+      </BrowserRouter>
+    </UrqlProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );
