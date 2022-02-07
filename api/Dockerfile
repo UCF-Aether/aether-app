@@ -14,7 +14,7 @@ RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile -P --aggregate-output
 RUN pnpm build
 
-ENV PORT=5000
+ENV PORT=80
 EXPOSE 5000
 
 LABEL description="My PostGraphile-powered server"
