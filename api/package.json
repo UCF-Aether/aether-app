@@ -4,12 +4,13 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "pnpm build && node dist/server.js",
     "build": "tsc"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.2",
     "postgraphile": "^4.12.8",
     "typescript": "^4.5.5"

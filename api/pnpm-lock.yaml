@@ -1,12 +1,14 @@
 lockfileVersion: 5.3
 
 specifiers:
+  cors: ^2.8.5
   express: ^4.17.2
   postgraphile: ^4.12.8
   prettier: 2.5.1
   typescript: ^4.5.5
 
 dependencies:
+  cors: 2.8.5
   express: 4.17.2
   postgraphile: 4.12.8
   typescript: 4.5.5
@@ -146,6 +148,14 @@ packages:
   /cookie/0.4.1:
     resolution: {integrity: sha512-ZwrFkGJxUR3EIoXtO+yVE69Eb7KlixbaeAWfBQB9vVsNn/o+Yw69gBWSSDK825hQNdN+wF8zELf3dFNl/kxkUA==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /cors/2.8.5:
+    resolution: {integrity: sha512-KIHbLJqu73RGr/hnbrO9uBeixNGuvSQjul/jdFvS/KFSIH1hWVd1ng7zOHx+YrEfInLG7q4n6GHQ9cDtxv/P6g==}
+    engines: {node: '>= 0.10'}
+    dependencies:
+      object-assign: 4.1.1
+      vary: 1.1.2
     dev: false
 
   /debug/2.6.9:
@@ -521,6 +531,11 @@ packages:
   /negotiator/0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
+    dev: false
+
+  /object-assign/4.1.1:
+    resolution: {integrity: sha1-IQmtx5ZYh8/AXLvUQsrIv7s2CGM=}
+    engines: {node: '>=0.10.0'}
     dev: false
 
   /on-finished/2.3.0:
