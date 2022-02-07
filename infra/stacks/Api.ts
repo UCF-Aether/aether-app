@@ -5,6 +5,7 @@ import * as ecsPatterns from "aws-cdk-lib/aws-ecs-patterns";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import * as cm from "aws-cdk-lib/aws-certificatemanager";
+import fs from "fs";
 
 export interface ApiStackProps extends sst.StackProps {
   vpc: ec2.Vpc;
@@ -47,6 +48,7 @@ export class ApiStack extends sst.Stack {
     console.log(`domain: ${props.domain}`);
     console.log(`hz: ${domainZone}`);
 
+    const redirectHTTP = certificate != null || certificate != undefined;
     this.service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, "PostgraphileApiService", {
       cluster: this.cluster,
       memoryLimitMiB: 1024,
@@ -57,7 +59,7 @@ export class ApiStack extends sst.Stack {
       domainName: props.domain,
       domainZone,
       certificate,
-      redirectHTTP: certificate != null || certificate != undefined,
+      redirectHTTP,
       taskImageOptions: {
         image: ecs.ContainerImage.fromAsset("api/"),
         containerPort:80,
@@ -69,5 +71,13 @@ export class ApiStack extends sst.Stack {
       publicLoadBalancer: true,
       assignPublicIp: true,
     });
+
+    const serviceDomain = props.domain ? props.domain : this.service.loadBalancer.loadBalancerDnsName;
+    const serviceUrl = `${redirectHTTP ? "https" : "http"}://${serviceDomain}`
+    const graphqlUrl = `${serviceUrl}/graphql`;
+    const graphiqlUrl = `${serviceUrl}/graphiql`;
+
+    new cdk.CfnOutput(this, "GraphQLURL", { value: graphqlUrl });
+    new cdk.CfnOutput(this, "GraphiQLURL", { value: graphiqlUrl });
   }
 }
