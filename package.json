@@ -32,7 +32,8 @@
     "@aws-cdk/aws-iot-alpha": "2.7.0-alpha.0",
     "@serverless-stack/cli": "0.60.11",
     "@serverless-stack/resources": "0.60.11",
-    "aws-cdk-lib": "2.7.0"
+    "aws-cdk-lib": "2.7.0",
+    "dotenv": "^16.0.0"
   },
   "workspaces": [
     "infra",
