@@ -19,7 +19,7 @@ const LOG_QUERY = gql`
         deveui
         gweui
         id
-        rcvd
+        time
         payload
       }
     }
@@ -45,12 +45,22 @@ export default function LogTable() {
   ];
 
   const rows: Array<GridRowsProp> = data.devmsgs.nodes.map((n: any) => {
-    return { id: n.id, time: n.rcvd, deveui: n.deveui, gweui: n.gweui, payload: n.payload } 
+    return { id: n.id, time: n.time, deveui: n.deveui, gweui: n.gweui, payload: n.payload } 
   });
 
   return (
     <div style={{ height: '100%', width: '100%' }}>
-      <DataGrid rows={rows} columns={columns} />
+      <DataGrid 
+        rows={rows} 
+        columns={columns} 
+        initialState={{
+          sorting: {
+            sortModel: [
+              { field: 'time', sort: 'desc' },
+            ]
+          }
+        }}
+      />
     </div>
   );
 }
