@@ -13,10 +13,9 @@ import { DataMap } from "./components/Map";
 import LogTable from "./components/LogTable";
 import { createClient, Provider as UrqlProvider } from "urql";
 
-console.log('hi');
-console.log(process.env.REACT_APP_API_DEV_URL);
+console.log(process.env.REACT_APP_GRAPHQL_URL);
 const client = createClient({
-  url: 'http://localhost:6969/graphql'
+  url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 6969}/graphql`,
 });
 
 ReactDOM.render(

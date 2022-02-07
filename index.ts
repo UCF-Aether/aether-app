@@ -1,4 +1,5 @@
 import * as sst from "@serverless-stack/resources";
+import * as route53 from "aws-cdk-lib/aws-route53";
 import { InfraConfig, StageConfig } from "./infra/util/InfraConfig";
 import { WebappStack } from "./infra/stacks/Webapp";
 import { ApiStack } from "./infra/stacks/Api";
@@ -7,12 +8,17 @@ import { Runtime } from "aws-cdk-lib/aws-lambda";
 import * as _config from "./infra.config.json";
 import { IotStack } from "./infra/stacks/Iot";
 import { VpcStack } from "./infra/stacks/Vpc";
+import dotenv from "dotenv";
+
 const config = _config as InfraConfig;
 
 export default function main(app: sst.App) {
   const stageConfig: StageConfig | undefined = config.stages[app.stage];
   const siteDomain = stageConfig?.domain || undefined;
   const apiDomain = siteDomain ? `api.${siteDomain}` : undefined;
+
+  dotenv.config({ path: app.stage === "prod" ? ".env.prod" : ".env", override: true })
+  console.log(process.env.REACT_APP_GOOGLE_MAPS_API_KEY);
 
   if (siteDomain) {
     console.log(`Using domain: ${siteDomain}`);
@@ -29,11 +35,6 @@ export default function main(app: sst.App) {
   // Check for environment variables needed for lambdas
   const missingEnv: Array<string> = [];
   [
-    "PGUSER",
-    "PGHOST",
-    "PGDATABASE",
-    "PGPASSWORD",
-    "PGPORT",
     "DATABASE_URL",
     "REACT_APP_GOOGLE_MAPS_API_KEY",
   ].forEach((env) => {
@@ -69,19 +70,19 @@ export default function main(app: sst.App) {
     };
   });
 
-  const webapp = new WebappStack(app, "Webapp", {
-    domain: siteDomain,
+  const api = new ApiStack(app, "Api", {
+    vpc: vpcStack.vpc,
+    domain: apiDomain,
     certificateArn: stageConfig
-      ? config.dnsCertificates[siteDomain!]
+      ? config.dnsCertificates[apiDomain!]
       : undefined,
   });
 
-  new ApiStack(app, "Api", {
-    vpc: vpcStack.vpc,
-    domain: apiDomain,
-    hostedZone: webapp.site.hostedZone,
+  const webapp = new WebappStack(app, "Webapp", {
+    graphqlUrl: api.graphqlUrl,
+    domain: siteDomain,
     certificateArn: stageConfig
-      ? config.dnsCertificates[apiDomain!]
+      ? config.dnsCertificates[siteDomain!]
       : undefined,
   });
 

@@ -17,6 +17,8 @@ export interface ApiStackProps extends sst.StackProps {
 export class ApiStack extends sst.Stack {
   cluster: ecs.Cluster;
   service: ecsPatterns.ApplicationLoadBalancedFargateService;
+  graphqlUrl: string;
+  graphiqlUrl: string;
 
   constructor(scope: sst.App, id: string, props: ApiStackProps) {
     super (scope, id, props);
@@ -74,10 +76,10 @@ export class ApiStack extends sst.Stack {
 
     const serviceDomain = props.domain ? props.domain : this.service.loadBalancer.loadBalancerDnsName;
     const serviceUrl = `${redirectHTTP ? "https" : "http"}://${serviceDomain}`
-    const graphqlUrl = `${serviceUrl}/graphql`;
-    const graphiqlUrl = `${serviceUrl}/graphiql`;
+    this.graphqlUrl = `${serviceUrl}/graphql`;
+    this.graphiqlUrl = `${serviceUrl}/graphiql`;
 
-    new cdk.CfnOutput(this, "GraphQLURL", { value: graphqlUrl });
-    new cdk.CfnOutput(this, "GraphiQLURL", { value: graphiqlUrl });
+    new cdk.CfnOutput(this, "GraphQLURL", { value: this.graphqlUrl });
+    new cdk.CfnOutput(this, "GraphiQLURL", { value: this.graphiqlUrl });
   }
 }
