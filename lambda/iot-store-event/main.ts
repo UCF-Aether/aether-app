@@ -6,7 +6,7 @@ import { Client } from "pg";
 const query = `INSERT INTO devmsgs(time, rcvd, deveui, gweui, payload) VALUES (NOW(), $1, $2, $3, $4);`;
 
 export const handler: Handler = async function (event, context) {
-  const client = new Client();
+  const client = new Client({ connectionString: process.env.DATABASE_URL });
   console.log(event);
 
   const loraMeta = event.WirelessMetadata.LoRaWAN;
