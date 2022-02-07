@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import { gql, useQuery } from "urql";
 
@@ -26,16 +27,28 @@ const LOG_QUERY = gql`
   }
 `;
 
+const QUERY_INTERVAL = 2000;
+
 export default function LogTable() {
   const [result, reexecuteQuery] = useQuery({
     query: LOG_QUERY,
   });
 
+
+  useEffect(() => {
+    if (result.fetching) return;
+
+    const timerId = setInterval(() => {
+      reexecuteQuery({ requestPolicy: 'network-only' });
+    }, QUERY_INTERVAL);
+
+    return () => clearInterval(timerId);
+  }, [result.fetching, reexecuteQuery]);
+
   const { data, fetching, error } = result;
 
   if (fetching) return <p>Loading...</p>
   if (error) return <p>WHYYYYYYYY...{error.message}</p>
-  console.log(data);
 
   const columns: Array<GridColDef> = [
     { field: 'time', headerName: 'Time', width: 250 },
