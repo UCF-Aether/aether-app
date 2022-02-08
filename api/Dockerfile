@@ -1,11 +1,6 @@
-# Global args, set before the first FROM, shared by all stages
-ARG NODE_ENV="production"
-
-################################################################################
-
 FROM node:14-alpine
-# Import our shared args
-ARG NODE_ENV
+
+ARG NODE_ENV="production"
 
 # Cache node_modules for as long as possible
 WORKDIR /app/
@@ -15,8 +10,9 @@ RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile -P --aggregate-output
 RUN pnpm build
 
-ENV PORT=6969
-EXPOSE 6969
+ARG PORT=80
+ENV PORT=$PORT
+EXPOSE $PORT
 
 HEALTHCHECK CMD ./healthcheck.sh
 
