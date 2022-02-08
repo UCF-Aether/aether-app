@@ -36,10 +36,12 @@ export default function ResponsiveDrawer() {
     {
       route: "/",
       text: "Map",
+      toolbarText: "Data Overlays",
     },
     {
       route: "logs",
       text: "Logs",
+      toolbarText: "Device Logs",
     },
   ];
 
@@ -82,7 +84,7 @@ export default function ResponsiveDrawer() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Data Overlays
+            { drawerItems[selectedIndex].toolbarText }
           </Typography>
         </Toolbar>
       </AppBar>
