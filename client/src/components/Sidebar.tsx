@@ -7,32 +7,58 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import logo from "../aether.png";
-import { List, ListItem, ListItemText } from "@mui/material";
+import { List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
 export default function ResponsiveDrawer() {
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
   const navigate = useNavigate();
+
+  const handleListItemClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    route: string,
+    index: number,
+  ) => {
+    setSelectedIndex(index);
+    navigate(route);
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
+  // First one is the default
+  const drawerItems = [
+    {
+      route: "/",
+      text: "Map",
+    },
+    {
+      route: "logs",
+      text: "Logs",
+    },
+  ];
 
   const drawer = (
     <div>
       <Toolbar sx={{ p: 2 }}>
         <img width="100%" src={logo} alt="Logo" />
       </Toolbar>
-      <List>
-        <ListItem button key="Map" onClick={() => {navigate("/")}}>
-          <ListItemText primary="Map" />
-        </ListItem>
-        <ListItem button key="Logs" onClick={() => {navigate("logs")}}>
-          <ListItemText primary="Logs" />
-        </ListItem>
-      </List>
+      <List component="nav">{
+        drawerItems.map(({ route, text }, index) => (
+          <ListItemButton
+            key={index}
+            selected={selectedIndex === index}
+            onClick={(event) => handleListItemClick(event, route, index)}
+          >
+            <ListItemText primary={text} />
+          </ListItemButton>
+        )) 
+      }</List>
     </div>
   );
 
