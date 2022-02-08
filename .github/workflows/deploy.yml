@@ -10,11 +10,7 @@ jobs:
     concurrency: deploy_prod_staging_environment
     env:
       REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY }}
-      PGUSER: ${{ secrets.PGUSER }}
-      PGDATABASE: ${{ secrets.PGDATABASE }}
-      PGPORT: ${{ secrets.PGPORT }}
-      PGHOST: ${{ secrets.PGHOST }}
-      PGPASSWORD: ${{ secrets.PGPASSWORD }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
     runs-on: ubuntu-latest
 
