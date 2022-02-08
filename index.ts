@@ -72,6 +72,7 @@ export default function main(app: sst.App) {
 
   const api = new ApiStack(app, "Api", {
     vpc: vpcStack.vpc,
+    containerPort: config.graphql.containerPort,
     domain: apiDomain,
     certificateArn: stageConfig
       ? config.dnsCertificates[apiDomain!]
