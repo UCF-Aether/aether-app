@@ -5,10 +5,10 @@ import * as ecsPatterns from "aws-cdk-lib/aws-ecs-patterns";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import * as cm from "aws-cdk-lib/aws-certificatemanager";
-import fs from "fs";
 
 export interface ApiStackProps extends sst.StackProps {
   vpc: ec2.Vpc;
+  containerPort: number;
   domain?: string;
   hostedZone?: route53.IHostedZone,
   certificateArn?: string;
@@ -57,14 +57,17 @@ export class ApiStack extends sst.Stack {
       desiredCount: 1,
       cpu: 512,
       circuitBreaker: { rollback: true },
-      serviceName: "PostgraphileApi",
       domainName: props.domain,
       domainZone,
       certificate,
       redirectHTTP,
       taskImageOptions: {
-        image: ecs.ContainerImage.fromAsset("api/"),
-        containerPort:80,
+        image: ecs.ContainerImage.fromAsset("api/", {
+          buildArgs: {
+            PORT: props.containerPort.toString(),
+          }
+        }),
+        containerPort: props.containerPort,
         environment: {
           DATABASE_URL: process.env.DATABASE_URL!,
           APP_STAGE: scope.stage.toUpperCase(),
