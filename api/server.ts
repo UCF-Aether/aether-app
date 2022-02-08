@@ -18,5 +18,10 @@ app.use(
   })
 );
 
+// This is for AWS ec2 health checks
+app.get("/", (_, res) => {
+  res.status(200).send("HEALTH CHECK: OK");
+});
+
 console.log(`Listing on port ${PORT}`);
 app.listen(PORT);
