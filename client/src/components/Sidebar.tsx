@@ -7,7 +7,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import logo from "../aether.png";
-import { List, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { List, ListItemButton, ListItemText } from "@mui/material";
 import { Outlet, useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
