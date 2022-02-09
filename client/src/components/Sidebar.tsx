@@ -39,7 +39,7 @@ export default function ResponsiveDrawer() {
 
   useEffect(() => {
     setSelectedIndex(routeToIndex(location));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
