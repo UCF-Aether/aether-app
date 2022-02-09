@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -8,15 +8,38 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import logo from "../aether.png";
 import { List, ListItemButton, ListItemText } from "@mui/material";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation, Location } from "react-router-dom";
 
 const drawerWidth = 240;
 
-export default function ResponsiveDrawer() {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+const drawerItems = [
+  {
+    route: "/",
+    text: "Map",
+    toolbarText: "Data Overlays",
+  },
+  {
+    route: "/logs",
+    text: "Logs",
+    toolbarText: "Device Logs",
+  },
+];
 
+function routeToIndex(location: Location) {
+  console.log(location.pathname);
+  return drawerItems.map(({ route }) => route).indexOf(location.pathname);
+}
+
+export default function ResponsiveDrawer() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+
+  useEffect(() => {
+    setSelectedIndex(routeToIndex(location));
+  }, []);
 
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -32,18 +55,6 @@ export default function ResponsiveDrawer() {
   };
 
   // First one is the default
-  const drawerItems = [
-    {
-      route: "/",
-      text: "Map",
-      toolbarText: "Data Overlays",
-    },
-    {
-      route: "logs",
-      text: "Logs",
-      toolbarText: "Device Logs",
-    },
-  ];
 
   const drawer = (
     <div>
