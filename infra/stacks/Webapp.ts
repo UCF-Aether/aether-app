@@ -20,8 +20,13 @@ export class WebappStack extends sst.Stack {
 
     let siteProps: StaticSiteProps = {
       path,
+      // To support single page applications
+      errorPage: sst.StaticSiteErrorOptions.REDIRECT_TO_INDEX_PAGE,
       buildOutput: "build",
       buildCommand: `pnpm build --filter ${path}`,
+      cfDistribution: {
+        priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
+      },
       environment: {
         REACT_APP_GRAPHQL_URL: props.graphqlUrl,
       },
@@ -48,12 +53,14 @@ export class WebappStack extends sst.Stack {
       siteProps = {
         ...siteProps,
         cfDistribution: {
+          ...(siteProps.cfDistribution || {}),
           defaultBehavior: {
             viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.ALLOW_ALL,
           }
         }
       }
     }
+
     this.site = new StaticSite(this, "Site", siteProps);
 
     new CfnOutput(this, "WebappURL", { value: this.site.url });
