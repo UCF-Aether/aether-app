@@ -26,7 +26,7 @@ export class IotFunction extends sst.Function {
     });
 
     const topic = props.topic ?? "iot/topic";
-    const sql = iot.IotSql.fromStringAsVer20160323(props.sql ?? `SELECT * FROM ${topic}`);
+    const sql = iot.IotSql.fromStringAsVer20160323(props.sql ?? `SELECT * FROM '${topic}'`);
     const otherActions: Array<iot.IAction> = props.otherActions ?? [];
 
     if (props.log) otherActions.push(new actions.CloudWatchLogsAction(props.log));
