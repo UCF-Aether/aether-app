@@ -1,5 +1,4 @@
 import * as sst from "@serverless-stack/resources";
-import * as route53 from "aws-cdk-lib/aws-route53";
 import { InfraConfig, StageConfig } from "./infra/util/InfraConfig";
 import { WebappStack } from "./infra/stacks/Webapp";
 import { ApiStack } from "./infra/stacks/Api";
@@ -9,6 +8,7 @@ import * as _config from "./infra.config.json";
 import { IotStack } from "./infra/stacks/Iot";
 import { VpcStack } from "./infra/stacks/Vpc";
 import dotenv from "dotenv";
+import { Cluster, TtsCommunityIntegrationStack } from "./infra/stacks/Tts";
 
 const config = _config as InfraConfig;
 
@@ -35,7 +35,9 @@ export default function main(app: sst.App) {
   // Check for environment variables needed for lambdas
   const missingEnv: Array<string> = [];
   [
+    "TTS_COMMUNITY_API_KEY",
     "DATABASE_URL",
+    "POOLED_DATABASE_URL",
     "REACT_APP_GOOGLE_MAPS_API_KEY",
   ].forEach((env) => {
     if (!process.env[env]) missingEnv.push(env);
@@ -57,11 +59,7 @@ export default function main(app: sst.App) {
       vpcSubnets: { subnets: appVpc.privateSubnets },
       securityGroups: [vpcStack.sgs.lambda],
       environment: {
-        PGUSER: process.env.PGUSER!,
-        PGHOST: process.env.PGHOST!,
-        PGDATABASE: process.env.PGDATABASE!,
-        PGPASSWORD: process.env.PGPASSWORD!,
-        PGPORT: process.env.PGPORT!,
+        DATABASE_URL: process.env.POOLED_DATABASE_URL!,
       },
       bundle: {
         externalModules: ["pg-native"],
@@ -79,7 +77,7 @@ export default function main(app: sst.App) {
       : undefined,
   });
 
-  const webapp = new WebappStack(app, "Webapp", {
+  new WebappStack(app, "Webapp", {
     graphqlUrl: api.graphqlUrl,
     domain: siteDomain,
     certificateArn: stageConfig
@@ -90,4 +88,10 @@ export default function main(app: sst.App) {
   // Using supabase - plugin other postgres rds // new DatabaseStack(app, "Database");
 
   new IotStack(app, "IoT", {});
+
+  new TtsCommunityIntegrationStack(app, "TtsCommunityIntegration", {
+    applicationId: "aether",
+    applicationApiKey: process.env.TTS_COMMUNITY_API_KEY!,
+    clusterAddress: Cluster.NAM1,
+  });
 }

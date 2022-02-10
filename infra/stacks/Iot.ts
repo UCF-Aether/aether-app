@@ -23,8 +23,9 @@ export class IotStack extends sst.Stack {
       removalPolicy: scope.stage === "prod" ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
     });
 
-    const storeEventFun = new IotFunction(this, {
-      name: "iot-store-event",
+    new IotFunction(this, {
+      name: "lorawan-record-event",
+      topic: "lorawan/+/uplink",
       log: iotLogGroup,
     });
 
@@ -53,13 +54,15 @@ export class IotStack extends sst.Stack {
       managedPolicies: [iotDestinationPolicy],
     });
 
-    this.destinations = {
-      default: new iotwireless.CfnDestination(this, "DefaultDestination", {
-        name: `${scope.stage}-DefaultDestination`,
-        expression: storeEventFun.topicRule.topicRuleName,
-        expressionType: "RuleName",
-        roleArn: iotDestinationRole.roleArn,
-      }),
-    };
+    // TODO: create function to map aws iot event to TTN-like event format
+    // and publish on /lorawan/+/uplink MQTT topic
+    // this.destinations = {
+    //   default: new iotwireless.CfnDestination(this, "DefaultDestination", {
+    //     name: `${scope.stage}-DefaultDestination`,
+    //     expression: recordEventFun.topicRule.topicRuleName,
+    //     expressionType: "RuleName",
+    //     roleArn: iotDestinationRole.roleArn,
+    //   }),
+    // };
   }
 }
