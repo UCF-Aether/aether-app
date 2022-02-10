@@ -12,6 +12,7 @@ jobs:
       REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       TTS_COMMUNITY_API_KEY: ${{ secrets.TTS_COMMUNITY_API_KEY }}
+      POOLED_DATABASE_URL: ${{ POOLED_DATABASE_URL }}
 
     runs-on: ubuntu-latest
 
