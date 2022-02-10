@@ -1,0 +1,24 @@
+{
+  "name": "handle-aws-lorawan-uplink",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-iot-data-plane": "^3.50.0",
+    "@types/aws-lambda": "^8.10.70",
+    "typescript": "^4.5.5"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "eslint": "^8.6.0",
+    "eslint-config-prettier": "^8.3.0",
+    "prettier": "2.5.1",
+    "ts-node": "^10.5.0"
+  }
+}

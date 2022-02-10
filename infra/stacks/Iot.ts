@@ -8,7 +8,7 @@ import { IotFunction } from "../lib/IotFunction";
 export interface IotStackProps extends sst.StackProps {}
 
 interface IotDestinations {
-  default: iotwireless.CfnDestination;
+  uplinkRedirect: iotwireless.CfnDestination;
 }
 
 export class IotStack extends sst.Stack {
@@ -23,9 +23,17 @@ export class IotStack extends sst.Stack {
       removalPolicy: scope.stage === "prod" ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
     });
 
+    const uplinkTopic = "lorawan/+/uplink";
+
     new IotFunction(this, {
       name: "lorawan-record-event",
-      topic: "lorawan/+/uplink",
+      topic: uplinkTopic,
+      log: iotLogGroup,
+    });
+
+    const awsLorawanUplinkFunction = new IotFunction(this, {
+      name: "handle-aws-lorawan-uplink",
+      publishTopicAny: true,
       log: iotLogGroup,
     });
 
@@ -54,15 +62,13 @@ export class IotStack extends sst.Stack {
       managedPolicies: [iotDestinationPolicy],
     });
 
-    // TODO: create function to map aws iot event to TTN-like event format
-    // and publish on /lorawan/+/uplink MQTT topic
-    // this.destinations = {
-    //   default: new iotwireless.CfnDestination(this, "DefaultDestination", {
-    //     name: `${scope.stage}-DefaultDestination`,
-    //     expression: recordEventFun.topicRule.topicRuleName,
-    //     expressionType: "RuleName",
-    //     roleArn: iotDestinationRole.roleArn,
-    //   }),
-    // };
+    this.destinations = {
+      uplinkRedirect: new iotwireless.CfnDestination(this, "AWSUplinkRedirect", {
+        name: `${scope.stage}-AWSUplinkRedirect`,
+        expression: awsLorawanUplinkFunction.topicRule.topicRuleName,
+        expressionType: "RuleName",
+        roleArn: iotDestinationRole.roleArn,
+      }),
+    };
   }
 }
