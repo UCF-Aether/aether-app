@@ -9,8 +9,11 @@ import Typography from "@mui/material/Typography";
 import logo from "../aether.png";
 import { List, ListItemButton, ListItemText } from "@mui/material";
 import { Outlet, useNavigate, useLocation, Location } from "react-router-dom";
+import { LayerPanel } from "./LayerPanel";
+import { NodePanel } from "./NodePanel";
+import { YouPanel } from "./YouPanel";
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 const drawerItems = [
   {
@@ -44,7 +47,7 @@ export default function ResponsiveDrawer() {
   const handleListItemClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
     route: string,
-    index: number,
+    index: number
   ) => {
     setSelectedIndex(index);
     navigate(route);
@@ -61,17 +64,9 @@ export default function ResponsiveDrawer() {
       <Toolbar sx={{ p: 2 }}>
         <img width="100%" src={logo} alt="Logo" />
       </Toolbar>
-      <List component="nav">{
-        drawerItems.map(({ route, text }, index) => (
-          <ListItemButton
-            key={index}
-            selected={selectedIndex === index}
-            onClick={(event) => handleListItemClick(event, route, index)}
-          >
-            <ListItemText primary={text} />
-          </ListItemButton>
-        )) 
-      }</List>
+      <LayerPanel />
+      <NodePanel />
+      <YouPanel />
     </div>
   );
 
@@ -95,7 +90,7 @@ export default function ResponsiveDrawer() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            { drawerItems[selectedIndex].toolbarText }
+            {drawerItems[selectedIndex].toolbarText}
           </Typography>
         </Toolbar>
       </AppBar>
