@@ -1,19 +1,25 @@
-import { useState, useEffect } from "react";
+import MenuIcon from "@mui/icons-material/Menu";
+import { Button } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { Fragment, useEffect, useState } from "react";
+import { Location, Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from "../aether.png";
-import { List, ListItemButton, ListItemText } from "@mui/material";
-import { Outlet, useNavigate, useLocation, Location } from "react-router-dom";
 import { LayerPanel } from "./LayerPanel";
+import { LoginSignupPanel } from "./LoginSignupPanel";
 import { NodePanel } from "./NodePanel";
 import { YouPanel } from "./YouPanel";
+import { ColorModeToggle } from "./ColorModeToggle";
 
 const drawerWidth = 280;
+
+// TODO: implement authentication
+// This is temporary - testing only
+const loggedIn = true;
 
 const drawerItems = [
   {
@@ -33,7 +39,10 @@ function routeToIndex(location: Location) {
   return drawerItems.map(({ route }) => route).indexOf(location.pathname);
 }
 
-export default function ResponsiveDrawer() {
+export interface SidebarProps {
+}
+
+export function Sidebar(props: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -67,8 +76,19 @@ export default function ResponsiveDrawer() {
         </Box>
       </Toolbar>
       <LayerPanel />
-      <NodePanel />
-      <YouPanel />
+      {
+        loggedIn ? (
+          <Fragment>
+            <NodePanel />
+            <YouPanel />
+          </Fragment>
+        ) : (
+          <Fragment>
+            <LoginSignupPanel />
+          </Fragment>
+        )
+      }
+      <ColorModeToggle />
     </div>
   );
 
