@@ -3,7 +3,7 @@ import { Panel } from './Panel';
 
 export function LayerPanel() {
   return (
-    <Panel title="Layers">
+    <Panel title="Layers" contentSx={{ p: 2 }}>
       <FormControl>
         <RadioGroup>
           <FormControlLabel value="test1" control={<Radio />} label="Test1"/>

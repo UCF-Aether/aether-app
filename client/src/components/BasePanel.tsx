@@ -6,6 +6,7 @@ import { SxProps } from '@mui/system';
 export interface BasePanelProps {
   children?: JSX.Element[] | JSX.Element;
   sx?: SxProps;
+  contentSx?: SxProps;
   top: JSX.Element;
 }
 
@@ -13,13 +14,21 @@ export function BasePanel(props: BasePanelProps) {
   return (
     <Box 
       sx={{ 
-        m: 1,
+        m: 2,
         ...(props.sx || {})
       }} 
       style={{ textAlign: 'left' }}>
      {props.top}
       <Card>
-        <CardContent>
+        <CardContent 
+          sx={{
+            p: 0,
+            '&:last-child': {
+              paddingBottom: 0,
+            },
+            ...(props.contentSx || {})
+          }}
+        >
           {props.children}
         </CardContent>
       </Card>

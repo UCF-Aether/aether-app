@@ -1,9 +1,11 @@
 import Typography from '@mui/material/Typography';
+import { SxProps } from '@mui/system';
 import { BasePanel } from './BasePanel';
 
 export interface PanelProps {
   children: JSX.Element[] | JSX.Element;
   title: string;
+  contentSx?: SxProps;
 }
 
 export function Panel(props: PanelProps) {
@@ -14,7 +16,7 @@ export function Panel(props: PanelProps) {
   );
 
   return (
-    <BasePanel top={topComp}>
+    <BasePanel top={topComp} contentSx={props.contentSx}>
       {props.children}
     </BasePanel>
   );

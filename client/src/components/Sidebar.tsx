@@ -62,7 +62,9 @@ export default function ResponsiveDrawer() {
   const drawer = (
     <div>
       <Toolbar sx={{ p: 2 }}>
-        <img width="100%" src={logo} alt="Logo" />
+        <Box alignContent='center'>
+          <img width="75%" src={logo} alt="Logo" />
+        </Box>
       </Toolbar>
       <LayerPanel />
       <NodePanel />
