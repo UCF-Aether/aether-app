@@ -3,11 +3,14 @@ import { Button, Grid, Paper, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { Panel } from './Panel';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const DashboardButton = styled(Button)(
   ({ theme }) => ({
     width: '100%',
+    textTransform: 'none',
     justifyContent: 'flex-start',
+    boxShadow: 'none',
   })
 );
 
@@ -43,7 +46,9 @@ export function YouPanel() {
 
   return (
     <Panel title='You'>
-      <DashboardButton variant='contained'>Dashboard</DashboardButton>
+      <DashboardButton variant='contained' endIcon={<ArrowForwardIcon />}>
+        Dashboard
+      </DashboardButton>
       <Grid container direction='row' sx={{ p: 1 }}>
         <Grid item xs={8}>
           <Grid item container direction='column'>
