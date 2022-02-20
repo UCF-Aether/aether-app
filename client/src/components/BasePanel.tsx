@@ -8,6 +8,8 @@ export interface BasePanelProps {
   sx?: SxProps;
   contentSx?: SxProps;
   top: JSX.Element;
+  pt?: number;
+  pb?: number;
 }
 
 export function BasePanel(props: BasePanelProps) {
@@ -23,8 +25,11 @@ export function BasePanel(props: BasePanelProps) {
         <CardContent 
           sx={{
             p: 0,
+            '&:first-child': {
+              paddingTop: props.pt || 1,
+            },
             '&:last-child': {
-              paddingBottom: 0,
+              paddingBottom: props.pb || 1,
             },
             ...(props.contentSx || {})
           }}
