@@ -1,11 +1,21 @@
 // import logo from "./logo.svg";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { useMemo, useState } from "react";
+import { Route, Routes } from 'react-router-dom';
 import "./App.css";
-import { Sidebar } from "./components/Sidebar";
 import { ColorModeContext } from './components/ColorModeContext';
+import { Sidebar } from "./components/Sidebar";
+import { SupabaseProvider } from "./components/SupabaseContext";
+import { LoginSignup } from "./pages/LoginSignup";
 
-function App() {
+const supabaseClient = createSupabaseClient(
+  process.env.REACT_APP_SUPABASE_URL!,
+  process.env.REACT_APP_PUBLIC_ANON_KEY!
+);
+console.log(supabaseClient);
+
+export default function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
   const colorMode = useMemo(
     () => ({
@@ -15,10 +25,6 @@ function App() {
     }),
     [],
   );
-
-  const toggleColorMode = () => {
-    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-  };
 
   const theme = useMemo(
     () =>
@@ -31,14 +37,18 @@ function App() {
   );
 
   return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <div className="App">
-          <Sidebar />
-        </div>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
+    <SupabaseProvider supabaseClient={supabaseClient} >
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={theme}>
+          <div className="App">
+            <Routes>
+              <Route path='/' element={<Sidebar />}>
+              </Route>
+              <Route path='/auth' element={<LoginSignup />} />
+            </Routes>
+          </div>
+        </ThemeProvider>
+      </ColorModeContext.Provider>
+    </SupabaseProvider>
   );
 }
-
-export default App;

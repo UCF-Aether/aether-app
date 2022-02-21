@@ -26,10 +26,10 @@ export function BasePanel(props: BasePanelProps) {
           sx={{
             p: 0,
             '&:first-child': {
-              paddingTop: props.pt || 1,
+              paddingTop: props.pt || 0,
             },
             '&:last-child': {
-              paddingBottom: props.pb || 1,
+              paddingBottom: props.pb || 0,
             },
             ...(props.contentSx || {})
           }}

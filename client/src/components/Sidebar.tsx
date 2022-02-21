@@ -19,7 +19,7 @@ const drawerWidth = 280;
 
 // TODO: implement authentication
 // This is temporary - testing only
-const loggedIn = true;
+const loggedIn = false;
 
 const drawerItems = [
   {
