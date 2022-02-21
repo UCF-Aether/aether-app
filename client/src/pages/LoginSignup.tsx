@@ -1,7 +1,7 @@
 import { Card, CardContent, Grid } from "@mui/material";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Auth, Button, Typography } from "@supabase/ui";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useSupabase } from "../components/SupabaseContext";
 
 const { Text } = Typography;
@@ -15,16 +15,11 @@ interface LoginSignupProps {
 }
 
 const AuthContainer = (props: AuthContainerProps) => {
+  const navigate = useNavigate();
   const { user } = Auth.useUser();
-  if (user)
-    return (
-      <>
-        <Text>Signed in: {user.email}</Text>
-        <Button block onClick={() => props.supabaseClient.auth.signOut()}>
-          Sign out
-        </Button>
-      </>
-    );
+  if (user) {
+    navigate('/');
+  }
   return <>{props.children}</>;
 };
 
