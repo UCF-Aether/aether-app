@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
+import Box from "@mui/material/Box";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 let map: google.maps.Map;
@@ -22,5 +23,7 @@ export function DataMap() {
     });
   });
 
-  return <div id="map"></div>;
+  return (
+    <div id="map"></div>
+  );
 }

@@ -9,6 +9,7 @@ import { Sidebar } from "./components/Sidebar";
 import { SupabaseProvider } from "./components/SupabaseContext";
 import { LoginSignup } from "./pages/LoginSignup";
 import { Dashboard } from './pages/Dashboard';
+import { DataMap } from './components/Map';
 
 const supabaseClient = createSupabaseClient(
   process.env.REACT_APP_SUPABASE_URL!,
@@ -44,6 +45,7 @@ export default function App() {
           <div className="App">
             <Routes>
               <Route path='/' element={<Sidebar />}>
+                <Route index element={<DataMap />} />
               </Route>
               <Route path='/auth' element={<LoginSignup />} />
               <Route path='/dashboard' element={<Dashboard />} />

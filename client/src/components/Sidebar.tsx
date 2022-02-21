@@ -84,7 +84,7 @@ export function Sidebar(props: SidebarProps) {
         loggedIn ? (
           <Fragment>
             <NodePanel />
-            <YouPanel dashboardOnClick={() => navigate('/dashboard')}/>
+            <YouPanel dashboardOnClick={() => navigate('/dashboard')} />
           </Fragment>
         ) : (
           <Fragment>
@@ -98,28 +98,6 @@ export function Sidebar(props: SidebarProps) {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div">
-            {drawerItems[selectedIndex].toolbarText}
-          </Typography>
-        </Toolbar>
-      </AppBar>
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
@@ -158,11 +136,10 @@ export function Sidebar(props: SidebarProps) {
         flexDirection="column"
         sx={{
           flexGrow: 1,
-          p: 3,
+          p: 0,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Toolbar />
         <Outlet />
       </Box>
     </Box>
