@@ -1,8 +1,7 @@
-import { Card, CardContent, Fab, Grid, Button as MuiButton } from "@mui/material";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { Card, CardContent, Grid } from "@mui/material";
+import { SupabaseClient } from "@supabase/supabase-js";
 import { Auth, Button, Typography } from "@supabase/ui";
 import { useLocation } from "react-router-dom";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useSupabase } from "../components/SupabaseContext";
 
 const { Text } = Typography;

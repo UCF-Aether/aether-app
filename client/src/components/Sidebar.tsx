@@ -1,21 +1,19 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { Button } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { Auth } from "@supabase/ui";
 import { Fragment, useEffect, useState } from "react";
 import { Location, Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from "../aether.png";
+import { ColorModeToggle } from "./ColorModeToggle";
 import { LayerPanel } from "./LayerPanel";
 import { LoginSignupPanel } from "./LoginSignupPanel";
 import { NodePanel } from "./NodePanel";
 import { YouPanel } from "./YouPanel";
-import { ColorModeToggle } from "./ColorModeToggle";
-import { useSupabase } from "./SupabaseContext";
-import { useUser } from "@supabase/ui/dist/cjs/components/Auth/UserContext";
 
 const drawerWidth = 280;
 
@@ -47,9 +45,10 @@ export interface SidebarProps {
 export function Sidebar(props: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useUser();
+  const { user } = Auth.useUser();
 
   loggedIn = !!user;
+  console.log(user);
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
