@@ -1,12 +1,11 @@
-import { Card, CardContent, Grid } from "@mui/material";
+import { Card, CardContent, Fab, Grid, Button as MuiButton } from "@mui/material";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { Auth, Button, Typography } from "@supabase/ui";
 import { useLocation } from "react-router-dom";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useSupabase } from "../components/SupabaseContext";
 
 const { Text } = Typography;
-
-// Create a single supabase client for interacting with your database
-const supabase = createClient("https://xyzcompany.supabase.co", "public-anon-key");
 
 interface AuthContainerProps {
   children?: JSX.Element[] | JSX.Element;
@@ -39,6 +38,7 @@ type ViewType =
 
 export function LoginSignup(props: LoginSignupProps) {
   const location = useLocation();
+  const supabaseClient = useSupabase();
 
   const hashView = location.hash.slice(1);
   const view = {
@@ -57,8 +57,8 @@ export function LoginSignup(props: LoginSignupProps) {
       <Grid item xs={12} sm={5} md={4} lg={3}>
         <Card>
           <CardContent >
-            <AuthContainer supabaseClient={supabase}>
-              <Auth supabaseClient={supabase} view={view as ViewType} />
+            <AuthContainer supabaseClient={supabaseClient}>
+              <Auth supabaseClient={supabaseClient} view={view as ViewType} />
             </AuthContainer>
           </CardContent>
         </Card>
