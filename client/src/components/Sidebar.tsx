@@ -84,7 +84,7 @@ export function Sidebar(props: SidebarProps) {
         loggedIn ? (
           <Fragment>
             <NodePanel />
-            <YouPanel />
+            <YouPanel dashboardOnClick={() => navigate('/dashboard')}/>
           </Fragment>
         ) : (
           <Fragment>
