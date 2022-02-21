@@ -14,12 +14,14 @@ import { LoginSignupPanel } from "./LoginSignupPanel";
 import { NodePanel } from "./NodePanel";
 import { YouPanel } from "./YouPanel";
 import { ColorModeToggle } from "./ColorModeToggle";
+import { useSupabase } from "./SupabaseContext";
+import { useUser } from "@supabase/ui/dist/cjs/components/Auth/UserContext";
 
 const drawerWidth = 280;
 
 // TODO: implement authentication
 // This is temporary - testing only
-const loggedIn = false;
+let loggedIn = false;
 
 const drawerItems = [
   {
@@ -45,6 +47,9 @@ export interface SidebarProps {
 export function Sidebar(props: SidebarProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useUser();
+
+  loggedIn = !!user;
 
   const [mobileOpen, setMobileOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(0);
