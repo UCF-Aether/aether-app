@@ -82,14 +82,14 @@ export function Sidebar(props: SidebarProps) {
       <LayerPanel />
       {
         loggedIn ? (
-          <Fragment>
+          <>
             <NodePanel />
             <YouPanel dashboardOnClick={() => navigate('/dashboard')} />
-          </Fragment>
+          </>
         ) : (
-          <Fragment>
+          <>
             <LoginSignupPanel />
-          </Fragment>
+          </>
         )
       }
       <ColorModeToggle />
@@ -103,7 +103,6 @@ export function Sidebar(props: SidebarProps) {
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
         aria-label="mailbox folders"
       >
-        {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
         <Drawer
           variant="temporary"
           open={mobileOpen}
