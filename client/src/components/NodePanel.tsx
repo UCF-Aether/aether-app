@@ -2,10 +2,47 @@ import TabPanelUnstyled from "@mui/base/TabPanelUnstyled";
 import TabsListUnstyled from "@mui/base/TabsListUnstyled";
 import TabsUnstyled from "@mui/base/TabsUnstyled";
 import TabUnstyled, { tabUnstyledClasses } from "@mui/base/TabUnstyled";
-import { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
-import { List, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { buttonUnstyledClasses } from "@mui/base/ButtonUnstyled";
+import { Box, CircularProgress, List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { BasePanel } from "./BasePanel";
+import { gql, useQuery } from "urql";
+import { TabPanelUnstyledProps } from "@mui/material/node_modules/@mui/base";
+import ErrorIcon from "@mui/icons-material/Error";
+
+const DEVICE_QUERY = gql`
+  query {
+    devices {
+      nodes {
+        deviceId
+        name
+      }
+    }
+  }
+`;
+
+interface DeviceQueryData {
+  devices: {
+    nodes: [{ deviceId: number; name: string; }];
+  };
+}
+
+const GATEWAY_QUERY = gql`
+  query {
+    gateways {
+      nodes {
+        gatewayId
+        name
+      }
+    }
+  }
+`;
+
+interface GatewayQueryData {
+  gateways: {
+    nodes: [{ gatewayId: number; name: string; }];
+  };
+}
 
 function Item(props: { primary: string }) {
   return (
@@ -18,16 +55,16 @@ function Item(props: { primary: string }) {
 }
 
 const blue = {
-  50: '#F0F7FF',
-  100: '#C2E0FF',
-  200: '#80BFFF',
-  300: '#66B2FF',
-  400: '#3399FF',
-  500: '#007FFF',
-  600: '#0072E5',
-  700: '#0059B2',
-  800: '#004C99',
-  900: '#003A75',
+  50: "#F0F7FF",
+  100: "#C2E0FF",
+  200: "#80BFFF",
+  300: "#66B2FF",
+  400: "#3399FF",
+  500: "#007FFF",
+  600: "#0072E5",
+  700: "#0059B2",
+  800: "#004C99",
+  900: "#003A75",
 };
 
 // TODO: use theme
@@ -86,6 +123,46 @@ const TabsList = styled(TabsListUnstyled)`
   /* align-content: space-between; */
 `;
 
+function DevicePanelContent() {
+  const [result, reexecuteQuery] = useQuery({
+    query: DEVICE_QUERY,
+  });
+
+  const { data, fetching, error } = result;
+
+  if (error) return <ErrorIcon color="error" />;
+
+  if (fetching) return <CircularProgress />;
+
+  return (
+    <List>
+      {(data as DeviceQueryData).devices.nodes.map(({ deviceId, name }) => (
+        <Item primary={name} key={deviceId} />
+      ))}
+    </List>
+  );
+}
+
+function GatewayPanelContent() {
+  const [result, reexecuteQuery] = useQuery({
+    query: GATEWAY_QUERY,
+  });
+
+  const { data, fetching, error } = result;
+
+  if (error) return <ErrorIcon color="error" />;
+
+  if (fetching) return <CircularProgress />;
+
+  return (
+    <List>
+      {(data as GatewayQueryData).gateways.nodes.map(({ gatewayId, name }) => (
+        <Item primary={name} key={gatewayId} />
+      ))}
+    </List>
+  );
+}
+
 export function NodePanel() {
   const tabs = (
     <TabsList>
@@ -94,28 +171,16 @@ export function NodePanel() {
     </TabsList>
   );
 
-  const deviceList = (
-    <List>
-      <Item primary="Device 1" />
-      <Item primary="Device 2" />
-      <Item primary="Device 3" />
-    </List>
-  );
-
-  const gatewayList = (
-    <List>
-      <Item primary="Gateway 1" />
-      <Item primary="Gateway 2" />
-      <Item primary="Gateway 3" />
-    </List>
-  );
-
   return (
     <TabsUnstyled defaultValue={0}>
       <BasePanel top={tabs}>
         <nav>
-          <TabPanel value={0}>{deviceList}</TabPanel>
-          <TabPanel value={1}>{gatewayList}</TabPanel>
+          <TabPanel value={0}>
+            <DevicePanelContent />
+          </TabPanel>
+          <TabPanel value={1}>
+            <GatewayPanelContent />
+          </TabPanel>
         </nav>
       </BasePanel>
     </TabsUnstyled>
