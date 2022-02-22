@@ -14,7 +14,7 @@ import { gql, useQuery } from "urql";
 // ];
 
 const LOG_QUERY = gql`
-  query MyQuery {
+  query LogQuery {
     devmsgs {
       nodes {
         deveui
