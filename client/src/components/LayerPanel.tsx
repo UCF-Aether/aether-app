@@ -2,15 +2,38 @@ import { FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@m
 import { Panel } from './Panel';
 
 export function LayerPanel() {
+  const layers = [
+    {
+      label: 'AQI'
+    },
+    {
+      label: 'PM2.5'
+    },
+    {
+      label: 'PM10'
+    },
+    {
+      label: 'CO2'
+    },
+    {
+      label: 'bVOC'
+    },
+    {
+      label: 'Temperature'
+    },
+    {
+      label: 'Humidity'
+    },
+  ];
+
   return (
     <Panel title="Layers" contentSx={{ p: 2 }}>
       <FormControl>
-        <RadioGroup>
-          <FormControlLabel value="test1" control={<Radio />} label="Test1"/>
-          <FormControlLabel value="test2" control={<Radio />} label="Test2"/>
-          <FormControlLabel value="test3" control={<Radio />} label="Test3"/>
-          <FormControlLabel value="test4" control={<Radio />} label="Test4"/>
-        </RadioGroup>
+        <RadioGroup defaultValue='AQI'>{
+          layers.map(({ label }, index) => (
+            <FormControlLabel key={index} value={label} control={<Radio />} label={label} />
+          ))
+        }</RadioGroup>
       </FormControl>
     </Panel>
   );
