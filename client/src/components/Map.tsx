@@ -24,7 +24,7 @@ const SearchBar = forwardRef<HTMLDivElement>((props: any, ref) => {
   );
 });
 
-function Map() {
+export function DataMap() {
   const searchRef = createRef<HTMLDivElement>();
   const searchBar = <SearchBar ref={searchRef} />
 
@@ -54,11 +54,5 @@ function Map() {
       <div id="map"></div>
       {searchBar}
     </Box>
-  );
-}
-
-export function DataMap() {
-  return (
-    <Map />
   );
 }
