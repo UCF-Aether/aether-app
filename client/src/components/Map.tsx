@@ -42,7 +42,7 @@ function Map() {
         center: { lat: 28.603053295127882, lng: -81.19995194984672 },
         zoom: 12,
         streetViewControl: false,
-        mapTypeControl: false,
+        disableDefaultUI: true,
       });
 
       map.controls[google.maps.ControlPosition.TOP_CENTER].push(searchRef.current);
