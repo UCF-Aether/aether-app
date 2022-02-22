@@ -1,22 +1,31 @@
 import { Loader } from "@googlemaps/js-api-loader";
-import { TextField, Box, Paper, Card } from "@mui/material";
+import { TextField, Box, Paper, Card, useTheme, useMediaQuery } from "@mui/material";
 import { createRef, forwardRef, useEffect } from "react";
+import SearchIcon from '@mui/icons-material/Search';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 let map: google.maps.Map;
 
 // eslint-disable-next-line react/display-name
-const SearchBar = forwardRef<HTMLDivElement>((props: any, ref) => (
-  <div ref={ref}>
-    <Card sx={{ m: 1, width: 400 }}>
-      <TextField id='maps-search-bar' label='Search' variant='outlined' sx={{ width: '100%', height: '100%' }}/>
-    </Card>
-  </div>
-));
+const SearchBar = forwardRef<HTMLDivElement>((props: any, ref) => {
+  const theme = useTheme();
+  const hitWidthBreakpoint = useMediaQuery(theme.breakpoints.up('md'));
+  const disableBarBreakpoint = useMediaQuery(theme.breakpoints.down('sm'));
+
+  return (
+    <div ref={ref}>
+      <Card sx={{ m: 1, width: hitWidthBreakpoint ? 400 : '100%' }}>
+        {disableBarBreakpoint ?
+          <SearchIcon />
+          : <TextField id='maps-search-bar' label='Search' variant='outlined' sx={{ width: '100%', height: '100%' }}/>
+        }
+      </Card>
+    </div>
+  );
+});
 
 function Map() {
   const searchRef = createRef<HTMLDivElement>();
-
   const searchBar = <SearchBar ref={searchRef} />
 
   useEffect(() => {
