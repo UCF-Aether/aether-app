@@ -1,4 +1,5 @@
 import MenuIcon from "@mui/icons-material/Menu";
+import { Card, Paper } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -96,8 +97,23 @@ export function Sidebar(props: SidebarProps) {
     </div>
   );
 
+  const toolbar = (
+    <AppBar style={{ background: 'transparent', boxShadow: 'none' }}>
+      <Toolbar>
+        <Card>
+          <IconButton
+            onClick={handleDrawerToggle}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Card>
+      </Toolbar>
+    </AppBar>
+  );
+
   return (
     <Box sx={{ display: "flex" }}>
+      {toolbar}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
