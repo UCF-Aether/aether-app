@@ -1,35 +1,15 @@
 import ErrorIcon from "@mui/icons-material/Error";
-import { CircularProgress, List, Skeleton } from "@mui/material";
-import { gql, useQuery } from "urql";
-import { useState } from "react";
-import { NodeListItem as Item } from "./NodeListItem";
-import { DetailsModal } from "./DetailsModal";
+import { CircularProgress, List } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
-const GATEWAY_QUERY = gql`
-  query {
-    gateways {
-      nodes {
-        gatewayId
-        name
-      }
-    }
-  }
-`;
-
-interface GatewayQueryData {
-  gateways: {
-    nodes: [{ gatewayId: number; name: string }];
-  };
-}
+import { useQuery } from "urql";
+import { GatewaysDocument } from "../generated/graphql";
+import { NodeListItem as Item } from "./NodeListItem";
 
 export function GatewayPanelContent() {
-  const [open, setOpen] = useState(false);
-  const [curIndex, setCurIndex] = useState(-1);
   const navigate = useNavigate();
 
   const [result, reexecuteQuery] = useQuery({
-    query: GATEWAY_QUERY,
+    query: GatewaysDocument,
   });
 
   const { data, fetching, error } = result;
@@ -38,18 +18,14 @@ export function GatewayPanelContent() {
 
   if (fetching) return <CircularProgress />;
 
-  const gateways = data.gateways.nodes;
-  const curGateway = gateways[curIndex];
-  const curGatewayId = curGateway?.gatewayId;
-  const curGatewayName = curGateway?.name;
+  const gateways = data?.gateways?.nodes || [];
 
   return (
-    <>
       <List>
-        {(data as GatewayQueryData).gateways.nodes.map(({ gatewayId, name }, index) => (
-          <Item primary={name} key={gatewayId} onClick={() => navigate('gateway/' + gatewayId)} />
-        ))}
+        {gateways.map(g => {
+          if (!g) return <></>
+          return <Item primary={g.name} key={g.gatewayId} onClick={() => navigate('gateway/' + g.gatewayId)} />
+        })}
       </List>
-    </>
   );
 }

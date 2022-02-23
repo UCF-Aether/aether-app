@@ -1,35 +1,15 @@
-import { CircularProgress, List, Skeleton } from "@mui/material";
-import { useState } from "react";
-import { gql, useQuery } from "urql";
-import { DetailsModal } from "./DetailsModal";
 import ErrorIcon from '@mui/icons-material/Error';
-import { NodeListItem as Item} from "./NodeListItem";
-import { useNavigate } from "react-router-dom";
-
-const DEVICE_QUERY = gql`
-  query {
-    devices {
-      nodes {
-        deviceId
-        name
-      }
-    }
-  }
-`;
-
-interface DeviceQueryData {
-  devices: {
-    nodes: [{ deviceId: number; name: string; }];
-  };
-}
+import { CircularProgress, List } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useQuery } from 'urql';
+import { DevicesDocument } from '../generated/graphql';
+import { NodeListItem as Item } from './NodeListItem';
 
 export function DevicePanelContent() {
-  const [open, setOpen] = useState(false);
-  const [curIndex, setCurIndex] = useState(-1);
   const navigate = useNavigate();
 
   const [result, reexecuteQuery] = useQuery({
-    query: DEVICE_QUERY,
+    query: DevicesDocument,
   });
 
   const { data, fetching, error } = result;
@@ -38,19 +18,14 @@ export function DevicePanelContent() {
 
   if (fetching) return <CircularProgress />;
 
-  const devices = data.devices.nodes;
-  const curDevice = devices[curIndex];
-  const curDeviceId = curDevice?.deviceId;
-  const curDeviceName = curDevice?.name;
-
+  const devices = data?.devices?.nodes || [];
   return (
-    <>
-      <List>
-        {(data as DeviceQueryData).devices.nodes.map(({ deviceId, name }, index) => (
-          <Item primary={name} key={deviceId} onClick={() => navigate('device/' + deviceId)} />
-        ))}
-      </List>
-
-    </>
+    <List>
+      {devices
+        .map(d => {
+          if (!d) return <></>
+          return <Item primary={d.name} key={d.deviceId} onClick={() => navigate('device/' + d.deviceId)} />
+        })
+      }</List>
   );
 }
