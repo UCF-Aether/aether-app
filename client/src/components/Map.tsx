@@ -51,12 +51,12 @@ const CurrentLocationButton = forwardRef<HTMLDivElement, CurrentLocationButtonPr
   }
 );
 
+// Get ready to have your eyes bleed
 export function DataMap() {
   const [[locationOnClick], setLocationOnClick] = useState<[() => void]>([
     () => console.log("maps not loaded"),
   ]);
 
-  console.log(locationOnClick);
   const searchRef = createRef<HTMLDivElement>();
   const searchBar = <SearchBar ref={searchRef} />;
 
