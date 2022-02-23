@@ -38,12 +38,12 @@ export function GatewayPanelContent() {
   });
 
   const { data, fetching, error } = result;
-  const gateways = data.gateways.nodes;
 
   if (error) return <ErrorIcon color="error" />;
 
   if (fetching) return <CircularProgress />;
 
+  const gateways = data.gateways.nodes;
   const curGateway = gateways[curIndex];
   const curGatewayId = curGateway?.gatewayId;
   const curGatewayName = curGateway?.name;

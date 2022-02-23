@@ -38,12 +38,12 @@ export function DevicePanelContent() {
   });
 
   const { data, fetching, error } = result;
-  const devices = data.devices.nodes;
 
   if (error) return <ErrorIcon color='error' />;
 
   if (fetching) return <CircularProgress />;
 
+  const devices = data.devices.nodes;
   const curDevice = devices[curIndex];
   const curDeviceId = curDevice?.deviceId;
   const curDeviceName = curDevice?.name;
