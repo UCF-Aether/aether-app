@@ -41,6 +41,7 @@ function routeToIndex(location: Location) {
 }
 
 export interface SidebarProps {
+  children?: JSX.Element[] | JSX.Element;
 }
 
 export function Sidebar(props: SidebarProps) {
@@ -155,7 +156,7 @@ export function Sidebar(props: SidebarProps) {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Outlet />
+        {props.children}
       </Box>
     </Box>
   );

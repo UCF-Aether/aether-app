@@ -4,6 +4,7 @@ import { gql, useQuery } from "urql";
 import { DetailsModal } from "./DetailsModal";
 import ErrorIcon from '@mui/icons-material/Error';
 import { NodeListItem as Item} from "./NodeListItem";
+import { useNavigate } from "react-router-dom";
 
 const DEVICE_QUERY = gql`
   query {
@@ -25,13 +26,7 @@ interface DeviceQueryData {
 export function DevicePanelContent() {
   const [open, setOpen] = useState(false);
   const [curIndex, setCurIndex] = useState(-1);
-  const handleOpen = (index: number) => {
-    return () => {
-      setCurIndex(index);
-      setOpen(true);
-    }
-  }
-  const handleClose = () => setOpen(false);
+  const navigate = useNavigate();
 
   const [result, reexecuteQuery] = useQuery({
     query: DEVICE_QUERY,
@@ -52,14 +47,9 @@ export function DevicePanelContent() {
     <>
       <List>
         {(data as DeviceQueryData).devices.nodes.map(({ deviceId, name }, index) => (
-          <Item primary={name} key={deviceId} onClick={handleOpen(index)} />
+          <Item primary={name} key={deviceId} onClick={() => navigate('device/' + deviceId)} />
         ))}
       </List>
-      <DetailsModal title='Device' subTitle={curDeviceName} open={open} onClose={handleClose}>
-        <Skeleton animation='wave' variant='rectangular' width='100%' height='30%' sx={{ my: 2}}/>       
-        <Skeleton animation='wave' variant='rectangular' width='100%' height='30%' sx={{ my: 4}}/>       
-        <Skeleton animation='wave' variant='rectangular' width='100%' height='30%' sx={{ my: 4}}/>       
-      </DetailsModal>
 
     </>
   );

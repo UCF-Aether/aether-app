@@ -4,6 +4,7 @@ import { gql, useQuery } from "urql";
 import { useState } from "react";
 import { NodeListItem as Item } from "./NodeListItem";
 import { DetailsModal } from "./DetailsModal";
+import { useNavigate } from "react-router-dom";
 
 const GATEWAY_QUERY = gql`
   query {
@@ -25,13 +26,7 @@ interface GatewayQueryData {
 export function GatewayPanelContent() {
   const [open, setOpen] = useState(false);
   const [curIndex, setCurIndex] = useState(-1);
-  const handleOpen = (index: number) => {
-    return () => {
-      setCurIndex(index);
-      setOpen(true);
-    };
-  };
-  const handleClose = () => setOpen(false);
+  const navigate = useNavigate();
 
   const [result, reexecuteQuery] = useQuery({
     query: GATEWAY_QUERY,
@@ -52,14 +47,9 @@ export function GatewayPanelContent() {
     <>
       <List>
         {(data as GatewayQueryData).gateways.nodes.map(({ gatewayId, name }, index) => (
-          <Item primary={name} key={gatewayId} onClick={handleOpen(index)} />
+          <Item primary={name} key={gatewayId} onClick={() => navigate('gateway/' + gatewayId)} />
         ))}
       </List>
-      <DetailsModal title='Gateway' subTitle={curGatewayName} open={open} onClose={handleClose}>
-        <Skeleton animation='wave' variant='rectangular' width='100%' height='30%' sx={{ my: 2}}/>       
-        <Skeleton animation='wave' variant='rectangular' width='100%' height='30%' sx={{ my: 4}}/>       
-        <Skeleton animation='wave' variant='rectangular' width='100%' height='30%' sx={{ my: 4}}/>       
-      </DetailsModal>
     </>
   );
 }
