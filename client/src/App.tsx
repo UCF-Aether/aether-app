@@ -85,7 +85,7 @@ export default function App() {
           <ThemeProvider theme={colorModeTheme}>
             <div className="App">
               <Routes>
-                <Route path='/' element={<Main />}>
+                <Route path='/*' element={<Main />}>
                   <Route path='device/:deviceId' element={<DeviceDetailsModal />} />
                   <Route path='gateway/:gatewayId' element={<GatewayDetailsModal />} />
                 </Route>
