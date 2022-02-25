@@ -124,3 +124,8 @@ cdk.out
 # SST
 .build/
 .sst
+
+# Supabase
+**/supabase/.branches
+**/supabase/.temp
+**/supabase/.env

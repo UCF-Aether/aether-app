@@ -18,22 +18,24 @@ create table profile
   first_name text default '',
   last_name  text default ''
 );
-alter table profile enable row level security;
+alter table profile
+  enable row level security;
 create policy "Only the account holder can update their profile"
   on profile for update using (
-    auth.uid() = profile_id
+  auth.uid() = profile_id
   );
 create policy "Only the account holder can view their profile"
   on profile for select using (
-    auth.uid() = profile_id
+  auth.uid() = profile_id
   );
 
 -- Create profile when there's a new user in auth.users
 create function handle_new_user()
-returns trigger
-language plpgsql
-security definer set search_path = public
-as $$
+  returns trigger
+  language plpgsql
+  security definer set search_path = public
+as
+$$
 begin
   insert into profile (profile_id)
   values (new.id);
@@ -43,8 +45,10 @@ $$;
 
 -- Trigger for creating profile on user creation
 create trigger on_auth_user_created
-  after insert on auth.users
-  for each row execute procedure public.handle_new_user();
+  after insert
+  on auth.users
+  for each row
+execute procedure public.handle_new_user();
 
 ------------------------------------------
 --
@@ -93,14 +97,24 @@ $$;
 -- Device
 --
 ------------------------------------------
+create type lorawan_activation_method as enum ('OTAA', 'ABP');
 create table device
 (
   device_id     integer generated always as identity primary key,
-  profile_id    uuid      not null references profile (profile_id),
+  profile_id    uuid         not null references profile (profile_id),
   name          varchar(64)  not null,
-  aws_device_id varchar(128) not null unique
+  dev_eui char(16) not null unique,
+  app_skey char(32),
+  app_key char(32),
+  nwk_skey char(32),
+  app_eui char(16),
+  activation_method lorawan_activation_method,
+  aws_device_id varchar(128) not null unique,
+  bme_config    json,
+  bme_state     json
 );
 create index device_profile_id on device (profile_id);
+create index device_deveui on device (dev_eui);
 alter table device
   enable row level security;
 
@@ -110,7 +124,9 @@ as
 $$
 begin
   return (
-    select profile_id from device where device_id = req_device_id
+    select profile_id
+    from device
+    where device_id = req_device_id
   );
 end;
 $$
@@ -171,6 +187,27 @@ create trigger device_meta_updated_at
   for each row
 execute procedure updated_at_trigger();
 
+create or replace function get_device_location(id integer)
+  returns location
+  language sql
+as
+$$
+select *
+from location
+where loc_id = (
+  select loc_id
+  from device_meta
+  where device_meta.device_id = id
+);
+$$;
+
+create or replace function device_by_deveui(lookup_dev_eui char(16))
+  returns device
+  language sql
+as
+$$
+  select * from device where device.dev_eui = lookup_dev_eui;
+$$;
 ------------------------------------------
 --
 -- Gateway
@@ -179,7 +216,7 @@ execute procedure updated_at_trigger();
 create table gateway
 (
   gateway_id     integer generated always as identity primary key,
-  profile_id     uuid      not null references profile (profile_id),
+  profile_id     uuid         not null references profile (profile_id),
   name           varchar(64)  not null,
   aws_gateway_id varchar(128) not null unique
 );
@@ -193,7 +230,9 @@ as
 $$
 begin
   return (
-    select profile_id from gateway where gateway_id = req_gateway_id
+    select profile_id
+    from gateway
+    where gateway_id = req_gateway_id
   );
 end;
 $$
@@ -275,12 +314,12 @@ create table sensor_chan
 create table reading
 (
   reading_id     integer generated always as identity primary key,
-  device_id      integer references device (device_id),
+  device_id      integer references device (device_id)            not null,
   loc_id         integer references location (loc_id),
-  sensor_chan_id smallint references sensor_chan (sensor_chan_id),
-  taken_at       timestamptz      not null,
+  sensor_chan_id smallint references sensor_chan (sensor_chan_id) not null,
+  taken_at       timestamptz                                      not null,
   received_at    timestamptz default now(),
-  val            double precision not null
+  val            double precision                                 not null
 );
 create index reading_taken_at on reading (taken_at);
 create index reading_device_id on reading (device_id);
@@ -290,22 +329,39 @@ alter table reading
 create policy "Allow unauthenticated reads"
   on reading for select using (true);
 
-create table phy_sensor
-(
-  phy_sensor_id integer generated always as identity primary key,
-  device_id     integer references device (device_id),
-  sensor_key    varchar(32),
-  config        json,
-  state         json
-);
-create index phy_sensor_device_id on phy_sensor (device_id);
-alter table phy_sensor
-  enable row level security;
+create or replace function set_reading_loc_to_device_loc()
+  returns trigger
+  language plpgsql
+as
+$$
+begin
+  new.loc_id := (select loc_id from get_device_location(new.device_id));
+  return new;
+end;
+$$;
 
-create policy "Only owners can use their own sensors"
-  on phy_sensor for all using (
-  get_device_owner(device_id) = auth.uid()
-  );
+create trigger updating_reading_loc
+  before insert
+  on reading
+  for each row
+execute procedure set_reading_loc_to_device_loc();
+
+-- create table phy_sensor
+-- (
+--   phy_sensor_id integer generated always as identity primary key,
+--   device_id     integer references device (device_id),
+--   sensor_key    varchar(32),
+--   config        json,
+--   state         json
+-- );
+-- create index phy_sensor_device_id on phy_sensor (device_id);
+-- alter table phy_sensor
+--   enable row level security;
+--
+-- create policy "Only owners can use their own sensors"
+--   on phy_sensor for all using (
+--   get_device_owner(device_id) = auth.uid()
+--   );
 
 -- Join of reading sensor_chan for convenience
 create or replace view reading_by_chan as
@@ -333,33 +389,52 @@ create type reading_w_loc as
   units       varchar(16)
 );
 
+create or replace function new_reading(dev_eui char(16), sensor_channel text, at timestamptz,
+                                       value double precision)
+  returns reading
+  language sql as
+$$
+  with dev as (select * from device_by_deveui(dev_eui))
+  insert into reading (device_id, loc_id, sensor_chan_id, taken_at, received_at, val)
+  values ((select device_id from dev),
+          (select loc_id from get_device_location((select device_id from dev))),
+          (select sensor_chan_id from sensor_chan where sensor_chan.name = sensor_channel),
+          at,
+          now(),
+          value)
+  returning *;
+$$;
+
 -- Find readings within various metrics - defaults shouldn't affect results i.e. return everything besides arguments passed.
-create or replace function reading_within(start_at timestamptz default '-infinity',
-                                          end_at timestamptz default 'infinity',
-                                          center_lon float default 0.0,
-                                          center_lat float default 0.0,
-                                          radius double precision default 'infinity')
-  returns setof reading_w_loc
-  language plpgsql
+-- Returns geojson
+create or replace function readings_within(start_at timestamptz default '-infinity',
+                                           end_at timestamptz default 'infinity',
+                                           center_lon float default 0.0,
+                                           center_lat float default 0.0,
+                                           radius double precision default 'infinity')
+  returns json
+  language sql
 as
 $$
-begin
-  return query
-    select r.reading_id,
-           r.device_id,
-           r.taken_at,
-           r.received_at,
-           r.val,
-           l.loc_geog,
-           r.chan_name,
-           r.chan_units
-    from reading_by_chan r
-           join location l on r.loc_id = l.loc_id
-    where start_at <= r.taken_at
-      and end_at >= r.taken_at
-      and st_dwithin(l.loc_geog, st_makepoint(center_lon, center_lat), radius)
-    order by r.taken_at;
-end;
+select json_build_object(
+           'type', 'FeatureCollection',
+           'features', coalesce(json_agg(st_asgeojson(readings.*)::json), '[]'::json)
+         )
+from (
+       select r.reading_id,
+              r.device_id,
+              r.taken_at,
+              r.received_at,
+              r.val,
+              l.loc_geog,
+              r.chan_name,
+              r.chan_units
+       from reading_by_chan r
+              join location l on r.loc_id = l.loc_id
+       where start_at <= r.taken_at
+         and end_at >= r.taken_at
+         and st_dwithin(l.loc_geog, st_makepoint(center_lon, center_lat), radius)
+       order by r.taken_at) as readings;
 $$
   stable;
 
@@ -406,9 +481,44 @@ alter table alert_def
   enable row level security;
 create policy "Only users can use their own alerts"
   on alert_def for all using (
-    auth.uid() = profile_id
+  auth.uid() = profile_id
   );
 
+------------------------------------------
+--
+-- Events
+--
+------------------------------------------
+create type link_direction as enum ('DOWNLINK', 'UPLINK');
+create type node_loc_method as enum ('MANUAL', 'GPS', 'GW_APPROX');
+create table event
+(
+  id         integer generated always as identity primary key,
+  profile_id uuid references profile (profile_id),
+  time       timestamptz default now(),
+  raw_event  json
+);
+
+
+create table node_event
+(
+  device_id       integer references device (device_id),
+  gateway_id      integer references gateway (gateway_id),
+  link_dir        link_direction,
+  device_rf_meta  json,
+  gateway_rf_meta json,
+  loc_id          integer references location (loc_id),
+  loc_method      node_loc_method,
+  reading_id      integer references reading (reading_id)
+) inherits (event);
+
+create table alert_event
+(
+  reading_id   integer references reading (reading_id),
+  alert_def_id integer references alert_def (alert_def_id)
+) inherits (event);
+
+-- TODO: create triggers to add to event table
 ------------------------------------------
 --
 -- Other functions
