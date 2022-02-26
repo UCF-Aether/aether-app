@@ -64,7 +64,7 @@ create index location_gist on location using gist (loc_geog);
 alter table location
   enable row level security;
 create policy "Anyone can insert locations"
-  on location for insert using (
+  on location for insert with check (
   true
   );
 create policy "Anyone can read locations"
@@ -526,7 +526,7 @@ create table event
   time       timestamptz default now(),
   raw_event  json
 );
-alter table node_event
+alter table event
   enable row level security;
 create policy "Users can see their own events"
   on event for select using (
