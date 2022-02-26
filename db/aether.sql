@@ -61,7 +61,16 @@ create table location
   loc_geog geography(point) not null
 );
 create index location_gist on location using gist (loc_geog);
-
+alter table location
+  enable row level security;
+create policy "Anyone can insert locations"
+  on location for insert using (
+  true
+  );
+create policy "Anyone can read locations"
+  on location for select using (
+  true
+  );
 
 ------------------------------------------
 --
@@ -149,6 +158,17 @@ create table device_meta
   last_uplink_at   timestamptz,
   last_downlink_at timestamptz
 );
+alter table device_meta
+  enable row level security;
+create policy "Users can modify their own device's config"
+  on device_meta for update using (
+  auth.uid() = get_device_owner(device_id)
+  );
+
+create policy "Users can read their own device's config"
+  on device_meta for select using (
+  auth.uid() = get_device_owner(device_id)
+  );
 
 create policy "Only owners can use their own device metadata"
   on device_meta for all using (
@@ -313,6 +333,10 @@ create table sensor_chan
   units          varchar(16),
   check (upper(name) = name)
 );
+alter table sensor_chan
+  enable row level security;
+create policy "Only admins can update sensor_chan"
+  on sensor_chan for all using (false);
 
 create table reading
 (
@@ -502,6 +526,12 @@ create table event
   time       timestamptz default now(),
   raw_event  json
 );
+alter table node_event
+  enable row level security;
+create policy "Users can see their own events"
+  on event for select using (
+  auth.uid() = profile_id
+  );
 
 
 create table node_event
@@ -515,12 +545,24 @@ create table node_event
   loc_method      node_loc_method,
   reading_id      integer references reading (reading_id)
 ) inherits (event);
+alter table node_event
+  enable row level security;
+create policy "Users can see their own node events"
+  on node_event for select using (
+  auth.uid() = profile_id
+  );
 
 create table alert_event
 (
   reading_id   integer references reading (reading_id),
   alert_def_id integer references alert_def (alert_def_id)
 ) inherits (event);
+alter table node_event
+  enable row level security;
+create policy "Users can see their own alert events"
+  on alert_event for select using (
+  auth.uid() = profile_id
+  );
 
 -- TODO: create triggers to add to event table
 ------------------------------------------
@@ -533,5 +575,14 @@ create table alert_event
 -- Other triggers
 --
 ------------------------------------------
+
+------------------------------------------
+--
+-- Other policies
+--
+------------------------------------------
+-- postgis creates an unprotected spatial_ref_sys table
+alter table spatial_ref_sys
+  enable row level security;
 
 commit;
