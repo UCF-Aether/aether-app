@@ -15,6 +15,7 @@
     "preserveConstEnums": true,
     "suppressImplicitAnyIndexErrors": true,
     "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "strict": true
   },
   "exclude": ["node_modules", "coverage"]
