@@ -100,18 +100,18 @@ $$;
 create type lorawan_activation_method as enum ('OTAA', 'ABP');
 create table device
 (
-  device_id     integer generated always as identity primary key,
-  profile_id    uuid         not null references profile (profile_id),
-  name          varchar(64)  not null,
-  dev_eui char(16) not null unique,
-  app_skey char(32),
-  app_key char(32),
-  nwk_skey char(32),
-  app_eui char(16),
+  device_id         integer generated always as identity primary key,
+  profile_id        uuid         not null references profile (profile_id),
+  name              varchar(64)  not null,
+  dev_eui           char(16)     not null unique,
+  app_skey          char(32),
+  app_key           char(32),
+  nwk_skey          char(32),
+  app_eui           char(16),
   activation_method lorawan_activation_method,
-  aws_device_id varchar(128) not null unique,
-  bme_config    json,
-  bme_state     json
+  aws_device_id     varchar(128) not null unique,
+  bme_config        json,
+  bme_state         json
 );
 create index device_profile_id on device (profile_id);
 create index device_deveui on device (dev_eui);
@@ -201,12 +201,15 @@ where loc_id = (
 );
 $$;
 
-create or replace function device_by_deveui(lookup_dev_eui char(16))
+-- Functions don't do string length matching - casts char(n) to char(1) for some odd reason?
+create or replace function device_by_deveui(lookup_dev_eui text)
   returns device
   language sql
 as
 $$
-  select * from device where device.dev_eui = lookup_dev_eui;
+select *
+from device
+where device.dev_eui = lookup_dev_eui;
 $$;
 ------------------------------------------
 --
@@ -389,20 +392,21 @@ create type reading_w_loc as
   units       varchar(16)
 );
 
-create or replace function new_reading(dev_eui char(16), sensor_channel text, at timestamptz,
+create or replace function new_reading(dev_eui text, sensor_channel text, at timestamptz,
                                        value double precision)
   returns reading
   language sql as
 $$
-  with dev as (select * from device_by_deveui(dev_eui))
-  insert into reading (device_id, loc_id, sensor_chan_id, taken_at, received_at, val)
-  values ((select device_id from dev),
-          (select loc_id from get_device_location((select device_id from dev))),
-          (select sensor_chan_id from sensor_chan where sensor_chan.name = sensor_channel),
-          at,
-          now(),
-          value)
-  returning *;
+with dev as (select * from device_by_deveui(dev_eui))
+insert
+into reading (device_id, loc_id, sensor_chan_id, taken_at, received_at, val)
+values ((select device_id from dev),
+        (select loc_id from get_device_location((select device_id from dev))),
+        (select sensor_chan_id from sensor_chan where sensor_chan.name = sensor_channel),
+        at,
+        now(),
+        value)
+returning *;
 $$;
 
 -- Find readings within various metrics - defaults shouldn't affect results i.e. return everything besides arguments passed.
