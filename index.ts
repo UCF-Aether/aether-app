@@ -36,8 +36,9 @@ export default function main(app: sst.App) {
   const missingEnv: Array<string> = [];
   [
     "TTS_COMMUNITY_API_KEY",
-    "DATABASE_URL",
-    "POOLED_DATABASE_URL",
+    "SUPABASE_URL",
+    "SUPABASE_PUBLIC_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
     "REACT_APP_GOOGLE_MAPS_API_KEY",
   ].forEach((env) => {
     if (!process.env[env]) missingEnv.push(env);
@@ -59,7 +60,8 @@ export default function main(app: sst.App) {
       vpcSubnets: { subnets: appVpc.privateSubnets },
       securityGroups: [vpcStack.sgs.lambda],
       environment: {
-        DATABASE_URL: process.env.POOLED_DATABASE_URL!,
+        SUPABASE_URL: process.env.SUPABASE_URL!,
+        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY!,
       },
       bundle: {
         externalModules: ["pg-native"],

@@ -29,6 +29,7 @@ export class WebappStack extends sst.Stack {
       },
       environment: {
         REACT_APP_GRAPHQL_URL: props.graphqlUrl,
+        REACT_APP_SUPABASE_PUBLIC_ANON_KEY: process.env.SUPABASE_PUBLIC_ANON_KEY!,
       },
       s3Bucket: {
         removalPolicy: scope.stage === "prod" ? RemovalPolicy.RETAIN : RemovalPolicy.DESTROY,
