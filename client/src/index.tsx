@@ -1,27 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import CssBaseline from '@mui/material/CssBaseline';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { DataMap } from './components/Map';
-import LogTable from './components/LogTable';
+import CssBaseline from '@mui/material/CssBaseline';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { createClient as createUrqlClient, Provider as UrqlProvider } from 'urql';
-import { SupabaseProvider } from './components/SupabaseContext';
-import { LoginSignup } from './pages/LoginSignup';
+import App from './App';
+import './index.css';
+import reportWebVitals from './reportWebVitals';
 
 console.log(process.env.REACT_APP_GRAPHQL_URL);
-['REACT_APP_GRAPHQL_URL', 'REACT_APP_SUPABASE_URL', 'REACT_APP_PUBLIC_ANON_KEY'].forEach((key) => {
+['REACT_APP_GRAPHQL_URL', 'REACT_APP_SUPABASE_URL', 'REACT_APP_SUPABASE_PUBLIC_ANON_KEY'].forEach((key) => {
   if (!process.env[key]) throw new Error(`${key} is not defined!`);
 });
 
 const urqlClient = createUrqlClient({
-  url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 6969}/graphql`,
+  url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 4000}/graphql`,
 });
 
 

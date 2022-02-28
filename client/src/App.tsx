@@ -13,12 +13,25 @@ import { DataMap } from './components/Map';
 import { Link, LinkProps } from 'react-router-dom';
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
+import { createClient as createUrqlClient, Provider as UrqlProvider } from 'urql';
 
 const supabaseClient = createSupabaseClient(
   process.env.REACT_APP_SUPABASE_URL!,
-  process.env.REACT_APP_PUBLIC_ANON_KEY!
+  process.env.REACT_APP_SUPABASE_PUBLIC_ANON_KEY!
 );
 console.log(supabaseClient);
+
+const urqlClient = createUrqlClient({
+  url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 4000}/graphql`,
+  fetchOptions: () => {
+    const token = supabaseClient.auth.session()?.access_token;
+    console.log(token);
+
+    return {
+      headers: { authorization: token ? `Bearer ${token}` : ''},
+    };
+  }
+});
 
 // https://github.com/mui/material-ui/issues/29942
 const LinkBehavior = forwardRef<
@@ -75,27 +88,29 @@ export default function App() {
     <Sidebar>
       <DataMap />
       <Outlet />
-    </Sidebar>  
+    </Sidebar>
   )
 
   return (
     <SupabaseProvider supabaseClient={supabaseClient} >
-      <ColorModeContext.Provider value={colorMode}>
-        <ThemeProvider theme={linkTheme}>
-          <ThemeProvider theme={colorModeTheme}>
-            <div className="App">
-              <Routes>
-                <Route path='/*' element={<Main />}>
-                  <Route path='device/:deviceId' element={<DeviceDetailsModal />} />
-                  <Route path='gateway/:gatewayId' element={<GatewayDetailsModal />} />
-                </Route>
-                <Route path='/auth' element={<LoginSignup />} />
-                <Route path='/dashboard' element={<Dashboard />} />
-              </Routes>
-            </div>
+      <UrqlProvider value={urqlClient}>
+        <ColorModeContext.Provider value={colorMode}>
+          <ThemeProvider theme={linkTheme}>
+            <ThemeProvider theme={colorModeTheme}>
+              <div className="App">
+                <Routes>
+                  <Route path='/*' element={<Main />}>
+                    <Route path='device/:deviceId' element={<DeviceDetailsModal />} />
+                    <Route path='gateway/:gatewayId' element={<GatewayDetailsModal />} />
+                  </Route>
+                  <Route path='/auth' element={<LoginSignup />} />
+                  <Route path='/dashboard' element={<Dashboard />} />
+                </Routes>
+              </div>
+            </ThemeProvider>
           </ThemeProvider>
-        </ThemeProvider>
-      </ColorModeContext.Provider>
+        </ColorModeContext.Provider>
+      </UrqlProvider>
     </SupabaseProvider>
   );
 }
