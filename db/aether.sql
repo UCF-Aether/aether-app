@@ -131,19 +131,15 @@ create or replace function get_device_owner(req_device_id integer)
   returns uuid
 as
 $$
-begin
-  return (
-    select profile_id
-    from device
-    where device_id = req_device_id
-  );
-end;
+select profile_id
+from device
+where device_id = req_device_id
 $$
-  language plpgsql;
+  language sql;
 
 create policy "Only owners can use their own devices"
-  on device for all using (
-  get_device_owner(device_id) = auth.uid()
+  on device for select using (
+  device.profile_id = auth.uid()
   );
 
 create table device_meta
