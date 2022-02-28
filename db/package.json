@@ -5,7 +5,7 @@
   "author": "Paul Wood",
   "main": "",
   "scripts": {
-    "start": "supabase start",
+    "start": "./scripts/start.sh",
     "stop": "supabase stop"
   }
 }
