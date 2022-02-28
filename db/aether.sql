@@ -434,35 +434,29 @@ returning *;
 $$;
 
 -- Find readings within various metrics - defaults shouldn't affect results i.e. return everything besides arguments passed.
--- Returns geojson
 create or replace function readings_within(start_at timestamptz default '-infinity',
                                            end_at timestamptz default 'infinity',
                                            center_lon float default 0.0,
                                            center_lat float default 0.0,
                                            radius double precision default 'infinity')
-  returns json
+  returns setof reading_w_loc
   language sql
 as
 $$
-select json_build_object(
-           'type', 'FeatureCollection',
-           'features', coalesce(json_agg(st_asgeojson(readings.*)::json), '[]'::json)
-         )
-from (
-       select r.reading_id,
-              r.device_id,
-              r.taken_at,
-              r.received_at,
-              r.val,
-              l.loc_geog,
-              r.chan_name,
-              r.chan_units
-       from reading_by_chan r
-              join location l on r.loc_id = l.loc_id
-       where start_at <= r.taken_at
-         and end_at >= r.taken_at
-         and st_dwithin(l.loc_geog, st_makepoint(center_lon, center_lat), radius)
-       order by r.taken_at) as readings;
+select r.reading_id,
+       r.device_id,
+       r.taken_at,
+       r.received_at,
+       r.val,
+       l.loc_geog,
+       r.chan_name,
+       r.chan_units
+from reading_by_chan r
+       join location l on r.loc_id = l.loc_id
+where start_at <= r.taken_at
+  and end_at >= r.taken_at
+  and st_dwithin(l.loc_geog, st_makepoint(center_lon, center_lat), radius)
+order by r.taken_at;
 $$
   stable;
 
