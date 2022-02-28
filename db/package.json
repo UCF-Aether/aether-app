@@ -3,5 +3,9 @@
   "version": "1.0.0",
   "description": "Aether supabase database configuration and schemas",
   "author": "Paul Wood",
-  "main": ""
+  "main": "",
+  "scripts": {
+    "start": "supabase start",
+    "stop": "supabase stop"
+  }
 }
