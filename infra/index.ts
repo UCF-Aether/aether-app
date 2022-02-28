@@ -1,14 +1,14 @@
 import * as sst from "@serverless-stack/resources";
-import { InfraConfig, StageConfig } from "./infra/util/InfraConfig";
-import { WebappStack } from "./infra/stacks/Webapp";
-import { ApiStack } from "./infra/stacks/Api";
+import { InfraConfig, StageConfig } from "./util/InfraConfig";
+import { WebappStack } from "./stacks/Webapp";
+import { ApiStack } from "./stacks/Api";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 
 import * as _config from "./infra.config.json";
-import { IotStack } from "./infra/stacks/Iot";
-import { VpcStack } from "./infra/stacks/Vpc";
+import { IotStack } from "./stacks/Iot";
+import { VpcStack } from "./stacks/Vpc";
 import dotenv from "dotenv";
-import { Cluster, TtsCommunityIntegrationStack } from "./infra/stacks/Tts";
+import { Cluster, TtsCommunityIntegrationStack } from "./stacks/Tts";
 
 const config = _config as InfraConfig;
 

@@ -1,0 +1,43 @@
+{
+  "name": "Aether-App",
+  "scripts": {
+    "test": "sst test",
+    "test:prod": "sst test --stage=prod",
+    "test:client": "pnpm test --filter ./client",
+    "start": "sst start --console",
+    "start:client": "pnpm start --filter ./client",
+    "build": "sst build",
+    "build:prod": "sst build --stage=prod",
+    "build:client": "pnpm build --filter ./client",
+    "deploy": "sst deploy",
+    "remove": "sst remove"
+  },
+  "devDependencies": {
+    "@tsconfig/node14": "^1.0.1",
+    "@types/aws-lambda": "^8.10.90",
+    "@types/node": "^14.18.9",
+    "cdk-dia": "^0.6.1",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.2.2"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "eslintConfig": {
+    "extends": [
+      "serverless-stack"
+    ]
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iot-actions-alpha": "2.7.0-alpha.0",
+    "@aws-cdk/aws-iot-alpha": "2.7.0-alpha.0",
+    "@serverless-stack/cli": "0.60.11",
+    "@serverless-stack/resources": "0.60.11",
+    "aws-cdk-lib": "2.7.0",
+    "dotenv": "^16.0.0"
+  },
+  "workspaces": [
+    "infra",
+    "client"
+  ]
+}
