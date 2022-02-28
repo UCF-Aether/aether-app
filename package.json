@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "author": "Paul Wood",
   "scripts": {
+    "infra:start": "sst start --console"
   },
   "dependencies": {
     "@serverless-stack/cli": "0.60.11",
