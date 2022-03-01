@@ -101,6 +101,16 @@ begin
 end;
 $$;
 
+create or replace function generate_eui()
+  returns text
+  language sql
+as
+$$
+SELECT array_to_string(
+           array(select substr('ABCDEF0123456789', ((random() * (16 - 1) + 1)::integer), 1)
+                 from generate_series(1, 16)), '');
+$$;
+
 ------------------------------------------
 --
 -- Device
@@ -119,8 +129,8 @@ create table device
   app_eui           char(16),
   activation_method lorawan_activation_method,
   aws_device_id     varchar(128) not null unique,
-  bme_config        json,
-  bme_state         json
+  bme_config        json default '{}'::json,
+  bme_state         json default '{}'::json
 );
 create index device_profile_id on device (profile_id);
 create index device_deveui on device (dev_eui);
@@ -338,7 +348,7 @@ create table reading
 (
   reading_id     integer generated always as identity primary key,
   device_id      integer references device (device_id)            not null,
-  loc_id         integer references location (loc_id),
+  loc_id         integer references location (loc_id) not null,
   sensor_chan_id smallint references sensor_chan (sensor_chan_id) not null,
   taken_at       timestamptz                                      not null,
   received_at    timestamptz default now(),
@@ -352,22 +362,22 @@ alter table reading
 create policy "Allow unauthenticated reads"
   on reading for select using (true);
 
-create or replace function set_reading_loc_to_device_loc()
-  returns trigger
-  language plpgsql
-as
-$$
-begin
-  new.loc_id := (select loc_id from get_device_location(new.device_id));
-  return new;
-end;
-$$;
-
-create trigger updating_reading_loc
-  before insert
-  on reading
-  for each row
-execute procedure set_reading_loc_to_device_loc();
+-- create or replace function set_reading_loc_to_device_loc()
+--   returns trigger
+--   language plpgsql
+-- as
+-- $$
+-- begin
+--   new.loc_id := (select loc_id from get_device_location(new.device_id));
+--   return new;
+-- end;
+-- $$;
+--
+-- create trigger updating_reading_loc
+--   before insert
+--   on reading
+--   for each row
+-- execute procedure set_reading_loc_to_device_loc();
 
 -- create table phy_sensor
 -- (
@@ -560,6 +570,27 @@ create policy "Users can see their own alert events"
 -- Other functions
 --
 ------------------------------------------
+create or replace function generate_random_point(lat float, lng float, radius float)
+  returns geography(point)
+  language sql
+as
+$$
+select st_makepoint(
+             lat + random() * radius,
+             lng + random() * radius
+         );
+$$;
+
+create or replace function generate_random_location(lat float, lng float, radius float)
+  returns integer
+  language sql
+as
+$$
+insert into location (loc_geog)
+values (generate_random_point(lat, lng, radius))
+returning loc_id;
+$$;
+
 ------------------------------------------
 --
 -- Other triggers
@@ -574,5 +605,7 @@ create policy "Users can see their own alert events"
 -- postgis creates an unprotected spatial_ref_sys table
 alter table spatial_ref_sys
   enable row level security;
+create policy "Allow spatial_ref_sys reads"
+on public.spatial_ref_sys using (true);
 
 commit;
