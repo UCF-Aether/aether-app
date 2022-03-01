@@ -1,117 +1,128 @@
-import { Loader } from "@googlemaps/js-api-loader";
-import { TextField, Box, Paper, Card, useTheme, useMediaQuery, IconButton } from "@mui/material";
-import { createRef, forwardRef, useEffect, useState } from "react";
-import SearchIcon from "@mui/icons-material/Search";
-import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+// @ts-ignore
+import { HeatmapLayer } from "@deck.gl/aggregation-layers";
+// @ts-ignore
+import { AmbientLight, LightingEffect, PointLight } from "@deck.gl/core";
+// @ts-ignore
+import DeckGL from "@deck.gl/react";
+import { useEffect, useState } from "react";
+import Map, { GeolocateControl } from "react-map-gl";
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-let map: google.maps.Map;
 
-// eslint-disable-next-line react/display-name
-const SearchBar = forwardRef<HTMLDivElement>((props: any, ref) => {
-  const theme = useTheme();
-  const hitWidthBreakpoint = useMediaQuery(theme.breakpoints.up("md"));
-  const disableBarBreakpoint = useMediaQuery(theme.breakpoints.down("sm"));
+// Source data CSV
+const DATA_URL =
+  "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/3d-heatmap/heatmap-data.csv"; // eslint-disable-line
 
-  return (
-    <div ref={ref}>
-      <Card sx={{ m: 1, width: hitWidthBreakpoint ? 400 : "100%" }}>
-        {disableBarBreakpoint ? (
-          <SearchIcon />
-        ) : (
-          <TextField
-            id="maps-search-bar"
-            label="Search"
-            variant="outlined"
-            sx={{ width: "100%", height: "100%" }}
-          />
-        )}
-      </Card>
-    </div>
-  );
+const ambientLight = new AmbientLight({
+  color: [255, 255, 255],
+  intensity: 1.0,
 });
 
-interface CurrentLocationButtonProps {
-  children?: JSX.Element[] | JSX.Element;
-  onClick: () => void;
+const pointLight1 = new PointLight({
+  color: [255, 255, 255],
+  intensity: 0.8,
+  position: [-0.144528, 49.739968, 80000],
+});
+
+const pointLight2 = new PointLight({
+  color: [255, 255, 255],
+  intensity: 0.8,
+  position: [-3.807751, 54.104682, 8000],
+});
+
+const lightingEffect = new LightingEffect({ ambientLight, pointLight1, pointLight2 });
+
+const material = {
+  ambient: 1,
+  diffuse: 0.6,
+  shininess: 32,
+  specularColor: [51, 51, 51],
+};
+
+const INITIAL_VIEW_STATE = {
+  longitude: -1.415727,
+  latitude: 52.232395,
+  zoom: 6.6,
+  minZoom: 5,
+  maxZoom: 15,
+  pitch: 40.5,
+  bearing: -27,
+};
+
+const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
+
+export const colorRange = [
+  [1, 152, 189],
+  [73, 227, 206],
+  [216, 254, 181],
+  [254, 237, 177],
+  [254, 173, 84],
+  [209, 55, 78],
+];
+
+function getTooltip({ object }) {
+  if (!object) {
+    return null;
+  }
+  const lat = object.position[1];
+  const lng = object.position[0];
+  const count = object.points.length;
+
+  return `\
+    latitude: ${Number.isFinite(lat) ? lat.toFixed(6) : ""}
+    longitude: ${Number.isFinite(lng) ? lng.toFixed(6) : ""}
+    ${count} Accidents`;
 }
 
-// eslint-disable-next-line react/display-name
-const CurrentLocationButton = forwardRef<HTMLDivElement, CurrentLocationButtonProps>(
-  (props: CurrentLocationButtonProps, ref) => {
-    return (
-      <div ref={ref}>
-        <Card>
-          <IconButton onClick={props.onClick!}>
-            <LocationOnOutlinedIcon />
-          </IconButton>
-        </Card>
-      </div>
-    );
-  }
-);
-
-// Get ready to have your eyes bleed
+/* eslint-disable react/no-deprecated */
 export function DataMap() {
-  const [[locationOnClick], setLocationOnClick] = useState<[() => void]>([
-    () => console.log("maps not loaded"),
-  ]);
-
-  const searchRef = createRef<HTMLDivElement>();
-  const searchBar = <SearchBar ref={searchRef} />;
-
-  const locationRef = createRef<HTMLDivElement>();
-  const locationButton = <CurrentLocationButton ref={locationRef} onClick={locationOnClick} />;
+  const [data, setData] = useState([]);
 
   useEffect(() => {
-    const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
-    if (!apiKey) throw new Error("REACT_APP_GOOGLE_MAPS_API_KEY not defined");
-
-    const loader = new Loader({
-      apiKey,
-      version: "weekly",
-    });
-
-    loader.load().then(() => {
-      map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
-        center: { lat: 28.603053295127882, lng: -81.19995194984672 },
-        zoom: 12,
-        streetViewControl: false,
-        disableDefaultUI: true,
-      });
-
-      map.controls[google.maps.ControlPosition.TOP_CENTER].push(searchRef.current);
-      map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(locationRef.current);
-
-      setLocationOnClick([
-        () => {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-              (position: GeolocationPosition) => {
-                const pos = {
-                  lat: position.coords.latitude,
-                  lng: position.coords.longitude,
-                };
-
-                map.setCenter(pos);
-              },
-              () => {
-                console.log("Error getting location");
-              }
-            );
-          } else {
-            console.log("Error getting location");
-          }
-        },
-      ]);
+    require("d3-request").csv(DATA_URL, (error, response) => {
+      if (!error) {
+        setData(response.map((d) => [Number(d.lng), Number(d.lat)]));
+      }
     });
   }, []);
+  const mapStyle = MAP_STYLE;
+  const radius = 1000;
+  const upperPercentile = 100;
+  const coverage = 1;
+  const google: boolean = false;
+
+  const layers = [
+    new HeatmapLayer({
+      id: "heatmap",
+      data,
+      getPosition: (d) => d,
+      getWeight: (d) => 1,
+      aggregation: "SUM",
+      // @ts-ignore
+      colorRange,
+      debounceTimeout: 500,
+    }),
+  ];
 
   return (
-    <Box sx={{ height: "100%" }}>
-      <div id="map"></div>
-      {searchBar}
-      {locationButton}
-    </Box>
+    <DeckGL
+      /* @ts-ignore */
+      layers={layers}
+      effects={[lightingEffect]}
+      initialViewState={INITIAL_VIEW_STATE}
+      controller={true}
+      getTooltip={getTooltip}
+    >
+      {/* @ts-ignore */}
+      <Map
+        style={{ height: "100%", zIndex: 2000 }}
+        reuseMaps
+        mapStyle={mapStyle}
+        // @ts-ignore
+        preventStyleDiffing={true}
+        mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
+      >
+        <GeolocateControl />
+      </Map>
+    </DeckGL>
   );
 }
