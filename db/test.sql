@@ -1,3 +1,4 @@
+begin;
 create or replace function create_random_devices(for_profile uuid, num integer)
   returns void
   language sql
@@ -34,15 +35,15 @@ as
 $$
 begin
   perform create_random_devices(new.profile_id, 100);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 5, 100);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 15, 100);
   return new;
 end;
 $$;
-
-select create_random_test_data();
 
 create trigger create_test_data_trigger
   after insert
   on profile
   for each row
   execute procedure create_random_test_data();
+
+commit;
