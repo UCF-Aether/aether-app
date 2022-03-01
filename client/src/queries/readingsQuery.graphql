@@ -1,0 +1,14 @@
+query Readings {
+  readingsWithin {
+    nodes {
+      val
+      geog {
+        latitude
+        longitude
+      }
+      chan
+      deviceId
+      takenAt
+    }
+  }
+}

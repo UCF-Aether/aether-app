@@ -9,7 +9,7 @@ import { Sidebar } from "./components/Sidebar";
 import { SupabaseProvider } from "./components/SupabaseContext";
 import { LoginSignup } from "./pages/LoginSignup";
 import { Dashboard } from "./pages/Dashboard";
-import { DataMap } from "./components/Map";
+import { Map } from "./components/map/Map";
 import { Link, LinkProps } from "react-router-dom";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
@@ -86,7 +86,7 @@ export default function App() {
 
   const Main = () => (
     <Sidebar>
-      <DataMap />
+      <Map />
       <Outlet />
     </Sidebar>
   );

@@ -33,9 +33,11 @@ specifiers:
   '@types/google-maps': ^3.2.3
   '@types/google.maps': ^3.47.2
   '@types/jest': ^27.4.0
+  '@types/mapbox-gl': ^2.6.2
   '@types/node': ^16.11.19
   '@types/react': ^17.0.38
   '@types/react-dom': ^17.0.11
+  '@types/react-map-gl': ^6.1.2
   '@typescript-eslint/eslint-plugin': ^5.0.0
   '@typescript-eslint/parser': ^5.0.0
   d3-request: ^1.0.6
@@ -92,9 +94,11 @@ dependencies:
   '@testing-library/user-event': 13.5.0
   '@types/google-maps': 3.2.3
   '@types/jest': 27.4.1
+  '@types/mapbox-gl': 2.6.2
   '@types/node': 16.11.26
   '@types/react': 17.0.39
   '@types/react-dom': 17.0.11
+  '@types/react-map-gl': 6.1.2
   d3-request: 1.0.6
   deck.gl: 8.7.0_react-dom@17.0.2+react@17.0.2
   graphql: 16.3.0
@@ -3789,6 +3793,15 @@ packages:
       '@types/react': 17.0.39
     dev: false
 
+  /@types/react-map-gl/6.1.2:
+    resolution: {integrity: sha512-/9+6j/Ej+tOVL2W2CYljw1CVnfH5xwgpiEfz0s8LFlIBzMFa/Nk/wKIYt/WE5wek0kVJEcU/RQ1RA3qvK7E03w==}
+    dependencies:
+      '@types/geojson': 7946.0.8
+      '@types/mapbox-gl': 2.6.2
+      '@types/react': 17.0.39
+      '@types/viewport-mercator-project': 6.1.2
+    dev: false
+
   /@types/react-transition-group/4.4.4:
     resolution: {integrity: sha512-7gAPz7anVK5xzbeQW9wFBDg7G++aPLAFY0QaSMOou9rJZpbuI58WAuJrgu+qR92l61grlnCUe7AFX8KGahAgug==}
     dependencies:
@@ -3848,6 +3861,12 @@ packages:
 
   /@types/trusted-types/2.0.2:
     resolution: {integrity: sha512-F5DIZ36YVLE+PN+Zwws4kJogq47hNgX3Nx6WyDJ3kcplxyke3XIzB8uK5n/Lpm1HBsbGzd6nmGehL8cPekP+Tg==}
+    dev: false
+
+  /@types/viewport-mercator-project/6.1.2:
+    resolution: {integrity: sha512-21U4s61ZMUx95F2Uc9DpXBlcSKlrkeChM+hbGWmpz8HtL+zwl/zP5pJarJmxKv/764iR9xf5870jYZ8Mby5xuQ==}
+    dependencies:
+      gl-matrix: 3.4.3
     dev: false
 
   /@types/websocket/1.0.5:
