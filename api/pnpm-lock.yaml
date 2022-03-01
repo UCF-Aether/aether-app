@@ -1,6 +1,8 @@
 lockfileVersion: 5.3
 
 specifiers:
+  '@graphile-contrib/pg-simplify-inflector': ^6.1.0
+  '@graphile/postgis': ^0.1.0
   cors: ^2.8.5
   express: ^4.17.2
   jsonwebtoken: ^8.5.1
@@ -9,6 +11,8 @@ specifiers:
   typescript: ^4.5.5
 
 dependencies:
+  '@graphile-contrib/pg-simplify-inflector': 6.1.0
+  '@graphile/postgis': 0.1.0
   cors: 2.8.5
   express: 4.17.3
   jsonwebtoken: 8.5.1
@@ -20,11 +24,44 @@ devDependencies:
 
 packages:
 
+  /@graphile-contrib/pg-simplify-inflector/6.1.0:
+    resolution: {integrity: sha512-3eI2FP4ulu/fxwkJBNXhR6XEzqVz4wJWFr4LfeyUNNArUtLFx0DpP6YdcARCYgwLExFcIQNE8fnul3JKiciYIw==}
+    dev: false
+
   /@graphile/lru/4.11.0:
     resolution: {integrity: sha512-Fakuk190EAKxWSa9YQyr/87g8mvAv8HBvk6yPCPuIoA3bYXF7n6kl0XSqKjSd5VfjEqhtnzQ6zJGzDf1Gv/tJg==}
     engines: {node: '>=8.6'}
     dependencies:
       tslib: 2.3.1
+    dev: false
+
+  /@graphile/postgis/0.1.0:
+    resolution: {integrity: sha512-67lTNvyTnng2oPU9OoA1NRvbAvS/zyTGQIK+d77OFhNi41NHNZynNVRZ+R/UpotcWVQL6rAmo2w8EkI1o4xfAg==}
+    peerDependencies:
+      graphile-build: ^4.3.0
+      graphile-build-pg: ^4.3.0
+      graphql: '>=0.6 <15'
+      pg-sql2: ^2.2.1
+    dependencies:
+      '@types/debug': 4.1.7
+      '@types/graphql': 14.5.0
+      debug: 4.3.3
+      tslib: 1.14.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@types/debug/4.1.7:
+    resolution: {integrity: sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg==}
+    dependencies:
+      '@types/ms': 0.7.31
+    dev: false
+
+  /@types/graphql/14.5.0:
+    resolution: {integrity: sha512-MOkzsEp1Jk5bXuAsHsUi6BVv0zCO+7/2PTiZMXWDSsMXvNU6w/PLMQT2vHn8hy2i0JqojPz1Sz6rsFjHtsU0lA==}
+    deprecated: This is a stub types definition. graphql provides its own type definitions, so you do not need this installed.
+    dependencies:
+      graphql: 15.8.0
     dev: false
 
   /@types/json5/0.0.30:
@@ -35,6 +72,10 @@ packages:
     resolution: {integrity: sha512-zm6xBQpFDIDM6o9r6HSgDeIcLy82TKWctCXEPbJJcXb5AKmi5BNNdLXneixK4lplX3PqIVcwLBCGE/kAGnlD4A==}
     dependencies:
       '@types/node': 17.0.21
+    dev: false
+
+  /@types/ms/0.7.31:
+    resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
     dev: false
 
   /@types/node/17.0.21:
@@ -843,6 +884,10 @@ packages:
   /toidentifier/1.0.1:
     resolution: {integrity: sha512-o5sSPKEkg/DIQNmH43V0/uerLrpzVedkUh8tGNvaeXpfpuwjKenlSox/2O/BTlZUtEe+JG7s5YhEz608PlAHRA==}
     engines: {node: '>=0.6'}
+    dev: false
+
+  /tslib/1.14.1:
+    resolution: {integrity: sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==}
     dev: false
 
   /tslib/2.3.1:

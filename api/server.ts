@@ -1,7 +1,8 @@
 import cors from "cors";
 import express, { NextFunction, Response } from "express";
 import postgraphile, { PostGraphileOptions } from "postgraphile";
-import shortenRowPlugin from "./src/plugins/pg-shorten-all-rows-inflector";
+import PgSimplifyInflectorPlugin from "@graphile-contrib/pg-simplify-inflector";
+import PostgisPlugin from "@graphile/postgis";
 import * as jwt from "jsonwebtoken";
 
 const secretJwt = process.env.SUPABASE_SECRET_JWT;
@@ -30,11 +31,12 @@ function supabaseAuth(req: any, res: Response, next: NextFunction) {
 }
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 const postgraphileConfig: PostGraphileOptions = {
   appendPlugins: [
-    shortenRowPlugin,
+    PgSimplifyInflectorPlugin,
+    PostgisPlugin,
   ],
   watchPg: true,
   graphiql: true,
