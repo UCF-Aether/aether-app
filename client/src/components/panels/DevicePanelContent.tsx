@@ -1,5 +1,5 @@
 import ErrorIcon from '@mui/icons-material/Error';
-import { CircularProgress, List } from '@mui/material';
+import { Box, CircularProgress, List } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from 'urql';
 import { DevicesDocument } from '../../generated/graphql';
@@ -20,12 +20,13 @@ export function DevicePanelContent() {
 
   const devices = data?.devices?.nodes || [];
   return (
-    <List>
+    <List sx={{ listStylePosition: 'inside', height: '35vh', display: 'block', overflow: 'auto' }}>
       {devices
         .map(d => {
           if (!d) return <></>
           return <Item primary={d.name} key={d.deviceId} onClick={() => navigate('device/' + d.deviceId)} />
         })
-      }</List>
+      }
+    </List>
   );
 }

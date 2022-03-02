@@ -31,11 +31,11 @@ export interface MapData {
 }
 
 export interface MapProps {
-  data?: Array<MapData>;
+  chan: string;
 }
 
 /* eslint-disable react/no-deprecated */
-export function Map(props?: MapProps) {
+export function Map(props: MapProps) {
   const mapStyle = MAP_STYLE;
   const radiusPixels = 30;
   const intensity = 1;
@@ -43,6 +43,7 @@ export function Map(props?: MapProps) {
 
   const [result, reexecuteQuery] = useQuery({
     query: ReadingsDocument,
+    variables: { chan: props.chan },
   });
 
   let mapData: Array<MapData> = [];
@@ -60,7 +61,7 @@ export function Map(props?: MapProps) {
         })) || [];
   }
 
-  console.log(mapData);
+  // console.log(mapData);
 
   const layers = [
     new HeatmapLayer<MapData>({

@@ -7,9 +7,10 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import { Auth } from "@supabase/ui";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import logo from "../aether.png";
 import { ColorModeToggle } from "./ColorModeToggle";
+import { Map } from "./map/Map";
 import { LayerPanel } from "./panels/LayerPanel";
 import { LoginSignupPanel } from "./panels/LoginSignupPanel";
 import { NodePanel } from "./panels/NodePanel";
@@ -26,12 +27,13 @@ export interface SidebarProps {
   setLayer?: (layer: string) => void;
 }
 
-export function Sidebar(props: SidebarProps) {
+export function Main(props: SidebarProps) {
   const navigate = useNavigate();
   const { user } = Auth.useUser();
+  const [ dataLayer, setDataLayer ] = useState('aqi');
 
   loggedIn = !!user;
-  console.log(user);
+  // console.log(user);
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -46,7 +48,7 @@ export function Sidebar(props: SidebarProps) {
           <img width="75%" src={logo} alt="Logo" />
         </Box>
       </Toolbar>
-      <LayerPanel />
+      <LayerPanel onChange={ layer => setDataLayer(layer) }/>
       {
         loggedIn ? (
           <>
@@ -103,7 +105,7 @@ export function Sidebar(props: SidebarProps) {
           variant="permanent"
           sx={{
             display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
+            "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth, overflow: 'auto' },
           }}
           open
         >
@@ -121,7 +123,8 @@ export function Sidebar(props: SidebarProps) {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        {props.children}
+        <Map chan={dataLayer} />
+        <Outlet />
       </Box>
     </Box>
   );

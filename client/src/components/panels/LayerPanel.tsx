@@ -1,54 +1,60 @@
 import { FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Panel } from './Panel';
 
-export type Layer =
-  'aqi'
-  | 'co2'
-  | 'voc'
-  | 'pm2_5'
-  | 'pm10'
-  | 'temperature'
-  | 'Humidity';
 
-export type SetLayer = (layer: Layer) => void;
+export interface LayerPanelProps {
+  onChange: (layer: string) => void;
+}
 
-export function LayerPanel() {
+export function LayerPanel(props?: LayerPanelProps) {
+  const [value, setValue] = useState('AQI');
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>, layer: string) => {
+    setValue(layer);
+    props?.onChange(layer);
+  }
+
+  // Set initial value ??
+  useEffect(() => props?.onChange(value), []);
+
   const layers = [
     {
       label: 'AQI',
-      key: 'aqi',
+      key: 'AQI',
     },
     {
       label: 'PM2.5',
-      key: 'pm2_5',
+      key: 'PM2.5',
     },
     {
       label: 'PM10',
-      key: 'pm10'
+      key: 'PM10'
     },
     {
       label: 'CO2',
-      key: 'co2',
+      key: 'CO2',
     },
     {
       label: 'bVOC',
-      key: 'voc',
+      key: 'VOC',
     },
     {
       label: 'Temperature',
-      key: 'temperature',
+      key: 'TEMPERATURE',
     },
     {
       label: 'Humidity',
-      key: 'humidity',
+      key: 'HUMIDITY',
     },
   ];
 
+
   return (
-    <Panel title="Layers" contentSx={{ p: 2 }}>
+    <Panel title="Layers" contentSx={{ p: 2, height: '20vh', overflow: 'auto' }}>
       <FormControl>
-        <RadioGroup defaultValue='aqi'>{
-          layers.map(({ key, label }, index) => (
+        <RadioGroup value={value} onChange={handleChange} >{
+          layers.map(({ key, label }) => (
             <FormControlLabel key={key} value={key} control={<Radio />} label={label} />
           ))
         }</RadioGroup>

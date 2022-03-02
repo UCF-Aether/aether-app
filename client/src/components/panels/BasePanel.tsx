@@ -7,7 +7,7 @@ export interface BasePanelProps {
   children?: JSX.Element[] | JSX.Element;
   sx?: SxProps;
   contentSx?: SxProps;
-  top: JSX.Element;
+  top?: JSX.Element;
   pt?: number;
   pb?: number;
 }

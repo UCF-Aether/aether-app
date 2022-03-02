@@ -21,11 +21,11 @@ export function GatewayPanelContent() {
   const gateways = data?.gateways?.nodes || [];
 
   return (
-      <List>
-        {gateways.map(g => {
-          if (!g) return <></>
-          return <Item primary={g.name} key={g.gatewayId} onClick={() => navigate('gateway/' + g.gatewayId)} />
-        })}
-      </List>
+    <List sx={{ listStylePosition: 'inside', height: '35vh', display: 'block', overflow: 'auto' }}>
+      {gateways.map(g => {
+        if (!g) return <></>
+        return <Item primary={g.name} key={g.gatewayId} onClick={() => navigate('gateway/' + g.gatewayId)} />
+      })}
+    </List>
   );
 }

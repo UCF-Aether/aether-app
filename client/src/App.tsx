@@ -5,7 +5,7 @@ import { useMemo, useState, forwardRef } from "react";
 import { Outlet, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { ColorModeContext } from "./components/ColorModeContext";
-import { Sidebar } from "./components/Sidebar";
+import { Main } from "./components/Main";
 import { SupabaseProvider } from "./components/SupabaseContext";
 import { LoginSignup } from "./pages/LoginSignup";
 import { Dashboard } from "./pages/Dashboard";
@@ -26,7 +26,6 @@ const urqlClient = createUrqlClient({
   url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 4000}/graphql`,
   fetchOptions: () => {
     const token = supabaseClient.auth.session()?.access_token;
-    console.log(token);
 
     return {
       headers: { authorization: token ? `Bearer ${token}` : "" },
@@ -82,13 +81,6 @@ export default function App() {
         },
       }),
     [mode]
-  );
-
-  const Main = () => (
-    <Sidebar>
-      <Map />
-      <Outlet />
-    </Sidebar>
   );
 
   const Clients = (props: { children?: JSX.Element[] | JSX.Element }) => {

@@ -7,6 +7,7 @@ import { styled } from '@mui/material/styles';
 import { BasePanel } from './BasePanel';
 import { GatewayPanelContent } from './GatewayPanelContent';
 import { DevicePanelContent } from './DevicePanelContent';
+import { useEffect } from 'react';
 
 const blue = {
   50: '#F0F7FF',
