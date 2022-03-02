@@ -39,7 +39,7 @@ export function DetailsModal(props: InfoOverlayProps) {
             {props.title}
           </Typography>
           <Typography variant="h5">{props.subTitle}</Typography>
-          <Box sx={{ p: 1, width: '100%', height: '85%' }}>
+          <Box sx={{ p: 1, width: '100%', height: '85%', overflow: 'scroll' }}>
             {props.children}
           </Box>
         </Card>
