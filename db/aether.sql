@@ -400,14 +400,15 @@ create policy "Allow unauthenticated reads"
 create or replace view reading_by_chan as
 select reading_id,
        device_id,
-       loc_id,
+       loc_geog as geog,
        taken_at,
        received_at,
        val,
        name  as chan_name,
        units as chan_units
 from reading
-       join sensor_chan on reading.sensor_chan_id = sensor_chan.sensor_chan_id;
+       join sensor_chan on reading.sensor_chan_id = sensor_chan.sensor_chan_id
+       join location on reading.loc_id = location.loc_id;
 
 -- Join of reading_by_chan and location for doing different types of filtering, like within <radius> or within a time range.
 create type reading_w_loc as
@@ -444,7 +445,8 @@ create or replace function readings_within(start_at timestamptz default '-infini
                                            end_at timestamptz default 'infinity',
                                            center_lon float default 0.0,
                                            center_lat float default 0.0,
-                                           radius double precision default 'infinity')
+                                           radius double precision default 'infinity',
+                                           chan text default '')
   returns setof reading_w_loc
   language sql
 as
@@ -462,6 +464,7 @@ from reading_by_chan r
 where start_at <= r.taken_at
   and end_at >= r.taken_at
   and st_dwithin(l.loc_geog, st_makepoint(center_lon, center_lat), radius)
+  and case when chan != '' then r.chan_name = chan else true end
 order by r.taken_at;
 $$
   stable;
