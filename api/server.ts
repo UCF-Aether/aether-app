@@ -3,6 +3,7 @@ import express, { NextFunction, Response } from "express";
 import postgraphile, { PostGraphileOptions } from "postgraphile";
 import PgSimplifyInflectorPlugin from "@graphile-contrib/pg-simplify-inflector";
 import PostgisPlugin from "@graphile/postgis";
+import ConnectionFilterPlugin from "postgraphile-plugin-connection-filter";
 import * as jwt from "jsonwebtoken";
 
 const secretJwt = process.env.SUPABASE_SECRET_JWT;
@@ -37,6 +38,7 @@ const postgraphileConfig: PostGraphileOptions = {
   appendPlugins: [
     PgSimplifyInflectorPlugin,
     PostgisPlugin,
+    ConnectionFilterPlugin,
   ],
   watchPg: true,
   graphiql: true,

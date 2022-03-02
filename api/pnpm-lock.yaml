@@ -7,6 +7,7 @@ specifiers:
   express: ^4.17.2
   jsonwebtoken: ^8.5.1
   postgraphile: ^4.12.8
+  postgraphile-plugin-connection-filter: ^2.2.2
   prettier: 2.5.1
   typescript: ^4.5.5
 
@@ -17,6 +18,7 @@ dependencies:
   express: 4.17.3
   jsonwebtoken: 8.5.1
   postgraphile: 4.12.9
+  postgraphile-plugin-connection-filter: 2.2.2
   typescript: 4.5.5
 
 devDependencies:
@@ -691,6 +693,12 @@ packages:
       tslib: 2.3.1
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /postgraphile-plugin-connection-filter/2.2.2:
+    resolution: {integrity: sha512-/PkdMwaIfGM++C8G5QUAF1iosAVEyIbPaaYteCMgfNWjW215SP9+8L+ewfi6Dm9Weaf+qKnNERWx7xlY8kuWOw==}
+    dependencies:
+      tslib: 2.3.1
     dev: false
 
   /postgraphile/4.12.9:
