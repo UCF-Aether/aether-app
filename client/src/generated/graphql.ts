@@ -49,6 +49,7 @@ export type AlertDefAlertEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<AlertEventCondition>;
+  filter?: InputMaybe<AlertEventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -72,6 +73,28 @@ export type AlertDefCondition = {
   sensorChanId?: InputMaybe<Scalars['Int']>;
   /** Checks for equality with the object’s `triggerVal` field. */
   triggerVal?: InputMaybe<Scalars['Float']>;
+};
+
+/** A filter to be used against `AlertDef` object types. All fields are combined with a logical ‘and.’ */
+export type AlertDefFilter = {
+  /** Filter by the object’s `alertDefId` field. */
+  alertDefId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `alertMethod` field. */
+  alertMethod?: InputMaybe<UserAlertMethodFilter>;
+  /** Filter by the object’s `alertTo` field. */
+  alertTo?: InputMaybe<StringFilter>;
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<AlertDefFilter>>;
+  /** Negates the expression. */
+  not?: InputMaybe<AlertDefFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<AlertDefFilter>>;
+  /** Filter by the object’s `profileId` field. */
+  profileId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `sensorChanId` field. */
+  sensorChanId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `triggerVal` field. */
+  triggerVal?: InputMaybe<FloatFilter>;
 };
 
 /** An input for mutations affecting `AlertDef` */
@@ -164,6 +187,26 @@ export type AlertEventCondition = {
   readingId?: InputMaybe<Scalars['Int']>;
   /** Checks for equality with the object’s `time` field. */
   time?: InputMaybe<Scalars['Datetime']>;
+};
+
+/** A filter to be used against `AlertEvent` object types. All fields are combined with a logical ‘and.’ */
+export type AlertEventFilter = {
+  /** Filter by the object’s `alertDefId` field. */
+  alertDefId?: InputMaybe<IntFilter>;
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<AlertEventFilter>>;
+  /** Filter by the object’s `id` field. */
+  id?: InputMaybe<IntFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<AlertEventFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<AlertEventFilter>>;
+  /** Filter by the object’s `profileId` field. */
+  profileId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `readingId` field. */
+  readingId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `time` field. */
+  time?: InputMaybe<DatetimeFilter>;
 };
 
 /** An input for mutations affecting `AlertEvent` */
@@ -693,6 +736,32 @@ export type CreateSensorChanPayload = {
 /** The output of our create `SensorChan` mutation. */
 export type CreateSensorChanPayloadSensorChanEdgeArgs = {
   orderBy?: InputMaybe<Array<SensorChansOrderBy>>;
+};
+
+/** A filter to be used against Datetime fields. All fields are combined with a logical ‘and.’ */
+export type DatetimeFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<Scalars['Datetime']>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<Scalars['Datetime']>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<Scalars['Datetime']>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<Scalars['Datetime']>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<Scalars['Datetime']>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<Scalars['Datetime']>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<Scalars['Datetime']>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<Scalars['Datetime']>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<Scalars['Datetime']>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<Scalars['Datetime']>>;
 };
 
 /** All input for the `deleteAlertDefByNodeId` mutation. */
@@ -1235,6 +1304,7 @@ export type DeviceDeviceMetasArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<DeviceMetaCondition>;
+  filter?: InputMaybe<DeviceMetaFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -1246,6 +1316,7 @@ export type DeviceNodeEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<NodeEventCondition>;
+  filter?: InputMaybe<NodeEventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -1257,6 +1328,7 @@ export type DeviceReadingsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<ReadingCondition>;
+  filter?: InputMaybe<ReadingFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -1324,6 +1396,36 @@ export type DeviceCondition = {
   profileId?: InputMaybe<Scalars['UUID']>;
 };
 
+/** A filter to be used against `Device` object types. All fields are combined with a logical ‘and.’ */
+export type DeviceFilter = {
+  /** Filter by the object’s `activationMethod` field. */
+  activationMethod?: InputMaybe<LorawanActivationMethodFilter>;
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<DeviceFilter>>;
+  /** Filter by the object’s `appEui` field. */
+  appEui?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `appKey` field. */
+  appKey?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `appSkey` field. */
+  appSkey?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `awsDeviceId` field. */
+  awsDeviceId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `devEui` field. */
+  devEui?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `deviceId` field. */
+  deviceId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `name` field. */
+  name?: InputMaybe<StringFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<DeviceFilter>;
+  /** Filter by the object’s `nwkSkey` field. */
+  nwkSkey?: InputMaybe<StringFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<DeviceFilter>>;
+  /** Filter by the object’s `profileId` field. */
+  profileId?: InputMaybe<UuidFilter>;
+};
+
 /** An input for mutations affecting `Device` */
 export type DeviceInput = {
   activationMethod?: InputMaybe<LorawanActivationMethod>;
@@ -1343,6 +1445,32 @@ export enum DeviceLocMethod {
   GwApprox = 'GW_APPROX',
   Manual = 'MANUAL'
 }
+
+/** A filter to be used against DeviceLocMethod fields. All fields are combined with a logical ‘and.’ */
+export type DeviceLocMethodFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<DeviceLocMethod>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<DeviceLocMethod>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<DeviceLocMethod>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<DeviceLocMethod>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<DeviceLocMethod>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<DeviceLocMethod>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<DeviceLocMethod>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<DeviceLocMethod>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<DeviceLocMethod>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<DeviceLocMethod>>;
+};
 
 export type DeviceMeta = Node & {
   __typename?: 'DeviceMeta';
@@ -1386,6 +1514,34 @@ export type DeviceMetaCondition = {
   locUpdatedAt?: InputMaybe<Scalars['Datetime']>;
   /** Checks for equality with the object’s `updatedAt` field. */
   updatedAt?: InputMaybe<Scalars['Datetime']>;
+};
+
+/** A filter to be used against `DeviceMeta` object types. All fields are combined with a logical ‘and.’ */
+export type DeviceMetaFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<DeviceMetaFilter>>;
+  /** Filter by the object’s `createdAt` field. */
+  createdAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `deviceId` field. */
+  deviceId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `lastDownlinkAt` field. */
+  lastDownlinkAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `lastUplinkAt` field. */
+  lastUplinkAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `locAccuracy` field. */
+  locAccuracy?: InputMaybe<FloatFilter>;
+  /** Filter by the object’s `locId` field. */
+  locId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `locMethod` field. */
+  locMethod?: InputMaybe<DeviceLocMethodFilter>;
+  /** Filter by the object’s `locUpdatedAt` field. */
+  locUpdatedAt?: InputMaybe<DatetimeFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<DeviceMetaFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<DeviceMetaFilter>>;
+  /** Filter by the object’s `updatedAt` field. */
+  updatedAt?: InputMaybe<DatetimeFilter>;
 };
 
 /** An input for mutations affecting `DeviceMeta` */
@@ -1553,6 +1709,22 @@ export type EventCondition = {
   time?: InputMaybe<Scalars['Datetime']>;
 };
 
+/** A filter to be used against `Event` object types. All fields are combined with a logical ‘and.’ */
+export type EventFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<EventFilter>>;
+  /** Filter by the object’s `id` field. */
+  id?: InputMaybe<IntFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<EventFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<EventFilter>>;
+  /** Filter by the object’s `profileId` field. */
+  profileId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `time` field. */
+  time?: InputMaybe<DatetimeFilter>;
+};
+
 /** An input for mutations affecting `Event` */
 export type EventInput = {
   profileId?: InputMaybe<Scalars['UUID']>;
@@ -1604,6 +1776,32 @@ export enum EventsOrderBy {
   TimeDesc = 'TIME_DESC'
 }
 
+/** A filter to be used against Float fields. All fields are combined with a logical ‘and.’ */
+export type FloatFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<Scalars['Float']>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<Scalars['Float']>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<Scalars['Float']>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<Scalars['Float']>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<Scalars['Float']>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<Scalars['Float']>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<Scalars['Float']>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<Scalars['Float']>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<Scalars['Float']>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<Scalars['Float']>>;
+};
+
 export type Gateway = Node & {
   __typename?: 'Gateway';
   awsGatewayId: Scalars['String'];
@@ -1630,6 +1828,7 @@ export type GatewayGatewayMetasArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<GatewayMetaCondition>;
+  filter?: InputMaybe<GatewayMetaFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -1641,6 +1840,7 @@ export type GatewayNodeEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<NodeEventCondition>;
+  filter?: InputMaybe<NodeEventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -1659,6 +1859,24 @@ export type GatewayCondition = {
   profileId?: InputMaybe<Scalars['UUID']>;
 };
 
+/** A filter to be used against `Gateway` object types. All fields are combined with a logical ‘and.’ */
+export type GatewayFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<GatewayFilter>>;
+  /** Filter by the object’s `awsGatewayId` field. */
+  awsGatewayId?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `gatewayId` field. */
+  gatewayId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `name` field. */
+  name?: InputMaybe<StringFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<GatewayFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<GatewayFilter>>;
+  /** Filter by the object’s `profileId` field. */
+  profileId?: InputMaybe<UuidFilter>;
+};
+
 /** An input for mutations affecting `Gateway` */
 export type GatewayInput = {
   awsGatewayId: Scalars['String'];
@@ -1670,6 +1888,32 @@ export enum GatewayLocMethod {
   Gps = 'GPS',
   Manual = 'MANUAL'
 }
+
+/** A filter to be used against GatewayLocMethod fields. All fields are combined with a logical ‘and.’ */
+export type GatewayLocMethodFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<GatewayLocMethod>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<GatewayLocMethod>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<GatewayLocMethod>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<GatewayLocMethod>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<GatewayLocMethod>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<GatewayLocMethod>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<GatewayLocMethod>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<GatewayLocMethod>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<GatewayLocMethod>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<GatewayLocMethod>>;
+};
 
 export type GatewayMeta = Node & {
   __typename?: 'GatewayMeta';
@@ -1713,6 +1957,34 @@ export type GatewayMetaCondition = {
   locUpdatedAt?: InputMaybe<Scalars['Datetime']>;
   /** Checks for equality with the object’s `updatedAt` field. */
   updatedAt?: InputMaybe<Scalars['Datetime']>;
+};
+
+/** A filter to be used against `GatewayMeta` object types. All fields are combined with a logical ‘and.’ */
+export type GatewayMetaFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<GatewayMetaFilter>>;
+  /** Filter by the object’s `createdAt` field. */
+  createdAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `gatewayId` field. */
+  gatewayId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `lastDownlinkAt` field. */
+  lastDownlinkAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `lastUplinkAt` field. */
+  lastUplinkAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `locAccuracy` field. */
+  locAccuracy?: InputMaybe<FloatFilter>;
+  /** Filter by the object’s `locId` field. */
+  locId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `locMethod` field. */
+  locMethod?: InputMaybe<GatewayLocMethodFilter>;
+  /** Filter by the object’s `locUpdatedAt` field. */
+  locUpdatedAt?: InputMaybe<DatetimeFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<GatewayMetaFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<GatewayMetaFilter>>;
+  /** Filter by the object’s `updatedAt` field. */
+  updatedAt?: InputMaybe<DatetimeFilter>;
 };
 
 /** An input for mutations affecting `GatewayMeta` */
@@ -2469,10 +2741,62 @@ export type GetGatewayOwnerPayload = {
   uuid?: Maybe<Scalars['UUID']>;
 };
 
+/** A filter to be used against Int fields. All fields are combined with a logical ‘and.’ */
+export type IntFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<Scalars['Int']>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<Scalars['Int']>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<Scalars['Int']>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<Scalars['Int']>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<Scalars['Int']>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<Scalars['Int']>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<Scalars['Int']>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<Scalars['Int']>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<Scalars['Int']>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<Scalars['Int']>>;
+};
+
 export enum LinkDirection {
   Downlink = 'DOWNLINK',
   Uplink = 'UPLINK'
 }
+
+/** A filter to be used against LinkDirection fields. All fields are combined with a logical ‘and.’ */
+export type LinkDirectionFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<LinkDirection>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<LinkDirection>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<LinkDirection>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<LinkDirection>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<LinkDirection>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<LinkDirection>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<LinkDirection>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<LinkDirection>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<LinkDirection>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<LinkDirection>>;
+};
 
 export type Location = Node & {
   __typename?: 'Location';
@@ -2495,6 +2819,7 @@ export type LocationDeviceMetasByLocIdArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<DeviceMetaCondition>;
+  filter?: InputMaybe<DeviceMetaFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -2506,6 +2831,7 @@ export type LocationGatewayMetasByLocIdArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<GatewayMetaCondition>;
+  filter?: InputMaybe<GatewayMetaFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -2517,6 +2843,7 @@ export type LocationNodeEventsByLocIdArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<NodeEventCondition>;
+  filter?: InputMaybe<NodeEventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -2528,6 +2855,7 @@ export type LocationReadingsByLocIdArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<ReadingCondition>;
+  filter?: InputMaybe<ReadingFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -2543,6 +2871,18 @@ export type LocationCondition = {
   locGeog?: InputMaybe<Scalars['GeoJSON']>;
   /** Checks for equality with the object’s `locId` field. */
   locId?: InputMaybe<Scalars['Int']>;
+};
+
+/** A filter to be used against `Location` object types. All fields are combined with a logical ‘and.’ */
+export type LocationFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<LocationFilter>>;
+  /** Filter by the object’s `locId` field. */
+  locId?: InputMaybe<IntFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<LocationFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<LocationFilter>>;
 };
 
 /** An input for mutations affecting `Location` */
@@ -2592,6 +2932,32 @@ export enum LorawanActivationMethod {
   Abp = 'ABP',
   Otaa = 'OTAA'
 }
+
+/** A filter to be used against LorawanActivationMethod fields. All fields are combined with a logical ‘and.’ */
+export type LorawanActivationMethodFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<LorawanActivationMethod>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<LorawanActivationMethod>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<LorawanActivationMethod>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<LorawanActivationMethod>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<LorawanActivationMethod>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<LorawanActivationMethod>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<LorawanActivationMethod>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<LorawanActivationMethod>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<LorawanActivationMethod>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<LorawanActivationMethod>>;
+};
 
 /** The root mutation type which contains root level fields which mutate data. */
 export type Mutation = {
@@ -3249,6 +3615,34 @@ export type NodeEventCondition = {
   time?: InputMaybe<Scalars['Datetime']>;
 };
 
+/** A filter to be used against `NodeEvent` object types. All fields are combined with a logical ‘and.’ */
+export type NodeEventFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<NodeEventFilter>>;
+  /** Filter by the object’s `deviceId` field. */
+  deviceId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `gatewayId` field. */
+  gatewayId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `id` field. */
+  id?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `linkDir` field. */
+  linkDir?: InputMaybe<LinkDirectionFilter>;
+  /** Filter by the object’s `locId` field. */
+  locId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `locMethod` field. */
+  locMethod?: InputMaybe<NodeLocMethodFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<NodeEventFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<NodeEventFilter>>;
+  /** Filter by the object’s `profileId` field. */
+  profileId?: InputMaybe<UuidFilter>;
+  /** Filter by the object’s `readingId` field. */
+  readingId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `time` field. */
+  time?: InputMaybe<DatetimeFilter>;
+};
+
 /** An input for mutations affecting `NodeEvent` */
 export type NodeEventInput = {
   deviceId?: InputMaybe<Scalars['Int']>;
@@ -3322,6 +3716,32 @@ export enum NodeLocMethod {
   Manual = 'MANUAL'
 }
 
+/** A filter to be used against NodeLocMethod fields. All fields are combined with a logical ‘and.’ */
+export type NodeLocMethodFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<NodeLocMethod>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<NodeLocMethod>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<NodeLocMethod>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<NodeLocMethod>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<NodeLocMethod>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<NodeLocMethod>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<NodeLocMethod>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<NodeLocMethod>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<NodeLocMethod>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<NodeLocMethod>>;
+};
+
 /** Information about pagination in a connection. */
 export type PageInfo = {
   __typename?: 'PageInfo';
@@ -3357,6 +3777,7 @@ export type ProfileAlertDefsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<AlertDefCondition>;
+  filter?: InputMaybe<AlertDefFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3368,6 +3789,7 @@ export type ProfileDevicesArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<DeviceCondition>;
+  filter?: InputMaybe<DeviceFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3379,6 +3801,7 @@ export type ProfileEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<EventCondition>;
+  filter?: InputMaybe<EventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3390,6 +3813,7 @@ export type ProfileGatewaysArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<GatewayCondition>;
+  filter?: InputMaybe<GatewayFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3404,6 +3828,22 @@ export type ProfileCondition = {
   lastName?: InputMaybe<Scalars['String']>;
   /** Checks for equality with the object’s `profileId` field. */
   profileId?: InputMaybe<Scalars['UUID']>;
+};
+
+/** A filter to be used against `Profile` object types. All fields are combined with a logical ‘and.’ */
+export type ProfileFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<ProfileFilter>>;
+  /** Filter by the object’s `firstName` field. */
+  firstName?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `lastName` field. */
+  lastName?: InputMaybe<StringFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<ProfileFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<ProfileFilter>>;
+  /** Filter by the object’s `profileId` field. */
+  profileId?: InputMaybe<UuidFilter>;
 };
 
 /** An input for mutations affecting `Profile` */
@@ -3549,6 +3989,7 @@ export type QueryAlertDefsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<AlertDefCondition>;
+  filter?: InputMaybe<AlertDefFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3561,6 +4002,7 @@ export type QueryAlertEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<AlertEventCondition>;
+  filter?: InputMaybe<AlertEventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3609,6 +4051,7 @@ export type QueryDeviceMetasArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<DeviceMetaCondition>;
+  filter?: InputMaybe<DeviceMetaFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3621,6 +4064,7 @@ export type QueryDevicesArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<DeviceCondition>;
+  filter?: InputMaybe<DeviceFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3645,6 +4089,7 @@ export type QueryEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<EventCondition>;
+  filter?: InputMaybe<EventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3687,6 +4132,7 @@ export type QueryGatewayMetasArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<GatewayMetaCondition>;
+  filter?: InputMaybe<GatewayMetaFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3699,6 +4145,7 @@ export type QueryGatewaysArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<GatewayCondition>;
+  filter?: InputMaybe<GatewayFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3723,6 +4170,7 @@ export type QueryLocationsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<LocationCondition>;
+  filter?: InputMaybe<LocationFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3741,6 +4189,7 @@ export type QueryNodeEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<NodeEventCondition>;
+  filter?: InputMaybe<NodeEventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3765,6 +4214,7 @@ export type QueryProfilesArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<ProfileCondition>;
+  filter?: InputMaybe<ProfileFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3783,6 +4233,7 @@ export type QueryReadingByChansArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<ReadingByChanCondition>;
+  filter?: InputMaybe<ReadingByChanFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3801,6 +4252,7 @@ export type QueryReadingsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<ReadingCondition>;
+  filter?: InputMaybe<ReadingFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3814,7 +4266,9 @@ export type QueryReadingsWithinArgs = {
   before?: InputMaybe<Scalars['Cursor']>;
   centerLat?: InputMaybe<Scalars['Float']>;
   centerLon?: InputMaybe<Scalars['Float']>;
+  chan?: InputMaybe<Scalars['String']>;
   endAt?: InputMaybe<Scalars['Datetime']>;
+  filter?: InputMaybe<ReadingWLocFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3846,6 +4300,7 @@ export type QuerySensorChansArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<SensorChanCondition>;
+  filter?: InputMaybe<SensorChanFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3880,6 +4335,7 @@ export type ReadingAlertEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<AlertEventCondition>;
+  filter?: InputMaybe<AlertEventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3891,6 +4347,7 @@ export type ReadingNodeEventsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<NodeEventCondition>;
+  filter?: InputMaybe<NodeEventFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -3902,7 +4359,7 @@ export type ReadingByChan = {
   chanName?: Maybe<Scalars['String']>;
   chanUnits?: Maybe<Scalars['String']>;
   deviceId?: Maybe<Scalars['Int']>;
-  locId?: Maybe<Scalars['Int']>;
+  geog?: Maybe<GeographyPoint>;
   readingId?: Maybe<Scalars['Int']>;
   receivedAt?: Maybe<Scalars['Datetime']>;
   takenAt?: Maybe<Scalars['Datetime']>;
@@ -3920,8 +4377,8 @@ export type ReadingByChanCondition = {
   chanUnits?: InputMaybe<Scalars['String']>;
   /** Checks for equality with the object’s `deviceId` field. */
   deviceId?: InputMaybe<Scalars['Int']>;
-  /** Checks for equality with the object’s `locId` field. */
-  locId?: InputMaybe<Scalars['Int']>;
+  /** Checks for equality with the object’s `geog` field. */
+  geog?: InputMaybe<Scalars['GeoJSON']>;
   /** Checks for equality with the object’s `readingId` field. */
   readingId?: InputMaybe<Scalars['Int']>;
   /** Checks for equality with the object’s `receivedAt` field. */
@@ -3930,6 +4387,30 @@ export type ReadingByChanCondition = {
   takenAt?: InputMaybe<Scalars['Datetime']>;
   /** Checks for equality with the object’s `val` field. */
   val?: InputMaybe<Scalars['Float']>;
+};
+
+/** A filter to be used against `ReadingByChan` object types. All fields are combined with a logical ‘and.’ */
+export type ReadingByChanFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<ReadingByChanFilter>>;
+  /** Filter by the object’s `chanName` field. */
+  chanName?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `chanUnits` field. */
+  chanUnits?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `deviceId` field. */
+  deviceId?: InputMaybe<IntFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<ReadingByChanFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<ReadingByChanFilter>>;
+  /** Filter by the object’s `readingId` field. */
+  readingId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `receivedAt` field. */
+  receivedAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `takenAt` field. */
+  takenAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `val` field. */
+  val?: InputMaybe<FloatFilter>;
 };
 
 /** A connection to a list of `ReadingByChan` values. */
@@ -3962,8 +4443,8 @@ export enum ReadingByChansOrderBy {
   ChanUnitsDesc = 'CHAN_UNITS_DESC',
   DeviceIdAsc = 'DEVICE_ID_ASC',
   DeviceIdDesc = 'DEVICE_ID_DESC',
-  LocIdAsc = 'LOC_ID_ASC',
-  LocIdDesc = 'LOC_ID_DESC',
+  GeogAsc = 'GEOG_ASC',
+  GeogDesc = 'GEOG_DESC',
   Natural = 'NATURAL',
   ReadingIdAsc = 'READING_ID_ASC',
   ReadingIdDesc = 'READING_ID_DESC',
@@ -3991,6 +4472,30 @@ export type ReadingCondition = {
   takenAt?: InputMaybe<Scalars['Datetime']>;
   /** Checks for equality with the object’s `val` field. */
   val?: InputMaybe<Scalars['Float']>;
+};
+
+/** A filter to be used against `Reading` object types. All fields are combined with a logical ‘and.’ */
+export type ReadingFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<ReadingFilter>>;
+  /** Filter by the object’s `deviceId` field. */
+  deviceId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `locId` field. */
+  locId?: InputMaybe<IntFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<ReadingFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<ReadingFilter>>;
+  /** Filter by the object’s `readingId` field. */
+  readingId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `receivedAt` field. */
+  receivedAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `sensorChanId` field. */
+  sensorChanId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `takenAt` field. */
+  takenAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `val` field. */
+  val?: InputMaybe<FloatFilter>;
 };
 
 /** An input for mutations affecting `Reading` */
@@ -4023,6 +4528,30 @@ export type ReadingWLoc = {
   takenAt?: Maybe<Scalars['Datetime']>;
   units?: Maybe<Scalars['String']>;
   val?: Maybe<Scalars['Float']>;
+};
+
+/** A filter to be used against `ReadingWLoc` object types. All fields are combined with a logical ‘and.’ */
+export type ReadingWLocFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<ReadingWLocFilter>>;
+  /** Filter by the object’s `chan` field. */
+  chan?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `deviceId` field. */
+  deviceId?: InputMaybe<IntFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<ReadingWLocFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<ReadingWLocFilter>>;
+  /** Filter by the object’s `readingId` field. */
+  readingId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `receivedAt` field. */
+  receivedAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `takenAt` field. */
+  takenAt?: InputMaybe<DatetimeFilter>;
+  /** Filter by the object’s `units` field. */
+  units?: InputMaybe<StringFilter>;
+  /** Filter by the object’s `val` field. */
+  val?: InputMaybe<FloatFilter>;
 };
 
 /** A connection to a list of `ReadingWLoc` values. */
@@ -4108,6 +4637,7 @@ export type SensorChanAlertDefsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<AlertDefCondition>;
+  filter?: InputMaybe<AlertDefFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -4119,6 +4649,7 @@ export type SensorChanReadingsArgs = {
   after?: InputMaybe<Scalars['Cursor']>;
   before?: InputMaybe<Scalars['Cursor']>;
   condition?: InputMaybe<ReadingCondition>;
+  filter?: InputMaybe<ReadingFilter>;
   first?: InputMaybe<Scalars['Int']>;
   last?: InputMaybe<Scalars['Int']>;
   offset?: InputMaybe<Scalars['Int']>;
@@ -4136,6 +4667,22 @@ export type SensorChanCondition = {
   sensorChanId?: InputMaybe<Scalars['Int']>;
   /** Checks for equality with the object’s `units` field. */
   units?: InputMaybe<Scalars['String']>;
+};
+
+/** A filter to be used against `SensorChan` object types. All fields are combined with a logical ‘and.’ */
+export type SensorChanFilter = {
+  /** Checks for all expressions in this list. */
+  and?: InputMaybe<Array<SensorChanFilter>>;
+  /** Filter by the object’s `name` field. */
+  name?: InputMaybe<StringFilter>;
+  /** Negates the expression. */
+  not?: InputMaybe<SensorChanFilter>;
+  /** Checks for any expressions in this list. */
+  or?: InputMaybe<Array<SensorChanFilter>>;
+  /** Filter by the object’s `sensorChanId` field. */
+  sensorChanId?: InputMaybe<IntFilter>;
+  /** Filter by the object’s `units` field. */
+  units?: InputMaybe<StringFilter>;
 };
 
 /** An input for mutations affecting `SensorChan` */
@@ -4184,6 +4731,110 @@ export enum SensorChansOrderBy {
   UnitsAsc = 'UNITS_ASC',
   UnitsDesc = 'UNITS_DESC'
 }
+
+/** A filter to be used against String fields. All fields are combined with a logical ‘and.’ */
+export type StringFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<Scalars['String']>;
+  /** Not equal to the specified value, treating null like an ordinary value (case-insensitive). */
+  distinctFromInsensitive?: InputMaybe<Scalars['String']>;
+  /** Ends with the specified string (case-sensitive). */
+  endsWith?: InputMaybe<Scalars['String']>;
+  /** Ends with the specified string (case-insensitive). */
+  endsWithInsensitive?: InputMaybe<Scalars['String']>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<Scalars['String']>;
+  /** Equal to the specified value (case-insensitive). */
+  equalToInsensitive?: InputMaybe<Scalars['String']>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<Scalars['String']>;
+  /** Greater than the specified value (case-insensitive). */
+  greaterThanInsensitive?: InputMaybe<Scalars['String']>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<Scalars['String']>;
+  /** Greater than or equal to the specified value (case-insensitive). */
+  greaterThanOrEqualToInsensitive?: InputMaybe<Scalars['String']>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<Scalars['String']>>;
+  /** Included in the specified list (case-insensitive). */
+  inInsensitive?: InputMaybe<Array<Scalars['String']>>;
+  /** Contains the specified string (case-sensitive). */
+  includes?: InputMaybe<Scalars['String']>;
+  /** Contains the specified string (case-insensitive). */
+  includesInsensitive?: InputMaybe<Scalars['String']>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<Scalars['String']>;
+  /** Less than the specified value (case-insensitive). */
+  lessThanInsensitive?: InputMaybe<Scalars['String']>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<Scalars['String']>;
+  /** Less than or equal to the specified value (case-insensitive). */
+  lessThanOrEqualToInsensitive?: InputMaybe<Scalars['String']>;
+  /** Matches the specified pattern (case-sensitive). An underscore (_) matches any single character; a percent sign (%) matches any sequence of zero or more characters. */
+  like?: InputMaybe<Scalars['String']>;
+  /** Matches the specified pattern (case-insensitive). An underscore (_) matches any single character; a percent sign (%) matches any sequence of zero or more characters. */
+  likeInsensitive?: InputMaybe<Scalars['String']>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<Scalars['String']>;
+  /** Equal to the specified value, treating null like an ordinary value (case-insensitive). */
+  notDistinctFromInsensitive?: InputMaybe<Scalars['String']>;
+  /** Does not end with the specified string (case-sensitive). */
+  notEndsWith?: InputMaybe<Scalars['String']>;
+  /** Does not end with the specified string (case-insensitive). */
+  notEndsWithInsensitive?: InputMaybe<Scalars['String']>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<Scalars['String']>;
+  /** Not equal to the specified value (case-insensitive). */
+  notEqualToInsensitive?: InputMaybe<Scalars['String']>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<Scalars['String']>>;
+  /** Not included in the specified list (case-insensitive). */
+  notInInsensitive?: InputMaybe<Array<Scalars['String']>>;
+  /** Does not contain the specified string (case-sensitive). */
+  notIncludes?: InputMaybe<Scalars['String']>;
+  /** Does not contain the specified string (case-insensitive). */
+  notIncludesInsensitive?: InputMaybe<Scalars['String']>;
+  /** Does not match the specified pattern (case-sensitive). An underscore (_) matches any single character; a percent sign (%) matches any sequence of zero or more characters. */
+  notLike?: InputMaybe<Scalars['String']>;
+  /** Does not match the specified pattern (case-insensitive). An underscore (_) matches any single character; a percent sign (%) matches any sequence of zero or more characters. */
+  notLikeInsensitive?: InputMaybe<Scalars['String']>;
+  /** Does not start with the specified string (case-sensitive). */
+  notStartsWith?: InputMaybe<Scalars['String']>;
+  /** Does not start with the specified string (case-insensitive). */
+  notStartsWithInsensitive?: InputMaybe<Scalars['String']>;
+  /** Starts with the specified string (case-sensitive). */
+  startsWith?: InputMaybe<Scalars['String']>;
+  /** Starts with the specified string (case-insensitive). */
+  startsWithInsensitive?: InputMaybe<Scalars['String']>;
+};
+
+/** A filter to be used against UUID fields. All fields are combined with a logical ‘and.’ */
+export type UuidFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<Scalars['UUID']>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<Scalars['UUID']>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<Scalars['UUID']>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<Scalars['UUID']>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<Scalars['UUID']>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<Scalars['UUID']>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<Scalars['UUID']>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<Scalars['UUID']>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<Scalars['UUID']>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<Scalars['UUID']>>;
+};
 
 /** All input for the `updateAlertDefByNodeId` mutation. */
 export type UpdateAlertDefByNodeIdInput = {
@@ -4732,6 +5383,49 @@ export enum UserAlertMethod {
   Sms = 'SMS'
 }
 
+/** A filter to be used against UserAlertMethod fields. All fields are combined with a logical ‘and.’ */
+export type UserAlertMethodFilter = {
+  /** Not equal to the specified value, treating null like an ordinary value. */
+  distinctFrom?: InputMaybe<UserAlertMethod>;
+  /** Equal to the specified value. */
+  equalTo?: InputMaybe<UserAlertMethod>;
+  /** Greater than the specified value. */
+  greaterThan?: InputMaybe<UserAlertMethod>;
+  /** Greater than or equal to the specified value. */
+  greaterThanOrEqualTo?: InputMaybe<UserAlertMethod>;
+  /** Included in the specified list. */
+  in?: InputMaybe<Array<UserAlertMethod>>;
+  /** Is null (if `true` is specified) or is not null (if `false` is specified). */
+  isNull?: InputMaybe<Scalars['Boolean']>;
+  /** Less than the specified value. */
+  lessThan?: InputMaybe<UserAlertMethod>;
+  /** Less than or equal to the specified value. */
+  lessThanOrEqualTo?: InputMaybe<UserAlertMethod>;
+  /** Equal to the specified value, treating null like an ordinary value. */
+  notDistinctFrom?: InputMaybe<UserAlertMethod>;
+  /** Not equal to the specified value. */
+  notEqualTo?: InputMaybe<UserAlertMethod>;
+  /** Not included in the specified list. */
+  notIn?: InputMaybe<Array<UserAlertMethod>>;
+};
+
+export type DeviceInfoQueryVariables = Exact<{
+  deviceId: Scalars['Int'];
+}>;
+
+
+export type DeviceInfoQuery = { __typename?: 'Query', device?: { __typename?: 'Device', name: string, devEui: string, activationMethod?: LorawanActivationMethod | null, deviceMeta?: { __typename?: 'DeviceMeta', createdAt?: any | null, updatedAt?: any | null, locUpdatedAt?: any | null, lastUplinkAt?: any | null, lastDownlinkAt?: any | null, locMethod?: DeviceLocMethod | null, loc?: { __typename?: 'Location', locGeog: { __typename?: 'GeographyPoint', longitude: number, latitude: number } } | null } | null } | null };
+
+export type DeviceReadingsQueryVariables = Exact<{
+  deviceId: Scalars['Int'];
+  start?: InputMaybe<Scalars['Datetime']>;
+}>;
+
+
+export type DeviceReadingsQuery = { __typename?: 'Query', aqi?: { __typename?: 'ReadingByChansConnection', nodes: Array<{ __typename?: 'ReadingByChan', val?: number | null, takenAt?: any | null, geog?: { __typename?: 'GeographyPoint', latitude: number, longitude: number } | null } | null> } | null, pm2_5?: { __typename?: 'ReadingByChansConnection', nodes: Array<{ __typename?: 'ReadingByChan', val?: number | null, takenAt?: any | null, geog?: { __typename?: 'GeographyPoint', latitude: number, longitude: number } | null } | null> } | null, voc?: { __typename?: 'ReadingByChansConnection', nodes: Array<{ __typename?: 'ReadingByChan', val?: number | null, takenAt?: any | null, geog?: { __typename?: 'GeographyPoint', latitude: number, longitude: number } | null } | null> } | null, temperature?: { __typename?: 'ReadingByChansConnection', nodes: Array<{ __typename?: 'ReadingByChan', val?: number | null, takenAt?: any | null, geog?: { __typename?: 'GeographyPoint', latitude: number, longitude: number } | null } | null> } | null };
+
+export type ReadingFieldsFragment = { __typename?: 'ReadingByChansConnection', nodes: Array<{ __typename?: 'ReadingByChan', val?: number | null, takenAt?: any | null, geog?: { __typename?: 'GeographyPoint', latitude: number, longitude: number } | null } | null> };
+
 export type DevicesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -4747,7 +5441,9 @@ export type ReadingsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type ReadingsQuery = { __typename?: 'Query', readingsWithin?: { __typename?: 'ReadingWLocsConnection', nodes: Array<{ __typename?: 'ReadingWLoc', val?: number | null, chan?: string | null, deviceId?: number | null, takenAt?: any | null, geog?: { __typename?: 'GeographyPoint', latitude: number, longitude: number } | null } | null> } | null };
 
-
+export const ReadingFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ReadingFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ReadingByChansConnection"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"val"}},{"kind":"Field","name":{"kind":"Name","value":"takenAt"}},{"kind":"Field","name":{"kind":"Name","value":"geog"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"latitude"}},{"kind":"Field","name":{"kind":"Name","value":"longitude"}}]}}]}}]}}]} as unknown as DocumentNode<ReadingFieldsFragment, unknown>;
+export const DeviceInfoDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DeviceInfo"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"deviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"device"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"deviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"deviceId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"devEui"}},{"kind":"Field","name":{"kind":"Name","value":"activationMethod"}},{"kind":"Field","name":{"kind":"Name","value":"deviceMeta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"locUpdatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastUplinkAt"}},{"kind":"Field","name":{"kind":"Name","value":"lastDownlinkAt"}},{"kind":"Field","name":{"kind":"Name","value":"locMethod"}},{"kind":"Field","name":{"kind":"Name","value":"loc"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"locGeog"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"longitude"}},{"kind":"Field","name":{"kind":"Name","value":"latitude"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<DeviceInfoQuery, DeviceInfoQueryVariables>;
+export const DeviceReadingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"DeviceReadings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"deviceId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"start"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Datetime"}},"defaultValue":{"kind":"StringValue","value":"2000-01-01","block":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"aqi"},"name":{"kind":"Name","value":"readingByChans"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"condition"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"deviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"deviceId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"chanName"},"value":{"kind":"StringValue","value":"AQI","block":false}}]}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"takenAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"greaterThanOrEqualTo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"start"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReadingFields"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"pm2_5"},"name":{"kind":"Name","value":"readingByChans"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"condition"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"deviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"deviceId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"chanName"},"value":{"kind":"StringValue","value":"PM2.5","block":false}}]}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"takenAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"greaterThanOrEqualTo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"start"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReadingFields"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"voc"},"name":{"kind":"Name","value":"readingByChans"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"condition"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"deviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"deviceId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"chanName"},"value":{"kind":"StringValue","value":"VOC","block":false}}]}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"takenAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"greaterThanOrEqualTo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"start"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReadingFields"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"temperature"},"name":{"kind":"Name","value":"readingByChans"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"condition"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"deviceId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"deviceId"}}},{"kind":"ObjectField","name":{"kind":"Name","value":"chanName"},"value":{"kind":"StringValue","value":"TEMPERATURE","block":false}}]}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"takenAt"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"greaterThanOrEqualTo"},"value":{"kind":"Variable","name":{"kind":"Name","value":"start"}}}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ReadingFields"}}]}}]}},...ReadingFieldsFragmentDoc.definitions]} as unknown as DocumentNode<DeviceReadingsQuery, DeviceReadingsQueryVariables>;
 export const DevicesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Devices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"devices"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"deviceId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<DevicesQuery, DevicesQueryVariables>;
 export const GatewaysDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Gateways"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gateways"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"gatewayId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<GatewaysQuery, GatewaysQueryVariables>;
 export const ReadingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Readings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"readingsWithin"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"val"}},{"kind":"Field","name":{"kind":"Name","value":"geog"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"latitude"}},{"kind":"Field","name":{"kind":"Name","value":"longitude"}}]}},{"kind":"Field","name":{"kind":"Name","value":"chan"}},{"kind":"Field","name":{"kind":"Name","value":"deviceId"}},{"kind":"Field","name":{"kind":"Name","value":"takenAt"}}]}}]}}]}}]} as unknown as DocumentNode<ReadingsQuery, ReadingsQueryVariables>;

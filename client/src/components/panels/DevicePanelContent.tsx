@@ -2,8 +2,8 @@ import ErrorIcon from '@mui/icons-material/Error';
 import { CircularProgress, List } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from 'urql';
-import { DevicesDocument } from '../generated/graphql';
-import { NodeListItem as Item } from './NodeListItem';
+import { DevicesDocument } from '../../generated/graphql';
+import { NodeListItem as Item } from '../NodeListItem';
 
 export function DevicePanelContent() {
   const navigate = useNavigate();

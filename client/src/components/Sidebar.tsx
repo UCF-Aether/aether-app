@@ -1,20 +1,19 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { Card, Paper } from "@mui/material";
+import { Card, Stack } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import { Auth } from "@supabase/ui";
-import { Fragment, useEffect, useState } from "react";
-import { Location, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import logo from "../aether.png";
 import { ColorModeToggle } from "./ColorModeToggle";
-import { LayerPanel } from "./LayerPanel";
-import { LoginSignupPanel } from "./LoginSignupPanel";
-import { NodePanel } from "./NodePanel";
-import { YouPanel } from "./YouPanel";
+import { LayerPanel } from "./panels/LayerPanel";
+import { LoginSignupPanel } from "./panels/LoginSignupPanel";
+import { NodePanel } from "./panels/NodePanel";
+import { YouPanel } from "./panels/YouPanel";
 
 const drawerWidth = 280;
 
@@ -22,60 +21,26 @@ const drawerWidth = 280;
 // This is temporary - testing only
 let loggedIn = false;
 
-const drawerItems = [
-  {
-    route: "/",
-    text: "Map",
-    toolbarText: "Data Overlays",
-  },
-  {
-    route: "/logs",
-    text: "Logs",
-    toolbarText: "Device Logs",
-  },
-];
-
-function routeToIndex(location: Location) {
-  console.log(location.pathname);
-  return drawerItems.map(({ route }) => route).indexOf(location.pathname);
-}
-
 export interface SidebarProps {
   children?: JSX.Element[] | JSX.Element;
+  setLayer?: (layer: string) => void;
 }
 
 export function Sidebar(props: SidebarProps) {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user } = Auth.useUser();
 
   loggedIn = !!user;
   console.log(user);
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(0);
-
-  useEffect(() => {
-    setSelectedIndex(routeToIndex(location));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleListItemClick = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-    route: string,
-    index: number
-  ) => {
-    setSelectedIndex(index);
-    navigate(route);
-  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  // First one is the default
-
   const drawer = (
-    <div>
+    <Stack>
       <Toolbar sx={{ p: 2 }}>
         <Box alignContent='center'>
           <img width="75%" src={logo} alt="Logo" />
@@ -95,7 +60,7 @@ export function Sidebar(props: SidebarProps) {
         )
       }
       <ColorModeToggle />
-    </div>
+    </Stack>
   );
 
   const toolbar = (

@@ -4,7 +4,7 @@ import { styled } from '@mui/system';
 import { Panel } from './Panel';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import { useSupabase } from './SupabaseContext';
+import { useSupabase } from '../SupabaseContext';
 
 const DashboardButton = styled(Button)(
   ({ theme }) => ({

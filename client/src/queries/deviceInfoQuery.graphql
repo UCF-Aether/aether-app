@@ -1,0 +1,21 @@
+query DeviceInfo($deviceId: Int!) {
+  device (deviceId: $deviceId) {
+    name
+    devEui
+    activationMethod
+    deviceMeta {
+      createdAt
+      updatedAt
+      locUpdatedAt
+      lastUplinkAt
+      lastDownlinkAt
+      locMethod
+      loc {
+        locGeog {
+          longitude
+          latitude
+        }
+      }
+    }
+  }
+}
