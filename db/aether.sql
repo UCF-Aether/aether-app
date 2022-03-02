@@ -456,14 +456,13 @@ select r.reading_id,
        r.taken_at,
        r.received_at,
        r.val,
-       l.loc_geog,
+       r.geog,
        r.chan_name,
        r.chan_units
 from reading_by_chan r
-       join location l on r.loc_id = l.loc_id
 where start_at <= r.taken_at
   and end_at >= r.taken_at
-  and st_dwithin(l.loc_geog, st_makepoint(center_lon, center_lat), radius)
+  and st_dwithin(r.geog, st_makepoint(center_lon, center_lat), radius)
   and case when chan != '' then r.chan_name = chan else true end
 order by r.taken_at;
 $$
