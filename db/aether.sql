@@ -593,6 +593,13 @@ values (generate_random_point(lat, lng, radius))
 returning loc_id;
 $$;
 
+create or replace function random_time(last_days integer)
+  returns timestamptz
+  language sql
+as
+$$
+select now() + (interval '1 minute' * 1440 * last_days * random());
+$$;
 ------------------------------------------
 --
 -- Other triggers

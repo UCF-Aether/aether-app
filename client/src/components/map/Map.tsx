@@ -37,8 +37,8 @@ export interface MapProps {
 /* eslint-disable react/no-deprecated */
 export function Map(props: MapProps) {
   const mapStyle = MAP_STYLE;
-  const radiusPixels = 30;
-  const intensity = 1;
+  const radiusPixels = 50;
+  const intensity = 0.8;
   const threshold = 0.03;
 
   const [result, reexecuteQuery] = useQuery({
@@ -87,7 +87,7 @@ export function Map(props: MapProps) {
       <StaticMap
         style={{ height: "100%", zIndex: 2000 }}
         reuseMaps
-        mapStyle={mapStyle}
+        mapStyle='mapbox://styles/mapbox/streets-v9'
         // @ts-ignore
         preventStyleDiffing={true}
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}

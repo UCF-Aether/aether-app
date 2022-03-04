@@ -1,5 +1,4 @@
 import { useQuery } from "urql";
-import { DeviceInfoDocument } from "../../generated/graphql";
 import ErrorIcon from "@mui/icons-material/Error";
 import {
   LinearProgress, Paper, Table, TableBody,
@@ -28,9 +27,7 @@ export interface DeviceInfoPanelProps {
   info: DeviceInfo;
 }
 
-export function
-  DeviceInfoPanel(props
-    : DeviceInfoPanelProps) {
+export function DeviceInfoPanel(props: DeviceInfoPanelProps) {
   if (props.error)
     return <ErrorIcon color='error' />
 
