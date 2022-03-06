@@ -67,11 +67,15 @@ export function decodeCayenne(payloadBuf: Buffer): Array<Reading> {
 
     let mapping = cayenneDataMappings[payloadBuf[curByte]];
     if (!mapping) throw new Error(`Unknown mapping: ${payloadBuf[curByte]}`)
+
     let { name, bytes, decode } = mapping;
     curByte++;
-    
+
+    if (curByte + bytes >= payloadSize) 
+      throw new Error(`Missing value for chan=${chan}, mapping=${mapping}`);
+
     let value: number = decode(payloadBuf.slice(curByte));
-     
+
     readings.push({ chan, value, type: name });
     curByte += bytes;
 
