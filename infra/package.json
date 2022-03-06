@@ -1,7 +1,6 @@
 {
   "name": "infra",
-  "scripts": {
-  },
+  "scripts": {},
   "devDependencies": {
     "@tsconfig/node14": "^1.0.1",
     "@types/aws-lambda": "^8.10.90",
@@ -24,6 +23,7 @@
     "@serverless-stack/cli": "0.60.11",
     "@serverless-stack/resources": "0.60.11",
     "aws-cdk-lib": "2.7.0",
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "esbuild": "^0.14.25"
   }
 }
