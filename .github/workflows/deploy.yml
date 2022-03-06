@@ -52,4 +52,4 @@ jobs:
         aws-region: us-east-1
 
     - name: Deploy to AWS
-      run: pnpm sst deploy --stage prod 
+      run: pnpm deploy:prod
