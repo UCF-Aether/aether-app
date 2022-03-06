@@ -11,11 +11,13 @@ on:
 jobs:
   ci:
     env:
-      REACT_APP_GOOGLE_MAPS_API_KEY: ${{ secrets.REACT_APP_GOOGLE_MAPS_API_KEY }}
       TTS_COMMUNITY_API_KEY: ${{ secrets.TTS_COMMUNITY_API_KEY }}
       SUPABASE_PUBLIC_ANON_KEY: ${{ secrets.SUPABASE_PUBLIC_ANON_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SECRET_JWT: ${{ secrets.SUPABASE_SECRET_JWT }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
 
     runs-on: ubuntu-latest
 
@@ -59,4 +61,4 @@ jobs:
         aws-region: us-east-1
 
     - name: Build
-      run: pnpm build:prod
+      run: pnpm build
