@@ -8,6 +8,7 @@ import { NodeListItem as Item } from "../NodeListItem";
 export function GatewayPanelContent() {
   const navigate = useNavigate();
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [result, reexecuteQuery] = useQuery({
     query: GatewaysDocument,
   });

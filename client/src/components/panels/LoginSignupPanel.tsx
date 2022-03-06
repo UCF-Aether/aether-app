@@ -3,7 +3,7 @@ import { Box, styled } from "@mui/system";
 import { useNavigate } from "react-router-dom";
 
 const WideButton = styled(Button)(
-  ({ theme }) => ({
+  () => ({
     width: '100%',
     textTransform: 'none',
     boxShadow: 'none',

@@ -1,5 +1,5 @@
+import { DataGrid, GridColDef, GridRowsProp } from "@mui/x-data-grid";
 import { useEffect } from "react";
-import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import { gql, useQuery } from "urql";
 
 // const rows: GridRowsProp = [

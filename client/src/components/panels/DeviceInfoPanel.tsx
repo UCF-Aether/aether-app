@@ -1,10 +1,8 @@
-import { useQuery } from "urql";
 import ErrorIcon from "@mui/icons-material/Error";
 import {
-  LinearProgress, Paper, Table, TableBody,
-  TableCell, TableContainer, TableRow, Typography
-} from
-  "@mui/material";
+    LinearProgress, Paper, Table, TableBody,
+    TableCell, TableContainer, TableRow
+} from "@mui/material";
 import { Panel } from "./Panel";
 
 export interface DeviceInfo {

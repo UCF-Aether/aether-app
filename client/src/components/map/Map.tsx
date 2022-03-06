@@ -1,17 +1,16 @@
 import { HeatmapLayer } from "@deck.gl/aggregation-layers";
 // @ts-ignore
-import { AmbientLight, LightingEffect, PointLight, Position2D } from "@deck.gl/core";
-// @ts-ignore
-import DeckGL from "@deck.gl/react";
-import { useEffect, useState } from "react";
+import * as DeckGL from "@deck.gl/react";
 import StaticMap, { GeolocateControl } from "react-map-gl";
 import { useQuery } from "urql";
 import { ReadingsDocument } from "../../generated/graphql";
 
 // Source data CSV
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const DATA_URL =
   "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/screen-grid/uber-pickup-locations.json"; // eslint-disable-line
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
 
 const INITIAL_VIEW_STATE = {
@@ -36,11 +35,11 @@ export interface MapProps {
 
 /* eslint-disable react/no-deprecated */
 export function Map(props: MapProps) {
-  const mapStyle = MAP_STYLE;
   const radiusPixels = 50;
   const intensity = 0.8;
   const threshold = 0.03;
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [result, reexecuteQuery] = useQuery({
     query: ReadingsDocument,
     variables: { chan: props.chan },

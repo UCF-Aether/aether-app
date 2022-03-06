@@ -1,5 +1,5 @@
 import ErrorIcon from '@mui/icons-material/Error';
-import { Box, CircularProgress, List } from '@mui/material';
+import { CircularProgress, List } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from 'urql';
 import { DevicesDocument } from '../../generated/graphql';
@@ -8,6 +8,7 @@ import { NodeListItem as Item } from '../NodeListItem';
 export function DevicePanelContent() {
   const navigate = useNavigate();
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const [result, reexecuteQuery] = useQuery({
     query: DevicesDocument,
   });

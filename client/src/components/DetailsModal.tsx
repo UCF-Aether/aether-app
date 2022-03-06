@@ -1,5 +1,5 @@
-import { Box, Card, Modal, Typography, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { Box, Card, IconButton, Modal, Typography } from "@mui/material";
 
 export interface InfoOverlayProps {
   children?: JSX.Element[] | JSX.Element;

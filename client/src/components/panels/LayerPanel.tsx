@@ -1,4 +1,4 @@
-import { FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Panel } from './Panel';
 
@@ -10,12 +10,14 @@ export interface LayerPanelProps {
 export function LayerPanel(props?: LayerPanelProps) {
   const [value, setValue] = useState('AQI');
 
+  /* eslint-disable no-unused-vars */
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>, layer: string) => {
     setValue(layer);
     props?.onChange(layer);
   }
 
   // Set initial value ??
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => props?.onChange(value), []);
 
   const layers = [

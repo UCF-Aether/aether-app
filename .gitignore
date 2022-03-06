@@ -43,7 +43,6 @@ jspm_packages/
 *.js
 !jest.config.js
 !.eslintrc.js
-*.d.ts
 
 # TypeScript v1 declaration files
 typings/

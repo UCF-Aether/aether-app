@@ -1,20 +1,18 @@
 // import logo from "./logo.svg";
-import { createTheme, ThemeProvider, LinkProps as MuiLinkProps } from "@mui/material";
+import { createTheme, LinkProps as MuiLinkProps, ThemeProvider } from "@mui/material";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import { useMemo, useState, forwardRef } from "react";
-import { Outlet, Route, Routes } from "react-router-dom";
+import { forwardRef, useMemo, useState } from "react";
+import { MapProvider } from "react-map-gl";
+import { Link, LinkProps, Route, Routes } from "react-router-dom";
+import { createClient as createUrqlClient, Provider as UrqlProvider } from "urql";
 import "./App.css";
 import { ColorModeContext } from "./components/ColorModeContext";
-import { Main } from "./components/Main";
-import { SupabaseProvider } from "./components/SupabaseContext";
-import { LoginSignup } from "./pages/LoginSignup";
-import { Dashboard } from "./pages/Dashboard";
-import { Map } from "./components/map/Map";
-import { Link, LinkProps } from "react-router-dom";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
-import { createClient as createUrqlClient, Provider as UrqlProvider } from "urql";
-import { MapProvider } from "react-map-gl";
+import { Main } from "./components/Main";
+import { SupabaseProvider } from "./components/SupabaseContext";
+import { Dashboard } from "./pages/Dashboard";
+import { LoginSignup } from "./pages/LoginSignup";
 
 const supabaseClient = createSupabaseClient(
   process.env.REACT_APP_SUPABASE_URL!,

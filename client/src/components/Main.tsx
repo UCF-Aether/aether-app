@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
 import { Auth } from "@supabase/ui";
 import { useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import logo from "../aether.png";
 import { ColorModeToggle } from "./ColorModeToggle";
 import { Map } from "./map/Map";
@@ -27,7 +27,7 @@ export interface SidebarProps {
   setLayer?: (layer: string) => void;
 }
 
-export function Main(props: SidebarProps) {
+export function Main() {
   const navigate = useNavigate();
   const { user } = Auth.useUser();
   const [ dataLayer, setDataLayer ] = useState('aqi');

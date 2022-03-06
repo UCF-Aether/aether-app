@@ -1,17 +1,12 @@
 import { Card, CardContent, Grid } from "@mui/material";
 import { SupabaseClient } from "@supabase/supabase-js";
-import { Auth, Button, Typography } from "@supabase/ui";
+import { Auth } from "@supabase/ui";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useSupabase } from "../components/SupabaseContext";
-
-const { Text } = Typography;
 
 interface AuthContainerProps {
   children?: JSX.Element[] | JSX.Element;
   supabaseClient: SupabaseClient;
-}
-
-interface LoginSignupProps {
 }
 
 const AuthContainer = (props: AuthContainerProps) => {
@@ -30,7 +25,7 @@ type ViewType =
   | 'magic_link'
   | 'update_password';
 
-export function LoginSignup(props: LoginSignupProps) {
+export function LoginSignup() {
   const location = useLocation();
   const supabaseClient = useSupabase();
 

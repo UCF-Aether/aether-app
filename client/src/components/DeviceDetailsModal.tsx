@@ -1,15 +1,13 @@
-import { Box, Skeleton, Typography } from '@mui/material';
+import ErrorIcon from "@mui/icons-material/Error";
+import { Skeleton, Typography } from '@mui/material';
+import { ResponsiveLine, Serie } from '@nivo/line';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from 'urql';
-import { DetailsModal } from './DetailsModal';
 import { DeviceDetailsDocument } from '../generated/graphql';
-import ErrorIcon from "@mui/icons-material/Error";
+import { DetailsModal } from './DetailsModal';
 import { DeviceInfoPanel } from './panels/DeviceInfoPanel';
-import { SwitchErrorComponentProps, UrqlSwitch } from './UrqlSwitch';
-import { ResponsiveLine, Serie } from '@nivo/line';
 import { Panel } from './panels/Panel';
-
-let testLineData: Array<any> = [];
+import { SwitchErrorComponentProps, UrqlSwitch } from './UrqlSwitch';
 
 interface ReadingsLineGraphProps {
   data: Serie[];
@@ -155,61 +153,3 @@ export function DeviceDetailsModal() {
     </DetailsModal>
   );
 }
-
-/* @ts-ignore */ 
-testLineData = [
-  {
-    "id": "AQI",
-    "color": "hsl(174, 70%, 50%)",
-    "data": [
-      {
-        "x": "plane",
-        "y": 297
-      },
-      {
-        "x": "helicopter",
-        "y": 75
-      },
-      {
-        "x": "boat",
-        "y": 208
-      },
-      {
-        "x": "train",
-        "y": 176
-      },
-      {
-        "x": "subway",
-        "y": 291
-      },
-      {
-        "x": "bus",
-        "y": 85
-      },
-      {
-        "x": "car",
-        "y": 256
-      },
-      {
-        "x": "moto",
-        "y": 157
-      },
-      {
-        "x": "bicycle",
-        "y": 282
-      },
-      {
-        "x": "horse",
-        "y": 173
-      },
-      {
-        "x": "skateboard",
-        "y": 253
-      },
-      {
-        "x": "others",
-        "y": 107
-      }
-    ]
-  },
-]

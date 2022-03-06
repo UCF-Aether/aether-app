@@ -1,13 +1,13 @@
-import { Fragment } from 'react';
-import { Button, Grid, Paper, Tooltip, Typography } from '@mui/material';
-import { styled } from '@mui/system';
-import { Panel } from './Panel';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { Button, Grid, Tooltip, Typography } from '@mui/material';
+import { styled } from '@mui/system';
+import { Fragment } from 'react';
 import { useSupabase } from '../SupabaseContext';
+import { Panel } from './Panel';
 
 const DashboardButton = styled(Button)(
-  ({ theme }) => ({
+  () => ({
     width: '100%',
     textTransform: 'none',
     justifyContent: 'flex-start',
