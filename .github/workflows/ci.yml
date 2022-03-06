@@ -46,7 +46,7 @@ jobs:
             args: [--frozen-lockfile]
             
     - name: Test
-      run: pnpm test:prod 
+      run: pnpm test
       
     - name: Lint
       run: pnpm lint -r
