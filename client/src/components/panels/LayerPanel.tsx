@@ -45,7 +45,7 @@ export function LayerPanel(props?: LayerPanelProps) {
     },
     {
       label: 'Humidity',
-      key: 'HUMIDITY',
+      key: 'REL_HUMIDITY',
     },
   ];
 
