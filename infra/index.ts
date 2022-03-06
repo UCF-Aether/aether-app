@@ -1,14 +1,14 @@
 import * as sst from "@serverless-stack/resources";
-import { InfraConfig, StageConfig } from "./infra/util/InfraConfig";
-import { WebappStack } from "./infra/stacks/Webapp";
-import { ApiStack } from "./infra/stacks/Api";
+import { InfraConfig, StageConfig } from "./util/InfraConfig";
+import { WebappStack } from "./stacks/Webapp";
+import { ApiStack } from "./stacks/Api";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 
 import * as _config from "./infra.config.json";
-import { IotStack } from "./infra/stacks/Iot";
-import { VpcStack } from "./infra/stacks/Vpc";
+import { IotStack } from "./stacks/Iot";
+import { VpcStack } from "./stacks/Vpc";
 import dotenv from "dotenv";
-import { Cluster, TtsCommunityIntegrationStack } from "./infra/stacks/Tts";
+import { Cluster, TtsCommunityIntegrationStack } from "./stacks/Tts";
 
 const config = _config as InfraConfig;
 
@@ -36,9 +36,13 @@ export default function main(app: sst.App) {
   const missingEnv: Array<string> = [];
   [
     "TTS_COMMUNITY_API_KEY",
+    "SUPABASE_URL",
+    "SUPABASE_PUBLIC_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "SUPABASE_SECRET_JWT",
+    "SUPABASE_URL",
+    "MAPBOX_ACCESS_TOKEN",
     "DATABASE_URL",
-    "POOLED_DATABASE_URL",
-    "REACT_APP_GOOGLE_MAPS_API_KEY",
   ].forEach((env) => {
     if (!process.env[env]) missingEnv.push(env);
   });
@@ -59,7 +63,11 @@ export default function main(app: sst.App) {
       vpcSubnets: { subnets: appVpc.privateSubnets },
       securityGroups: [vpcStack.sgs.lambda],
       environment: {
-        DATABASE_URL: process.env.POOLED_DATABASE_URL!,
+        SUPABASE_URL: process.env.SUPABASE_URL!,
+        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        SUPABASE_PUBLIC_ANON_KEY: process.env.SUPABASE_PUBLIC_ANON_KEY!,
+        DATABASE_URL: process.env.DATABASE_URL!,
+        APP_STAGE: app.stage.toUpperCase(),
       },
       bundle: {
         externalModules: ["pg-native"],

@@ -43,7 +43,6 @@ jspm_packages/
 *.js
 !jest.config.js
 !.eslintrc.js
-*.d.ts
 
 # TypeScript v1 declaration files
 typings/
@@ -75,6 +74,7 @@ typings/
 # dotenv environment variables file
 .env*
 .env.test
+!.env.template
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -124,3 +124,8 @@ cdk.out
 # SST
 .build/
 .sst
+
+# Supabase
+**/supabase/.branches
+**/supabase/.temp
+**/supabase/.env

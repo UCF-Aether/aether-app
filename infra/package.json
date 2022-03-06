@@ -1,0 +1,29 @@
+{
+  "name": "infra",
+  "scripts": {},
+  "devDependencies": {
+    "@tsconfig/node14": "^1.0.1",
+    "@types/aws-lambda": "^8.10.90",
+    "@types/node": "^14.18.9",
+    "cdk-dia": "^0.6.1",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.2.2"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
+  "eslintConfig": {
+    "extends": [
+      "serverless-stack"
+    ]
+  },
+  "dependencies": {
+    "@aws-cdk/aws-iot-actions-alpha": "2.7.0-alpha.0",
+    "@aws-cdk/aws-iot-alpha": "2.7.0-alpha.0",
+    "@serverless-stack/cli": "0.60.11",
+    "@serverless-stack/resources": "0.60.11",
+    "aws-cdk-lib": "2.7.0",
+    "dotenv": "^16.0.0",
+    "esbuild": "^0.14.25"
+  }
+}

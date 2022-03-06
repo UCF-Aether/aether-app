@@ -70,7 +70,7 @@ export class ApiStack extends sst.Stack {
         containerPort: props.containerPort,
         environment: {
           DATABASE_URL: process.env.DATABASE_URL!,
-          APP_STAGE: scope.stage.toUpperCase(),
+          SUPABASE_SECRET_JWT: process.env.SUPABASE_SECRET_JWT!,
         },
       },
       publicLoadBalancer: true,

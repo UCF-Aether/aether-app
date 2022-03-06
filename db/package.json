@@ -1,0 +1,11 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "description": "Aether supabase database configuration and schemas",
+  "author": "Paul Wood",
+  "main": "",
+  "scripts": {
+    "start": "./scripts/start.sh",
+    "stop": "supabase stop"
+  }
+}

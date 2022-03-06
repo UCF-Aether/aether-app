@@ -1,0 +1,14 @@
+query Readings($chan: String!) {
+  readingsWithin(filter: {chan: {equalTo: $chan}}) {
+    nodes {
+      val
+      geog {
+        latitude
+        longitude
+      }
+      chan
+      deviceId
+      takenAt
+    }
+  }
+}

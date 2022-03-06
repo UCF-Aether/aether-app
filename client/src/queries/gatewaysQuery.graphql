@@ -1,0 +1,8 @@
+query Gateways {
+  gateways {
+    nodes {
+      gatewayId
+      name
+    }
+  }
+}

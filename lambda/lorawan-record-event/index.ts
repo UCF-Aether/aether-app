@@ -1,9 +1,8 @@
 // import { Handler } from "aws-lambda";
-import { Client } from "pg";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { decodeCayenne } from "./cayenne";
 
 // Expects PG env vars
-
-const query = `INSERT INTO devmsgs(time, rcvd, deveui, gweui, payload) VALUES ($1, $2, $3, $4, $5);`;
 
 /* Expects TTN format (must have the minimum here):
   {
@@ -60,21 +59,21 @@ interface LorawanEvent {
     dev_eui: string;
     dev_addr: string;
   };
-  received_at: Date;
+  received_at: string;
   uplink_message: {
     f_port: number;
     f_cnt: number;
     frm_payload: string;
-    rx_metadata: [{
+    rx_metadata: Array<{
       gateway_ids: {
         gateway_id: string;
         eui: string;
       };
-      time: Date;
+      time: string;
       rssi: number;
       channel_rssi: number;
       snr: number;
-    }];
+    }>;
     settings: {
       data_rate: {
         lora: {
@@ -85,43 +84,51 @@ interface LorawanEvent {
       coding_rate: string;
       frequency: string;
       timestamp: number;
-      time: Date;
+      time: string;
     };
-    received_at: Date;
+    received_at: string;
     confirmed: boolean;
     consumed_airtime: string;
   }
 }
 
-async function record(client: Client, event: LorawanEvent) {
+async function record(supabase: SupabaseClient, event: LorawanEvent) {
   const payload = event.uplink_message.frm_payload;
   const deveui = event.end_device_ids.dev_eui;
   // There should really only be one...right?
-  const gweui = event.uplink_message.rx_metadata[0].gateway_ids.eui;
+  // const gweui = event.uplink_message.rx_metadata[0].gateway_ids.eui;
   const uplinkReceivedAt = event.uplink_message.received_at;
-  const ttsReceivedAt = event.received_at;  // Time The Things Stack handled uplink message on AWS
+  // const ttsReceivedAt = event.received_at;  // Time The Things Stack handled uplink message on AWS
 
-  console.log('Performing query');
-  await client.query(query, [ttsReceivedAt, uplinkReceivedAt, deveui, gweui, payload]);
+  try {
+    const base64Decoded = Buffer.from(payload, 'base64');
+    const readings = decodeCayenne(base64Decoded);
+
+    console.log(`Got readings: ${readings}`);
+
+    readings.forEach(async (reading, index) => {
+      console.log(reading);
+      console.log(deveui);
+      const { error } = await supabase.rpc('new_reading', {
+        dev_eui: deveui,
+        sensor_channel: reading.type,
+        at: uplinkReceivedAt,
+        value: 42.5,
+      });
+
+      if (error) throw new Error(`Error when adding new reading="${reading}, index=${index}: ${error}`);
+    })
+  }
+  catch (err) {
+    // Still store it, but TODO: issue some other kind of error/warning
+  }
 }
 
-export const handler = async function (event: LorawanEvent) {
-  const client = new Client({ connectionString: process.env.DATABASE_URL });
-  console.log(event)
+export const handler = async function(event: LorawanEvent) {
+  const supabase = createClient(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
 
-  console.log("Connecting to db");
-  try {
-    await client.connect();
-  } catch (e) {
-    throw new Error(`Error connecting to db: ${e}`);
-  }
-
-  try {
-    await record(client, event);
-    console.log("Query successful!");
-  } catch (e) {
-    throw new Error(`Error performing query: ${e}`);
-  } finally {
-    await client.end();
-  }
+  await record(supabase, event);
 };
