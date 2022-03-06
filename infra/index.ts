@@ -39,7 +39,10 @@ export default function main(app: sst.App) {
     "SUPABASE_URL",
     "SUPABASE_PUBLIC_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
-    "REACT_APP_GOOGLE_MAPS_API_KEY",
+    "SUPABASE_SECRET_JWT",
+    "SUPABASE_URL",
+    "MAPBOX_ACCESS_TOKEN",
+    "DATABASE_URL",
   ].forEach((env) => {
     if (!process.env[env]) missingEnv.push(env);
   });
@@ -62,6 +65,9 @@ export default function main(app: sst.App) {
       environment: {
         SUPABASE_URL: process.env.SUPABASE_URL!,
         SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        SUPABASE_PUBLIC_ANON_KEY: process.env.SUPABASE_PUBLIC_ANON_KEY!,
+        DATABASE_URL: process.env.DATABASE_URL!,
+        APP_STAGE: app.stage.toUpperCase(),
       },
       bundle: {
         externalModules: ["pg-native"],
