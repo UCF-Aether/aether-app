@@ -40,7 +40,6 @@ export default function main(app: sst.App) {
     "SUPABASE_PUBLIC_ANON_KEY",
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_SECRET_JWT",
-    "SUPABASE_URL",
     "MAPBOX_ACCESS_TOKEN",
     "DATABASE_URL",
   ].forEach((env) => {
