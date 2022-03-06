@@ -13,7 +13,6 @@
     "format:check": "prettier --check src",
     "codegen": "graphql-codegen --config codegen.yml"
   },
-  "private": true,
   "dependencies": {
     "@danmarshall/deckgl-typings": "^4.9.15",
     "@deck.gl/aggregation-layers": "^8.7.0",
@@ -73,14 +72,10 @@
   },
   "browserslist": {
     "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
+      "defaults, not ie 11"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      "defaults, not ie 11"
     ]
   },
   "devDependencies": {
