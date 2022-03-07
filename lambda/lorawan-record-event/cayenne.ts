@@ -7,13 +7,13 @@ export interface Reading {
 const decodeInt = (buf: Buffer) => buf.readUInt16BE();
 const decodeFloat = (buf: Buffer) => buf.readFloatBE();
 
-const cayenneChannels = {
+export const cayenneChannels = {
   0: 'BME688',
   1: 'ZMOD4510',
   2: 'SPS30'
 };
 
-const cayenneDataMappings = {
+export const cayenneDataMappings = {
   0: {
     name: 'TEMPERATURE',
     bytes: 4,
@@ -58,7 +58,7 @@ export function decodeCayenne(payloadBuf: Buffer): Array<Reading> {
   let payloadSize = payloadBuf.byteLength;
   let curByte = 0;
 
-  console.log(`Got cayenna packet: 0x${payloadBuf.toString('hex')}`);
+  console.log(`Got cayenna packet (${payloadSize} bytes): 0x${payloadBuf.toString('hex')}`);
 
   while (curByte < payloadSize) {
     chan = cayenneChannels[payloadBuf[curByte]];
@@ -71,7 +71,7 @@ export function decodeCayenne(payloadBuf: Buffer): Array<Reading> {
     let { name, bytes, decode } = mapping;
     curByte++;
 
-    if (curByte + bytes >= payloadSize) 
+    if (curByte + bytes > payloadSize) 
       throw new Error(`Missing value for chan=${chan}, mapping=${mapping}`);
 
     let value: number = decode(payloadBuf.slice(curByte));
