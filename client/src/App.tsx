@@ -20,6 +20,7 @@ const supabaseClient = createSupabaseClient(
 );
 console.log(supabaseClient);
 
+
 const urqlClient = createUrqlClient({
   url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 4000}/graphql`,
   fetchOptions: () => {
