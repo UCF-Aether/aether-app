@@ -35,6 +35,14 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
+        
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::831841410317:role/github-actions-deploy
+        role-session-name: github-actions-deploy
+        aws-region: us-east-1
+        
     - name: Cache pnpm modules
       uses: actions/cache@v2
       with:
@@ -48,13 +56,6 @@ jobs:
         run_install: |
           - recursive: true
             args: [--frozen-lockfile]
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        role-to-assume: arn:aws:iam::831841410317:role/github-actions-deploy
-        role-session-name: github-actions-deploy
-        aws-region: us-east-1
 
     - name: Deploy to AWS
       run: pnpm deploy:prod
