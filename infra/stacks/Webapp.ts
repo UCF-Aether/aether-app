@@ -44,7 +44,7 @@ export class WebappStack extends sst.Stack {
         ...siteProps,
         customDomain: {
           domainName: props.domain,
-          domainAlias: `www.${props.domain}`,
+          // domainAlias: `www.${props.domain}`,
           certificate: Certificate.fromCertificateArn(this, "SiteCertificate", props.certificateArn!),
         }
       }
