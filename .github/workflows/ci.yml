@@ -57,8 +57,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_PROD_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_PROD_SECRET_ACCESS_KEY }}
+        role-to-assume: arn:aws:iam::831841410317:role/github-actions-deploy
+        role-session-name: github-actions-deploy
         aws-region: us-east-1
 
     - name: Build
