@@ -1,6 +1,7 @@
 import { HeatmapLayer } from "@deck.gl/aggregation-layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
+import { useState } from "react";
 import StaticMap, { GeolocateControl } from "react-map-gl";
 import { useQuery } from "urql";
 import { ReadingsDocument } from "../../generated/graphql";
@@ -38,11 +39,22 @@ export function Map(props: MapProps) {
   const radiusPixels = 50;
   const intensity = 0.8;
   const threshold = 0.03;
+  
+  const [after, setAfter] = useState(() => {
+    let d = new Date()
+    d.setHours(d.getHours() - 4);
+    return d;
+  });
+
+  console.log(after);
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
   const [result, reexecuteQuery] = useQuery({
     query: ReadingsDocument,
-    variables: { chan: props.chan },
+    variables: {
+      chan: props.chan,
+      after,
+    },
   });
 
   let mapData: Array<MapData> = [];
