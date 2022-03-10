@@ -1,39 +1,21 @@
 import MenuIcon from "@mui/icons-material/Menu";
-import { Card, Stack } from "@mui/material";
+import { Card } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
-import { Auth } from "@supabase/ui";
 import { useState } from "react";
-import { Outlet, useNavigate } from "react-router-dom";
-import logo from "../aether.png";
-import { ColorModeToggle } from "./ColorModeToggle";
-import { Map } from "./map/Map";
-import { LayerPanel } from "./panels/LayerPanel";
-import { LoginSignupPanel } from "./panels/LoginSignupPanel";
-import { NodePanel } from "./panels/NodePanel";
-import { YouPanel } from "./panels/YouPanel";
-
-const drawerWidth = 280;
-
-// TODO: implement authentication
-// This is temporary - testing only
-let loggedIn = false;
+import { Outlet } from "react-router-dom";
 
 export interface SidebarProps {
   children?: JSX.Element[] | JSX.Element;
-  setLayer?: (layer: string) => void;
+  drawerWidth?: number;
+  drawer: JSX.Element;
 }
 
-export function Main() {
-  const navigate = useNavigate();
-  const { user } = Auth.useUser();
-  const [ dataLayer, setDataLayer ] = useState('aqi');
-
-  loggedIn = !!user;
-  // console.log(user);
+export function Sidebar(props: SidebarProps) {
+  const drawerWidth = props.drawerWidth ?? 280;
 
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -41,37 +23,11 @@ export function Main() {
     setMobileOpen(!mobileOpen);
   };
 
-  const drawer = (
-    <Stack>
-      <Toolbar sx={{ p: 2 }}>
-        <Box alignContent='center'>
-          <img width="75%" src={logo} alt="Logo" />
-        </Box>
-      </Toolbar>
-      <LayerPanel onChange={ layer => setDataLayer(layer) }/>
-      {
-        loggedIn ? (
-          <>
-            <NodePanel />
-            <YouPanel dashboardOnClick={() => navigate('/dashboard')} />
-          </>
-        ) : (
-          <>
-            <LoginSignupPanel />
-          </>
-        )
-      }
-      <ColorModeToggle />
-    </Stack>
-  );
-
   const toolbar = (
-    <AppBar style={{ pointerEvents: 'none', background: 'transparent', boxShadow: 'none' }}>
+    <AppBar style={{ background: "transparent", boxShadow: "none" }}>
       <Toolbar>
         <Card>
-          <IconButton
-            onClick={handleDrawerToggle}
-          >
+          <IconButton onClick={handleDrawerToggle}>
             <MenuIcon />
           </IconButton>
         </Card>
@@ -99,17 +55,17 @@ export function Main() {
             "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth },
           }}
         >
-          {drawer}
+          {props.drawer}
         </Drawer>
         <Drawer
           variant="permanent"
           sx={{
             display: { xs: "none", sm: "block" },
-            "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth, overflow: 'auto' },
+            "& .MuiDrawer-paper": { boxSizing: "border-box", width: drawerWidth, overflow: "auto" },
           }}
           open
         >
-          {drawer}
+          {props.drawer}
         </Drawer>
       </Box>
       <Box
@@ -123,7 +79,7 @@ export function Main() {
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >
-        <Map chan={dataLayer} />
+        {props.children}
         <Outlet />
       </Box>
     </Box>

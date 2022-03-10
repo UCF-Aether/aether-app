@@ -1,7 +1,7 @@
 import { HeatmapLayer } from "@deck.gl/aggregation-layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StaticMap, { GeolocateControl } from "react-map-gl";
 import { useQuery } from "urql";
 import { ReadingsDocument } from "../../generated/graphql";
@@ -32,6 +32,8 @@ export interface MapData {
 
 export interface MapProps {
   chan: string;
+  hoursAgo?: number;
+  timeout?: number;
 }
 
 /* eslint-disable react/no-deprecated */
@@ -42,18 +44,16 @@ export function Map(props: MapProps) {
   
   const [after, setAfter] = useState(() => {
     let d = new Date()
-    d.setHours(d.getHours() - 4);
+    d.setHours(d.getHours() - (props.hoursAgo ?? 2));
     return d;
   });
 
-  console.log(after);
-
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  const [result, reexecuteQuery] = useQuery({
+  const [result, query] = useQuery({
     query: ReadingsDocument,
     variables: {
       chan: props.chan,
-      after,
+      after: after.toISOString(),
     },
   });
 
@@ -103,7 +103,6 @@ export function Map(props: MapProps) {
         preventStyleDiffing={true}
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
       >
-        <GeolocateControl />
       </StaticMap>
     </DeckGL>
   );

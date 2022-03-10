@@ -1,5 +1,6 @@
-query Readings($chan: String!) {
-  readingsWithin(filter: {chan: {equalTo: $chan}}) {
+query Readings($chan: String!, $after: Datetime = "2000-01-01") {
+  readingsWithin(filter: {takenAt: {greaterThanOrEqualTo: $after}}, chan: $chan) {
+    totalCount
     nodes {
       val
       geog {

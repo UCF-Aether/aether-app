@@ -9,7 +9,7 @@ import "./App.css";
 import { ColorModeContext } from "./components/ColorModeContext";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
-import { Main } from "./components/Main";
+import { MainPage } from "./pages/Main";
 import { SupabaseProvider } from "./components/SupabaseContext";
 import { Dashboard } from "./pages/Dashboard";
 import { LoginSignup } from "./pages/LoginSignup";
@@ -96,9 +96,7 @@ export default function App() {
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={linkTheme}>
           <ThemeProvider theme={colorModeTheme}>
-            <MapProvider>
-              {props.children}
-            </MapProvider>
+            {props.children}
           </ThemeProvider>
         </ThemeProvider>
       </ColorModeContext.Provider>
@@ -110,7 +108,7 @@ export default function App() {
       <Providers>
         <div className="App">
           <Routes>
-            <Route path="/*" element={<Main />}>
+            <Route path="/*" element={<MainPage />}>
               <Route path="device/:deviceId" element={<DeviceDetailsModal />} />
               <Route path="gateway/:gatewayId" element={<GatewayDetailsModal />} />
             </Route>
