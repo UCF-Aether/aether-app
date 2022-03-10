@@ -25,7 +25,7 @@ export function BasePanel(props: BasePanelProps) {
         <CardContent 
           sx={{
             p: 0,
-            '&:first-child': {
+            '&:first-of-type': {
               paddingTop: props.pt || 0,
             },
             '&:last-child': {

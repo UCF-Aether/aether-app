@@ -76,6 +76,15 @@ export default function App() {
         palette: {
           mode,
         },
+        components: {
+          MuiDrawer: {
+            styleOverrides: {
+              paper: {
+                backgroundColor: '#F8F9FB',
+              },
+            }
+          }
+        }
       }),
     [mode]
   );
@@ -112,7 +121,7 @@ export default function App() {
               <Route path="gateway/:gatewayId" element={<GatewayDetailsModal />} />
             </Route>
             <Route path="/auth" element={<LoginSignup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/*" element={<Dashboard />} />
           </Routes>
         </div>
       </Providers>
