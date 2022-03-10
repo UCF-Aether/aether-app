@@ -1,8 +1,8 @@
 import { HeatmapLayer } from "@deck.gl/aggregation-layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
-import { useEffect, useState } from "react";
-import StaticMap, { GeolocateControl } from "react-map-gl";
+import { useState } from "react";
+import StaticMap from "react-map-gl";
 import { useQuery } from "urql";
 import { ReadingsDocument } from "../../generated/graphql";
 

@@ -2,17 +2,16 @@
 import { createTheme, LinkProps as MuiLinkProps, ThemeProvider } from "@mui/material";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { forwardRef, useMemo, useState } from "react";
-import { MapProvider } from "react-map-gl";
 import { Link, LinkProps, Route, Routes } from "react-router-dom";
 import { createClient as createUrqlClient, Provider as UrqlProvider } from "urql";
 import "./App.css";
 import { ColorModeContext } from "./components/ColorModeContext";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
-import { MainPage } from "./pages/Main";
 import { SupabaseProvider } from "./components/SupabaseContext";
 import { Dashboard } from "./pages/Dashboard";
 import { LoginSignup } from "./pages/LoginSignup";
+import { MainPage } from "./pages/Main";
 
 const supabaseClient = createSupabaseClient(
   process.env.REACT_APP_SUPABASE_URL!,
