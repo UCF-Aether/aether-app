@@ -1,5 +1,5 @@
 {
-  "Description": "AWS IoT Integration 1.1.8 for The Things Stack",
+  "Description": "AWS IoT Integration 1.1.9 for The Things Stack",
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterGroups": [
@@ -235,7 +235,7 @@
             "Fn::Sub": "thethingsindustries-${AWS::Region}"
           },
           "S3Key": {
-            "Fn::Sub": "integration-aws/1.1.8/fnconfigure.zip"
+            "Fn::Sub": "integration-aws/1.1.9/fnconfigure.zip"
           }
         },
         "Role": {
@@ -410,7 +410,7 @@
             "Fn::Sub": "thethingsindustries-${AWS::Region}"
           },
           "S3Key": {
-            "Fn::Sub": "integration-aws/1.1.8/fncreatethingtype.zip"
+            "Fn::Sub": "integration-aws/1.1.9/fncreatethingtype.zip"
           }
         },
         "Role": {
@@ -594,7 +594,7 @@
             "Fn::Sub": "thethingsindustries-${AWS::Region}"
           },
           "S3Key": {
-            "Fn::Sub": "integration-aws/1.1.8/fnhandleuplink.zip"
+            "Fn::Sub": "integration-aws/1.1.9/fnhandleuplink.zip"
           }
         },
         "Role": {
@@ -1182,7 +1182,7 @@
             "Fn::Sub": "thethingsindustries-${AWS::Region}"
           },
           "S3Key": {
-            "Fn::Sub": "integration-aws/1.1.8/fnhandledownlink.zip"
+            "Fn::Sub": "integration-aws/1.1.9/fnhandledownlink.zip"
           }
         },
         "Role": {
@@ -1374,7 +1374,7 @@
             "Fn::Sub": "thethingsindustries-${AWS::Region}"
           },
           "S3Key": {
-            "Fn::Sub": "integration-aws/1.1.8/fnclaimthing.zip"
+            "Fn::Sub": "integration-aws/1.1.9/fnclaimthing.zip"
           }
         },
         "Role": {
@@ -1549,7 +1549,7 @@
             "Fn::Sub": "thethingsindustries-${AWS::Region}"
           },
           "S3Key": {
-            "Fn::Sub": "integration-aws/1.1.8/fncreatething.zip"
+            "Fn::Sub": "integration-aws/1.1.9/fncreatething.zip"
           }
         },
         "Role": {
@@ -1723,7 +1723,7 @@
             "Fn::Sub": "thethingsindustries-${AWS::Region}"
           },
           "S3Key": {
-            "Fn::Sub": "integration-aws/1.1.8/fndeletething.zip"
+            "Fn::Sub": "integration-aws/1.1.9/fndeletething.zip"
           }
         },
         "Role": {
@@ -1946,7 +1946,7 @@
             "Fn::Sub": "thethingsindustries-${AWS::Region}"
           },
           "S3Key": {
-            "Fn::Sub": "integration-aws/1.1.8/fncheckversion.zip"
+            "Fn::Sub": "integration-aws/1.1.9/fncheckversion.zip"
           }
         },
         "Role": {
@@ -1958,7 +1958,7 @@
         "Environment": {
           "Variables": {
             "URL": "https://www.thethingsindustries.com/releases/thethingsstack-aws-iot-integration.json",
-            "CURRENT_VERSION": "1.1.8",
+            "CURRENT_VERSION": "1.1.9",
             "METRIC_NAME": "Version update available",
             "METRIC_NAMESPACE": {
               "Fn::Sub": "${AWS::StackName}"
