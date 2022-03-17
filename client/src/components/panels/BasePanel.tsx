@@ -17,6 +17,7 @@ export function BasePanel(props: BasePanelProps) {
     <Box 
       sx={{ 
         m: 2,
+        height: '100%',
         ...(props.sx || {})
       }} 
       style={{ textAlign: 'left' }}>
@@ -25,6 +26,7 @@ export function BasePanel(props: BasePanelProps) {
         <CardContent 
           sx={{
             p: 0,
+            height: '100%',
             '&:first-of-type': {
               paddingTop: props.pt || 0,
             },
