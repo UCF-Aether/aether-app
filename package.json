@@ -3,12 +3,10 @@
   "version": "1.0.0",
   "author": "Paul Wood",
   "scripts": {
-    "start": "exit 0",
+    "start": "source .env && pnpm run start --filter !infra",
     "build": "sst build",
     "deploy": "sst deploy",
-    "deploy:prod": "sst deploy --stage prod",
-    "build:prod": "sst build --stage prod",
-    "infra:start": "sst start --console"
+    "start:infra": "sst start --console"
   },
   "dependencies": {
     "@serverless-stack/cli": "0.60.11",
