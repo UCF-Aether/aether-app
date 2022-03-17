@@ -23,6 +23,7 @@ begin
     end if;
 end;
 $$
+language plpgsql;
 
 
 ------------------------------------------
