@@ -7,7 +7,23 @@ create type gateway_loc_method as enum ('GPS', 'MANUAL');
 create type user_alert_method as enum ('SMS', 'EMAIL');
 
 -- Allow postgraphile to augment user credentials
-grant authenticated to postgres;
+do $$
+declare
+    rec record;
+begin
+    select oid, rolname
+    into rec
+    from pg_roles
+    where
+        pg_has_role('postgres', oid, 'member')
+    and
+        rolname = 'authenticated';
+    if not found then
+        grant authenticated to postgres;
+    end if;
+end;
+$$
+
 
 ------------------------------------------
 --
