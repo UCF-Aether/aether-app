@@ -7,7 +7,7 @@ import { DevicesDocument } from "../../generated/graphql";
 
 const columns = [
   { field: "name", headerName: "Name", flex: 1 },
-  { field: "deveui", headerName: "Device EUI", flex: 1},
+  { field: "id", headerName: "Device EUI", flex: 1},
   { field: "updatedAt", headerName: "Updated At", flex: 1},
 ];
 
@@ -16,7 +16,13 @@ export function Devices() {
     query: DevicesDocument,
   });
 
-  const rows = [];
+  const rows = data?.devices?.nodes
+    .filter(dev => dev != null)
+    .map(dev => ({
+      name: dev.name,
+      id: dev.devEui,
+      updatedAt: dev.deviceMeta.updatedAt ?? '-',
+    })) || [];
 
   return (
     <Box sx={{ height: '100vh', m: 2  }}>
