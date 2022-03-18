@@ -16,6 +16,7 @@ import { Devices } from "./pages/dashboard/Devices";
 import { Gateways } from "./pages/dashboard/Gateways";
 import { Alerts } from "./pages/dashboard/Alerts";
 import { Account } from "./pages/dashboard/Account";
+import { RequireAuth } from "./components/RequireAuth";
 
 console.log(supabase);
 
@@ -113,7 +114,7 @@ export default function App() {
               <Route path="gateway/:gatewayId" element={<GatewayDetailsModal />} />
             </Route>
             <Route path="/auth" element={<LoginSignup />} />
-            <Route path="/dashboard/*" element={<Dashboard />}>
+            <Route path="/dashboard/*" element={<RequireAuth><Dashboard /></RequireAuth>}>
               <Route index element={<Overview />} />
               <Route path='devices' element={<Devices />} />
               <Route path='gateways' element={<Gateways />} />

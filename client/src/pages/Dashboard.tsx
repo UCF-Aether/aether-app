@@ -1,8 +1,8 @@
-import { Box, IconButton, List, ListItemButton, ListItemText, Stack } from "@mui/material";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { Sidebar } from "../components/Sidebar";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
+import { Box, IconButton, List, ListItemButton, ListItemText, Stack } from "@mui/material";
 import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Sidebar } from "../components/Sidebar";
 
 const dashy = [
   {
