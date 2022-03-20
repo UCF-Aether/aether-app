@@ -23,6 +23,22 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
+const AQI_COLORS: [number, number, number, number?][] = [
+  [0, 255, 0, 100],
+  [0, 255, 0],
+  [255, 255, 0],
+  [255, 126, 0],
+  [255, 0, 0],
+  [143, 63, 151],
+  [126, 0, 35],
+];
+
+const AQI_DOMAIN: [number, number]  = [0, 300];
+
+const PM_COLORS = [
+
+];
+
 export interface MapData {
   lat: number;
   lng: number;
@@ -38,9 +54,9 @@ export interface MapProps {
 
 /* eslint-disable react/no-deprecated */
 export function Map(props: MapProps) {
-  const radiusPixels = 50;
-  const intensity = 0.8;
-  const threshold = 0.03;
+  const radiusPixels = 20;
+  const intensity = 1.0;
+  const threshold = 0.003;
   
   const [after, setAfter] = useState(() => {
     let d = new Date()
@@ -53,7 +69,7 @@ export function Map(props: MapProps) {
     query: ReadingsDocument,
     variables: {
       chan: props.chan,
-      after: after.toISOString(),
+      // after: after.toISOString(),
     },
   });
 
@@ -72,15 +88,18 @@ export function Map(props: MapProps) {
         })) || [];
   }
 
-  // console.log(mapData);
+  console.log(mapData);
 
   const layers = [
     new HeatmapLayer<MapData>({
       data: mapData,
       id: "heatmp-layer",
-      pickable: false,
+      pickable: true,
       getPosition: (d) => [d.lat, d.lng],
-      getWeight: (d) => d.weight ?? 1,
+      getWeight: (d) => d.value,
+      colorDomain: AQI_DOMAIN,
+      colorRange: AQI_COLORS,
+      aggregation: 'MEAN',
       radiusPixels,
       intensity,
       threshold,
