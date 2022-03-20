@@ -23,7 +23,7 @@ export function LayerPanel(props?: LayerPanelProps) {
   const layers = [
     {
       label: 'AQI',
-      key: 'AQI',
+      key: 'FAST_AQI',
     },
     {
       label: 'PM2.5',
