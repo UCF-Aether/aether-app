@@ -24,9 +24,9 @@ export function Sidebar(props: SidebarProps) {
   };
 
   const toolbar = (
-    <AppBar style={{ background: "transparent", boxShadow: "none" }}>
+    <AppBar style={{ pointerEvents: 'none', background: "transparent", boxShadow: "none" }}>
       <Toolbar>
-        <Card>
+        <Card style={{ pointerEvents: 'auto' }}>
           <IconButton onClick={handleDrawerToggle}>
             <MenuIcon />
           </IconButton>
