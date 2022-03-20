@@ -24,7 +24,7 @@ const INITIAL_VIEW_STATE = {
 };
 
 const AQI_COLORS: [number, number, number, number?][] = [
-  [0, 255, 0, 100],
+  [0, 255, 0, 200],
   [0, 255, 0],
   [255, 255, 0],
   [255, 126, 0],
@@ -94,7 +94,7 @@ export function Map(props: MapProps) {
     new HeatmapLayer<MapData>({
       data: mapData,
       id: "heatmp-layer",
-      pickable: true,
+      pickable: false,
       getPosition: (d) => [d.lat, d.lng],
       getWeight: (d) => d.value,
       colorDomain: AQI_DOMAIN,
@@ -105,6 +105,14 @@ export function Map(props: MapProps) {
       threshold,
     }),
   ];
+
+  const getTooltip = info => {
+    console.log(info);
+    if (info.picked && info.object) {
+      return `${mapData[info.object.value]}`;
+    }
+    return null;
+  }
 
   return (
     <DeckGL
