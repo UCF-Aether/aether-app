@@ -1,7 +1,7 @@
 import { HeatmapLayer } from "@deck.gl/aggregation-layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StaticMap from "react-map-gl";
 import { useQuery } from "urql";
 import { ReadingsDocument } from "../../generated/graphql";
@@ -72,6 +72,14 @@ export function Map(props: MapProps) {
       // after: after.toISOString(),
     },
   });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      query();
+      console.log('fetching');
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [query]);
 
   let mapData: Array<MapData> = [];
 
