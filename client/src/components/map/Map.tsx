@@ -1,4 +1,5 @@
 import { HeatmapLayer } from "@deck.gl/aggregation-layers";
+import { ScatterplotLayer } from "@deck.gl/layers"; 
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
 import { useEffect, useState } from "react";
@@ -98,20 +99,31 @@ export function Map(props: MapProps) {
 
   console.log(mapData);
 
+  const radius = 5;
   const layers = [
-    new HeatmapLayer<MapData>({
+    new ScatterplotLayer<MapData>({
+      id: 'scatterplot-layer',
       data: mapData,
-      id: "heatmp-layer",
-      pickable: false,
-      getPosition: (d) => [d.lat, d.lng],
-      getWeight: (d) => d.value,
-      colorDomain: AQI_DOMAIN,
-      colorRange: AQI_COLORS,
-      aggregation: 'MEAN',
-      radiusPixels,
-      intensity,
-      threshold,
+      radiusScale: radius,
+      getPosition: d => [d.lng, d.lat],
+      getFillColor: [0, 128, 255],
+      getRadius: radius,
+      radiusMinPixels: radius,
+      pickable: true,
     }),
+    // new HeatmapLayer<MapData>({
+    //   data: mapData,
+    //   id: "heatmp-layer",
+    //   pickable: false,
+    //   getPosition: (d) => [d.lat, d.lng],
+    //   getWeight: (d) => d.value,
+    //   colorDomain: AQI_DOMAIN,
+    //   colorRange: AQI_COLORS,
+    //   aggregation: 'MEAN',
+    //   radiusPixels,
+    //   intensity,
+    //   threshold,
+    // }),
   ];
 
   const getTooltip = info => {
@@ -128,6 +140,7 @@ export function Map(props: MapProps) {
       layers={layers}
       initialViewState={INITIAL_VIEW_STATE}
       controller={true}
+      getTooltip={({ object }) => object && `${(object as any).value}`}
     >
       {/* @ts-ignore */}
       <StaticMap

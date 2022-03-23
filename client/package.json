@@ -18,6 +18,7 @@
     "@deck.gl/aggregation-layers": "^8.7.0",
     "@deck.gl/core": "^8.7.0",
     "@deck.gl/google-maps": "^8.7.0",
+    "@deck.gl/layers": "^8.7.2",
     "@deck.gl/react": "^8.7.0",
     "@emotion/react": "^11.7.1",
     "@emotion/styled": "^11.6.0",

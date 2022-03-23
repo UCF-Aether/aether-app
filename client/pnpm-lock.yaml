@@ -5,6 +5,7 @@ specifiers:
   '@deck.gl/aggregation-layers': ^8.7.0
   '@deck.gl/core': ^8.7.0
   '@deck.gl/google-maps': ^8.7.0
+  '@deck.gl/layers': ^8.7.2
   '@deck.gl/react': ^8.7.0
   '@emotion/react': ^11.7.1
   '@emotion/styled': ^11.6.0
@@ -72,9 +73,10 @@ specifiers:
 
 dependencies:
   '@danmarshall/deckgl-typings': 4.9.15
-  '@deck.gl/aggregation-layers': 8.7.0_@deck.gl+core@8.7.0
+  '@deck.gl/aggregation-layers': 8.7.0_60661eda146a3a8cd3a6b836883875f3
   '@deck.gl/core': 8.7.0
   '@deck.gl/google-maps': 8.7.0_@deck.gl+core@8.7.0
+  '@deck.gl/layers': 8.7.2_@deck.gl+core@8.7.0
   '@deck.gl/react': 8.7.0_ce8eb0b11b6273692454d209443eb00c
   '@emotion/react': 11.8.1_a0c521d4794c7ad97f5f4c1c4a7d5818
   '@emotion/styled': 11.8.1_d24c5a2cd50724e2cbcff1306f0cc72d
@@ -1563,6 +1565,19 @@ packages:
       indefinitely-typed: 1.1.0
     dev: false
 
+  /@deck.gl/aggregation-layers/8.7.0_60661eda146a3a8cd3a6b836883875f3:
+    resolution: {integrity: sha512-Wgv+anQccFcMlNN/tx1AO51XJxMtze/YzMfTFbLuhou0YErnRLkG6VITCOJUx9TESE006gPdsjqMmrljk64UqA==}
+    peerDependencies:
+      '@deck.gl/core': ^8.0.0
+      '@deck.gl/layers': ^8.0.0
+    dependencies:
+      '@deck.gl/core': 8.7.0
+      '@deck.gl/layers': 8.7.2_@deck.gl+core@8.7.0
+      '@luma.gl/shadertools': 8.5.10
+      '@math.gl/web-mercator': 3.5.7
+      d3-hexbin: 0.2.2
+    dev: false
+
   /@deck.gl/aggregation-layers/8.7.0_896097169083b0c2ca47eb8fcca7afc8:
     resolution: {integrity: sha512-Wgv+anQccFcMlNN/tx1AO51XJxMtze/YzMfTFbLuhou0YErnRLkG6VITCOJUx9TESE006gPdsjqMmrljk64UqA==}
     peerDependencies:
@@ -1571,18 +1586,6 @@ packages:
     dependencies:
       '@deck.gl/core': 8.7.0
       '@deck.gl/layers': 8.7.0_@deck.gl+core@8.7.0
-      '@luma.gl/shadertools': 8.5.10
-      '@math.gl/web-mercator': 3.5.7
-      d3-hexbin: 0.2.2
-    dev: false
-
-  /@deck.gl/aggregation-layers/8.7.0_@deck.gl+core@8.7.0:
-    resolution: {integrity: sha512-Wgv+anQccFcMlNN/tx1AO51XJxMtze/YzMfTFbLuhou0YErnRLkG6VITCOJUx9TESE006gPdsjqMmrljk64UqA==}
-    peerDependencies:
-      '@deck.gl/core': ^8.0.0
-      '@deck.gl/layers': ^8.0.0
-    dependencies:
-      '@deck.gl/core': 8.7.0
       '@luma.gl/shadertools': 8.5.10
       '@math.gl/web-mercator': 3.5.7
       d3-hexbin: 0.2.2
@@ -1695,6 +1698,19 @@ packages:
 
   /@deck.gl/layers/8.7.0_@deck.gl+core@8.7.0:
     resolution: {integrity: sha512-imC4IWQuFnNXnPLzIdV3NXZbeyxJeQDSxh+XWKslBEcEwTwfeczlQobJ8f1KkJYI6dsfwWHB5pP+oLQ2JArZxQ==}
+    peerDependencies:
+      '@deck.gl/core': ^8.0.0
+      '@loaders.gl/core': ^3.1.5
+    dependencies:
+      '@deck.gl/core': 8.7.0
+      '@loaders.gl/images': 3.1.8
+      '@mapbox/tiny-sdf': 1.2.5
+      '@math.gl/polygon': 3.5.7
+      earcut: 2.2.3
+    dev: false
+
+  /@deck.gl/layers/8.7.2_@deck.gl+core@8.7.0:
+    resolution: {integrity: sha512-5jee5f9pafMatbu1Ijwcsz6CT21nouut2h3TIDHLHrhMNmYsRKdWIaxDcXfh45FWZUbR0v04xo0GH5vjBQWd6g==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
       '@loaders.gl/core': ^3.1.5
