@@ -4,6 +4,7 @@ specifiers:
   '@danmarshall/deckgl-typings': ^4.9.15
   '@deck.gl/aggregation-layers': ^8.7.0
   '@deck.gl/core': ^8.7.0
+  '@deck.gl/extensions': ^8.7.2
   '@deck.gl/google-maps': ^8.7.0
   '@deck.gl/layers': ^8.7.2
   '@deck.gl/react': ^8.7.0
@@ -45,6 +46,7 @@ specifiers:
   '@types/react-map-gl': ^6.1.2
   '@typescript-eslint/eslint-plugin': ^5.0.0
   '@typescript-eslint/parser': ^5.0.0
+  colorjs.io: ^0.0.5
   d3-request: ^1.0.6
   deck.gl: ^8.7.0
   eslint: ^8.6.0
@@ -75,6 +77,7 @@ dependencies:
   '@danmarshall/deckgl-typings': 4.9.15
   '@deck.gl/aggregation-layers': 8.7.0_60661eda146a3a8cd3a6b836883875f3
   '@deck.gl/core': 8.7.0
+  '@deck.gl/extensions': 8.7.2_@deck.gl+core@8.7.0
   '@deck.gl/google-maps': 8.7.0_@deck.gl+core@8.7.0
   '@deck.gl/layers': 8.7.2_@deck.gl+core@8.7.0
   '@deck.gl/react': 8.7.0_ce8eb0b11b6273692454d209443eb00c
@@ -109,6 +112,7 @@ dependencies:
   '@types/react': 17.0.39
   '@types/react-dom': 17.0.11
   '@types/react-map-gl': 6.1.2
+  colorjs.io: 0.0.5
   d3-request: 1.0.6
   deck.gl: 8.7.0_react-dom@17.0.2+react@17.0.2
   graphql: 16.3.0
@@ -1636,6 +1640,16 @@ packages:
 
   /@deck.gl/extensions/8.7.0_@deck.gl+core@8.7.0:
     resolution: {integrity: sha512-4u+hSJgnMavz4LYzAWR8bIjQ4mbPRkqyBZ+nPqbu8PDmtEBbvbUKLU988ctuBXmC2oZ74sKYlcc4SsuZiTnU9w==}
+    peerDependencies:
+      '@deck.gl/core': ^8.0.0
+      gl-matrix: ^3.0.0
+    dependencies:
+      '@deck.gl/core': 8.7.0
+      '@luma.gl/shadertools': 8.5.10
+    dev: false
+
+  /@deck.gl/extensions/8.7.2_@deck.gl+core@8.7.0:
+    resolution: {integrity: sha512-Fy2SQApie3h2DC/eESHEkXDtAKqHpTahWVO1tMpRdAyfz/FMGv7N4M1FB1tpYFyLxpl1e+cjBKQ4N2ZwlvVppg==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
       gl-matrix: ^3.0.0
@@ -6019,6 +6033,12 @@ packages:
 
   /colorette/2.0.16:
     resolution: {integrity: sha512-hUewv7oMjCp+wkBv5Rm0v87eJhq4woh5rSR+42YSQJKecCqgIqNkZ6lAlQms/BwHPJA5NKMRlpxPRv0n8HQW6g==}
+
+  /colorjs.io/0.0.5:
+    resolution: {integrity: sha512-ZxozJyDt3+P0dUjkdKg6vP+fXKNyxxqybIqZAhOz4zjMwfHsLYlBjgPtx1hDqGule+QqEjcqNGbqs03iCfEMxQ==}
+    dependencies:
+      acorn: 7.4.1
+    dev: false
 
   /colors/1.0.3:
     resolution: {integrity: sha1-BDP0TYCWgP3rYO0mDxsMJi6CpAs=}

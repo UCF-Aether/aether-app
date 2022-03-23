@@ -1,19 +1,9 @@
-import { HeatmapLayer } from "@deck.gl/aggregation-layers";
-import { ScatterplotLayer } from "@deck.gl/layers"; 
+import { ScatterplotLayer } from "@deck.gl/layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
-import { useEffect, useState } from "react";
 import StaticMap from "react-map-gl";
-import { useQuery } from "urql";
-import { ReadingsDocument } from "../../generated/graphql";
-
-// Source data CSV
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const DATA_URL =
-  "https://raw.githubusercontent.com/visgl/deck.gl-data/master/examples/screen-grid/uber-pickup-locations.json"; // eslint-disable-line
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-const MAP_STYLE = "https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json";
+import Color from "colorjs.io";
+import { useMemo } from "react";
 
 const INITIAL_VIEW_STATE = {
   longitude: -73.75,
@@ -34,105 +24,83 @@ const AQI_COLORS: [number, number, number, number?][] = [
   [126, 0, 35],
 ];
 
-const AQI_DOMAIN: [number, number]  = [0, 300];
+export interface Reading {
+  val: number;
+  timestamp: Date;
+}
 
-const PM_COLORS = [
-
-];
-
-export interface MapData {
-  lat: number;
+interface MapData {
   lng: number;
-  value: number;
-  weight?: number;
+  lat: number;
+  timestamp: string;
+  val: number;
+}
+
+export interface ColorDomain {
+  color: [number, number, number];
+  start: number;
+}
+
+export interface LegendProps {
+  title: string;
+  description?: string;
+  colors: Array<ColorDomain>;
 }
 
 export interface MapProps {
-  chan: string;
-  hoursAgo?: number;
-  timeout?: number;
+  data: Array<MapData>;
+  legend: LegendProps;
+  rangeStart?: Date;
+  rangeStop?: Date;
 }
 
 /* eslint-disable react/no-deprecated */
 export function Map(props: MapProps) {
-  const radiusPixels = 20;
-  const intensity = 1.0;
-  const threshold = 0.003;
-  
-  const [after, setAfter] = useState(() => {
-    let d = new Date()
-    d.setHours(d.getHours() - (props.hoursAgo ?? 2));
-    return d;
-  });
+  const { data, rangeStart, rangeStop, legend } = props;
+  const { title, description, colors } = legend;
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const [result, query] = useQuery({
-    query: ReadingsDocument,
-    variables: {
-      chan: props.chan,
-      // after: after.toISOString(),
-    },
-  });
+  const colorRanges = useMemo(
+    () =>
+      colors.map((co, i) => {
+        if (i == colors.length - 1) 
+          return { start: co.start, color: (_) => co.color, width: -1 };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      query();
-      console.log('fetching');
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [query]);
+        const startColor = new Color(co.color);
+        const endColor = new Color(colors[i + 1].color);
+        const range = startColor.range(endColor);
+        const width = colors[i + 1].start - co.start;
+        return { start: co.start, color: (pct: number) => range(pct).srgb, width };
+      }),
+    [colors]
+  );
 
-  let mapData: Array<MapData> = [];
+  const getColor = (val: number) => {
+    const i = colorRanges.findIndex((cr) => val <= cr.start);
+    if (i === -1) return colorRanges[colorRanges.length - 1].color(0);
 
-  const { data, fetching, error } = result;
-
-  if (!fetching && !error && data) {
-    mapData =
-      data.readingsWithin?.nodes
-        .filter((r) => r != null && r != undefined)
-        .map((reading) => ({
-          value: reading!.val!,
-          lat: reading!.geog!.latitude,
-          lng: reading!.geog!.longitude,
-        })) || [];
+    const rangeDef = colorRanges[Math.max(i - 1, 0)];
+    const pct = (val - rangeDef.start) / rangeDef.width;
+    return rangeDef.color(pct);
   }
 
-  console.log(mapData);
-
-  const radius = 5;
   const layers = [
     new ScatterplotLayer<MapData>({
-      id: 'scatterplot-layer',
-      data: mapData,
-      radiusScale: radius,
+      id: "scatterplot-layer",
+      data,
       getPosition: d => [d.lng, d.lat],
-      getFillColor: [0, 128, 255],
-      getRadius: radius,
-      radiusMinPixels: radius,
+      getFillColor: d => getColor(d.val),
+      radiusMaxPixels: 100,
+      radiusMinPixels: 10,
       pickable: true,
+      opacity: 0.8,
+      filled: true,
+      updateTriggers: {
+        getFillColor: [getColor],
+      }
     }),
-    // new HeatmapLayer<MapData>({
-    //   data: mapData,
-    //   id: "heatmp-layer",
-    //   pickable: false,
-    //   getPosition: (d) => [d.lat, d.lng],
-    //   getWeight: (d) => d.value,
-    //   colorDomain: AQI_DOMAIN,
-    //   colorRange: AQI_COLORS,
-    //   aggregation: 'MEAN',
-    //   radiusPixels,
-    //   intensity,
-    //   threshold,
-    // }),
   ];
 
-  const getTooltip = info => {
-    console.log(info);
-    if (info.picked && info.object) {
-      return `${mapData[info.object.value]}`;
-    }
-    return null;
-  }
+  const getTooltip = ({ object }) => object && `${object.val}`;
 
   return (
     <DeckGL
@@ -140,18 +108,17 @@ export function Map(props: MapProps) {
       layers={layers}
       initialViewState={INITIAL_VIEW_STATE}
       controller={true}
-      getTooltip={({ object }) => object && `${(object as any).value}`}
+      getTooltip={getTooltip}
     >
       {/* @ts-ignore */}
       <StaticMap
         style={{ height: "100%", zIndex: 2000 }}
         reuseMaps
-        mapStyle='mapbox://styles/mapbox/streets-v9'
+        mapStyle="mapbox://styles/mapbox/streets-v11"
         // @ts-ignore
         preventStyleDiffing={true}
         mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-      >
-      </StaticMap>
+      ></StaticMap>
     </DeckGL>
   );
 }
