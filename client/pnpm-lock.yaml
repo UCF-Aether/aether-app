@@ -46,6 +46,9 @@ specifiers:
   '@types/react-map-gl': ^6.1.2
   '@typescript-eslint/eslint-plugin': ^5.0.0
   '@typescript-eslint/parser': ^5.0.0
+  '@visx/gradient': ^2.1.0
+  '@visx/legend': ^2.2.2
+  '@visx/scale': ^2.2.2
   colorjs.io: ^0.0.5
   d3-request: ^1.0.6
   deck.gl: ^8.7.0
@@ -112,6 +115,9 @@ dependencies:
   '@types/react': 17.0.39
   '@types/react-dom': 17.0.11
   '@types/react-map-gl': 6.1.2
+  '@visx/gradient': 2.1.0_react@17.0.2
+  '@visx/legend': 2.2.2_react@17.0.2
+  '@visx/scale': 2.2.2
   colorjs.io: 0.0.5
   d3-request: 1.0.6
   deck.gl: 8.7.0_react-dom@17.0.2+react@17.0.2
@@ -4385,6 +4391,26 @@ packages:
       '@types/node': 16.11.26
     dev: false
 
+  /@types/d3-color/1.4.2:
+    resolution: {integrity: sha512-fYtiVLBYy7VQX+Kx7wU/uOIkGQn8aAEY8oWMoyja3N4dLd8Yf6XgSIR/4yWvMuveNOH5VShnqCgRqqh/UNanBA==}
+    dev: false
+
+  /@types/d3-interpolate/1.4.2:
+    resolution: {integrity: sha512-ylycts6llFf8yAEs1tXzx2loxxzDZHseuhPokrqKprTQSTcD3JbJI1omZP1rphsELZO3Q+of3ff0ZS7+O6yVzg==}
+    dependencies:
+      '@types/d3-color': 1.4.2
+    dev: false
+
+  /@types/d3-scale/3.3.2:
+    resolution: {integrity: sha512-gGqr7x1ost9px3FvIfUMi5XA/F/yAf4UkUDtdQhpH92XCT0Oa7zkkRzY61gPVJq+DxpHn/btouw5ohWkbBsCzQ==}
+    dependencies:
+      '@types/d3-time': 2.1.1
+    dev: false
+
+  /@types/d3-time/2.1.1:
+    resolution: {integrity: sha512-9MVYlmIgmRR31C5b4FVSWtuMmBHh2mOWQYfl7XAYOa8dsnb7iEmUmRSWSFgXFtkjxO65d7hTUHQC+RhR/9IWFg==}
+    dev: false
+
   /@types/eslint-scope/3.7.3:
     resolution: {integrity: sha512-PB3ldyrcnAicT35TWPs5IcwKD8S333HMaa2VVv4+wdvebJkjWuW/xESoB8IwRcog8HYVYamb1g/R31Qv5Bx03g==}
     dependencies:
@@ -4803,6 +4829,51 @@ packages:
     dependencies:
       graphql: 16.3.0
     dev: true
+
+  /@visx/gradient/2.1.0_react@17.0.2:
+    resolution: {integrity: sha512-IpmAuAPsk4XQzKB+BxZiyyWHK4Ao/fJXYuqSO1Kryp5li3wt5H7LshXn2b2Nhu9NsR2eJFU1tmH9BDD9mT/Vww==}
+    peerDependencies:
+      react: ^16.0.0-0 || ^17.0.0-0
+    dependencies:
+      '@types/react': 17.0.39
+      prop-types: 15.8.1
+      react: 17.0.2
+    dev: false
+
+  /@visx/group/2.1.0_react@17.0.2:
+    resolution: {integrity: sha512-bZKa54yVjGYPZZhzYHLz4AVlidSr4ET9B/xmSa7nnictMJWr7e/IuZThB/bMfDQlgdtvhcfTgs+ZluySc5SBUg==}
+    peerDependencies:
+      react: ^16.0.0-0 || ^17.0.0-0
+    dependencies:
+      '@types/react': 17.0.39
+      classnames: 2.3.1
+      prop-types: 15.8.1
+      react: 17.0.2
+    dev: false
+
+  /@visx/legend/2.2.2_react@17.0.2:
+    resolution: {integrity: sha512-Pf77v3h12P5W2w5Iw1z+hucJVk19GOg+2R3N+O0SODDeaWg3pyN4eJMcs2LdYSfNWGkcejGu4G9Q/UUgjv7ihw==}
+    peerDependencies:
+      react: ^16.3.0-0 || ^17.0.0-0
+    dependencies:
+      '@types/react': 17.0.39
+      '@visx/group': 2.1.0_react@17.0.2
+      '@visx/scale': 2.2.2
+      classnames: 2.3.1
+      prop-types: 15.8.1
+      react: 17.0.2
+    dev: false
+
+  /@visx/scale/2.2.2:
+    resolution: {integrity: sha512-3aDySGUTpe6VykDQmF+g2nz5paFu9iSPTcCOEgkcru0/v5tmGzUdvivy8CkYbr87HN73V/Jc53lGm+kJUQcLBw==}
+    dependencies:
+      '@types/d3-interpolate': 1.4.2
+      '@types/d3-scale': 3.3.2
+      '@types/d3-time': 2.1.1
+      d3-interpolate: 1.4.0
+      d3-scale: 3.3.0
+      d3-time: 2.1.1
+    dev: false
 
   /@webassemblyjs/ast/1.11.1:
     resolution: {integrity: sha512-ukBh14qFLjxTQNTXocdyksN5QdM28S1CxHt2rdskFyL+xFV7VremuBLVbmCePj+URalXBENx/9Lm7lnhihtCSw==}
@@ -5880,6 +5951,10 @@ packages:
     resolution: {integrity: sha512-cOU9usZw8/dXIXKtwa8pM0OTJQuJkxMN6w30csNRUerHfeQ5R6U3kkU/FtJeIf3M202OHfY2U8ccInBG7/xogA==}
     dev: false
 
+  /classnames/2.3.1:
+    resolution: {integrity: sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==}
+    dev: false
+
   /clean-css/5.2.4:
     resolution: {integrity: sha512-nKseG8wCzEuji/4yrgM/5cthL9oTDc5UOQyFMvW/Q53oP6gLH690o1NbuTh6Y18nujr7BxlsFuS7gXLnLzKJGg==}
     engines: {node: '>= 10.0'}
@@ -6543,6 +6618,10 @@ packages:
     resolution: {integrity: sha512-ii0/r5f4sjKNTfh84Di+DpztYwqKhEyUlKoPrzUFfeSkWxjW49xU2QzO9qrPrNkpdI0XJkfzvmTu8V2Zylln6A==}
     dev: false
 
+  /d3-color/1.4.1:
+    resolution: {integrity: sha512-p2sTHSLCJI2QKunbGb7ocOh7DgTAn8IrLx21QRc/BSnodXM4sv6aLQlnfpvehFMLZEfBc6g9pH9SWQccFYfJ9Q==}
+    dev: false
+
   /d3-color/2.0.0:
     resolution: {integrity: sha512-SPXi0TSKPD4g9tw0NMZFnR95XVgUZiBH+uUTqQuDu1OsE2zomHU7ho0FISciaPvosimixwHFl3WHLGabv6dDgQ==}
     dev: false
@@ -6580,6 +6659,12 @@ packages:
 
   /d3-hierarchy/1.1.9:
     resolution: {integrity: sha512-j8tPxlqh1srJHAtxfvOUwKNYJkQuBFdM1+JAUfq6xqH5eAqf93L7oG1NVqDa4CpFZNvnNKtCYEUC8KY9yEn9lQ==}
+    dev: false
+
+  /d3-interpolate/1.4.0:
+    resolution: {integrity: sha512-V9znK0zc3jOPV4VD2zZn0sDhZU3WAE2bmlxdIwwQPPzPjvyLkd8B3JUVdS1IDUFDkWZ72c9qnv1GK2ZagTZ8EA==}
+    dependencies:
+      d3-color: 1.4.1
     dev: false
 
   /d3-interpolate/2.0.1:

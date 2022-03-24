@@ -20,6 +20,12 @@ export function MainPage() {
 
   const testData = [
     {
+      lat: -6.581689428,
+      lng: 10.142188214,
+      val: -81.7074561647786,
+      timestamp: "2022-03-11T20:54:46.653193+00:00",
+    },
+    {
       lat: -70.581689428,
       lng: 109.142188214,
       val: 81.7074561647786,
@@ -91,20 +97,12 @@ export function MainPage() {
     </Stack>
   );
 
-  const colors: ColorDomain[] = [
-    {
-      color: [0, 0, 255],
-      start: 0,
-    },
-    {
-      color: [255, 0, 0],
-      start: 50,
-    },
-  ];
+  const domain = [0, 51, 101, 151, 201, 301, 500];
+  const range = ['#00e400', '#ffff00', '#ff7e00', '#ff0000', '#8b3f97', '#8b3f97', '#7e0023']
 
   return (
     <Sidebar drawer={Drawer}>
-      <Map data={testData} legend={{ title: 'aqi', colors }}/>
+      <Map data={testData} legend={{ title: 'aqi', domain, range, units: '%' }}/>
     </Sidebar>
   );
 }

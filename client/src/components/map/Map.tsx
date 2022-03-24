@@ -4,6 +4,8 @@ import { DeckGL } from "@deck.gl/react";
 import StaticMap from "react-map-gl";
 import Color from "colorjs.io";
 import { useMemo } from "react";
+import { Card, Typography } from "@mui/material";
+import { Legend, LegendProps } from "./Legend";
 
 const INITIAL_VIEW_STATE = {
   longitude: -73.75,
@@ -41,15 +43,14 @@ export interface ColorDomain {
   start: number;
 }
 
-export interface LegendProps {
+export interface MapLegendProps extends LegendProps {
   title: string;
   description?: string;
-  colors: Array<ColorDomain>;
 }
 
 export interface MapProps {
   data: Array<MapData>;
-  legend: LegendProps;
+  legend: MapLegendProps;
   rangeStart?: Date;
   rangeStop?: Date;
 }
@@ -57,26 +58,28 @@ export interface MapProps {
 /* eslint-disable react/no-deprecated */
 export function Map(props: MapProps) {
   const { data, rangeStart, rangeStop, legend } = props;
-  const { title, description, colors } = legend;
+  const { title, description, units, domain, range } = legend;
 
+  // Each function takes a domain [0, 1] and returns a Color object
   const colorRanges = useMemo(
     () =>
-      colors.map((co, i) => {
-        if (i == colors.length - 1) 
-          return { start: co.start, color: (_) => co.color, width: -1 };
+      range.map((rng, i) => {
+        const dm = domain[i];
 
-        const startColor = new Color(co.color);
-        const endColor = new Color(colors[i + 1].color);
-        const range = startColor.range(endColor);
-        const width = colors[i + 1].start - co.start;
-        return { start: co.start, color: (pct: number) => range(pct).srgb, width };
+        const startColor = new Color(rng);
+        const endColor = new Color(range[i + 1] ?? rng);
+        const colorRange = startColor.range(endColor);
+        const width = (i === domain.length - 1) ? -1 : domain[i + 1] - dm;
+        return { start: dm, color: (pct: number) => colorRange(Math.min(pct, 1)).srgb.map(c => c * 256), width };
       }),
-    [colors]
+    [domain, range]
   );
 
+  // Find the right range function for `val`, and get the color in that range
   const getColor = (val: number) => {
     const i = colorRanges.findIndex((cr) => val <= cr.start);
     if (i === -1) return colorRanges[colorRanges.length - 1].color(0);
+    if (i === 0 && val < colorRanges[0].start) return colorRanges[0].color(0);
 
     const rangeDef = colorRanges[Math.max(i - 1, 0)];
     const pct = (val - rangeDef.start) / rangeDef.width;
@@ -103,22 +106,36 @@ export function Map(props: MapProps) {
   const getTooltip = ({ object }) => object && `${object.val}`;
 
   return (
-    <DeckGL
-      /* @ts-ignore */
-      layers={layers}
-      initialViewState={INITIAL_VIEW_STATE}
-      controller={true}
-      getTooltip={getTooltip}
-    >
-      {/* @ts-ignore */}
-      <StaticMap
-        style={{ height: "100%", zIndex: 2000 }}
-        reuseMaps
-        mapStyle="mapbox://styles/mapbox/streets-v11"
-        // @ts-ignore
-        preventStyleDiffing={true}
-        mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-      ></StaticMap>
-    </DeckGL>
+    <>
+      <DeckGL
+        /* @ts-ignore */
+        layers={layers}
+        initialViewState={INITIAL_VIEW_STATE}
+        controller={true}
+        getTooltip={getTooltip}
+      >
+        {/* @ts-ignore */}
+        <StaticMap
+          style={{ height: "100%", zIndex: 2000 }}
+          reuseMaps
+          mapStyle="mapbox://styles/mapbox/streets-v11"
+          // @ts-ignore
+          preventStyleDiffing={true}
+          mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
+        ></StaticMap>
+      </DeckGL>
+      <Card sx={{ 
+        zIndex: 10, 
+        alignSelf: 'end', 
+        justifyContent: 'center',
+        display: 'flex',
+        position: 'absolute', 
+        right: 5, 
+        top: 5,
+        width: 200,
+      }}>
+        <Legend title={title} domain={domain} range={range} />
+      </Card>
+    </>
   );
 }
