@@ -103,6 +103,7 @@ export function Map(props: MapProps) {
         initialViewState={INITIAL_VIEW_STATE}
         controller={true}
         getTooltip={getTooltip}
+        style={{ position: 'relative' }}
       >
         {/* @ts-ignore */}
         <StaticMap
