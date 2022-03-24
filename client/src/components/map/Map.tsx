@@ -16,22 +16,12 @@ const INITIAL_VIEW_STATE = {
   bearing: 0,
 };
 
-const AQI_COLORS: [number, number, number, number?][] = [
-  [0, 255, 0, 200],
-  [0, 255, 0],
-  [255, 255, 0],
-  [255, 126, 0],
-  [255, 0, 0],
-  [143, 63, 151],
-  [126, 0, 35],
-];
-
 export interface Reading {
   val: number;
   timestamp: Date;
 }
 
-interface MapData {
+export interface MapData {
   lng: number;
   lat: number;
   timestamp: string;
@@ -98,7 +88,7 @@ export function Map(props: MapProps) {
       opacity: 0.8,
       filled: true,
       updateTriggers: {
-        getFillColor: [getColor],
+        getFillColor: [getColor, colorRanges],
       }
     }),
   ];
@@ -132,9 +122,8 @@ export function Map(props: MapProps) {
         position: 'absolute', 
         right: 5, 
         top: 5,
-        width: 200,
       }}>
-        <Legend title={title} domain={domain} range={range} />
+        <Legend title={title} domain={domain} range={range} units={units} />
       </Card>
     </>
   );
