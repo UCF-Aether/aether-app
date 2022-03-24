@@ -42,13 +42,13 @@ export const layers: LayerInfoMap = {
     domain: [0, 12, 35.5, 55.5, 150.5, 250.5, 500.5], // Using 24-hour domain
     range: aqiRange,
     title: 'Raw PM2.5',
-    units: 'ug/m^3'
+    units: 'μg/m³'
   },
   RAW_PM10: {
     domain: [0, 55, 155, 255, 355, 425, 604], // Using 24-hour domain
     range: aqiRange,
     title: 'Raw PM10',
-    units: 'ug/m^3'
+    units: 'μg/m³'
   },
   RAW_O3: {
     domain: [0, 0.055, 0.071, 0.086, 0.106, 0.2], // Using 8-hour domain
@@ -78,7 +78,7 @@ export const layers: LayerInfoMap = {
     domain: [0, 10, 20, 30, 40, 50, 60],
     range: [],
     title: 'Temperature',
-    units: 'C',
+    units: '℃',
   },
   REL_HUMIDITY: {
     domain: [],
@@ -145,15 +145,15 @@ const testData = [
   },
 ];
 
-export interface UseLayerProps {
-  layer: LayerType
+export interface UseLayerOptions {
+  subscribe?: boolean; // Default true
 }
 
 export interface Layer extends LayerMeta {
   queryLayer: () => Array<MapData>;
 }
 
-export function useLayer(layer: LayerType): Layer {
+export function useLayer(layer: LayerType, options?: UseLayerOptions): Layer {
 
   return {
     ...layers[layer],
