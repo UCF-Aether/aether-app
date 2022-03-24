@@ -43,7 +43,7 @@ export function Legend(props: LegendProps) {
   const thresholdScale = scaleThreshold({ domain, range });  
 
   return (
-    <LegendContainer title={title}>
+    <LegendContainer title={`${title} (${units})`}>
         <LegendThreshold scale={thresholdScale}>
           {(labels) =>
             labels.slice(1).reverse().map((label, i) => (
