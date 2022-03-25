@@ -102,10 +102,11 @@ export function Map(props: MapProps) {
       data,
       pickable: false,
       getPosition: d => [d.lng, d.lat],
-      getText: d => `${f(d.val)}`,
+      getText: d => `${f(d.val)}`.replace('−', '-'),  // I'm too lazy to properly load fonts for deck.gl
       getSize: 18,
       getTextAnchor: 'middle',
       getAlignmentBaseline: 'center',
+      // fontFamily: 'Roboto',
       // getColor: (d) => isBright(deckRef.current?.pickObject({x: d.lng, y: d.lat, radius: 10}).)
     }),
   ];
