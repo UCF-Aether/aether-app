@@ -22,7 +22,7 @@ interface LayerMeta {
 
 type LayerInfoMap = {[key: string]: LayerMeta};
 
-const aqiDomain = [0, 50, 100, 150, 200, 300, 500];
+const aqiDomain = [50, 100, 150, 200, 300, 500];
 const aqiRange = ['#00e400', '#ffff00', '#ff7e00', '#ff0000', '#8b3f97', '#7e0023']
 
 export const layers: LayerInfoMap = {
@@ -75,14 +75,22 @@ export const layers: LayerInfoMap = {
     units: 'Index',
   },
   TEMPERATURE: {
-    domain: [0, 10, 20, 30, 40, 50, 60],
-    range: [],
+    domain: [-18, -12, -7, -1, 4, 10, 16, 21, 27, 32, 38],  // Every 10 F
+    range: [
+      '#B91BE4', '#6B1BE3', '#3915DC',
+      '#1267E6', '#2CB6F1', '#2CF1F1',
+      '#1BDA91', '#1BDA4B', '#8EDA1B', 
+      '#DADA1B' ,'#DA911B', '#DA211B',
+    ],
     title: 'Temperature',
     units: '℃',
   },
   REL_HUMIDITY: {
-    domain: [],
-    range: [],
+    domain: [36, 46, 56, 66, 76],
+    range: [
+      '#A647FF', '#3D6BEA', '#50DCA9', 
+      '#F8FB2F', '#F6451E', '#9D2417',
+    ],
     title: 'Rel. Humidity',
     units: '%',
   },

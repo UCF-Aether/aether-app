@@ -46,7 +46,7 @@ export function Legend(props: LegendProps) {
     <LegendContainer title={`${title} (${units})`}>
         <LegendThreshold scale={thresholdScale}>
           {(labels) =>
-            labels.slice(1).reverse().map((label, i) => (
+            labels.slice(0).reverse().map((label, i) => (
               <LegendItem
                 key={`legend-quantile-${i}`}
                 onClick={() => {
@@ -56,7 +56,7 @@ export function Legend(props: LegendProps) {
                 <svg width={legendGlyphSize} height={legendGlyphSize * 1.5}>
                   <LinearGradient 
                     from={range[range.length - 1 - i]} 
-                    to={range[range.length - i - 2]} 
+                    to={range[Math.max(range.length - i - 2, 0)]} 
                     id={`legend-grad-${i}`} 
                   />
                   <rect 
