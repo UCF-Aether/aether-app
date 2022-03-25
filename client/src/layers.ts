@@ -1,4 +1,6 @@
+import { CombinedError, OperationContext, useQuery } from "urql";
 import { MapData } from "./components/map/Map";
+import { ReadingsDocument } from "./generated/graphql";
 
 export type LayerType = 
   'RAW_AQI'
@@ -12,7 +14,7 @@ export type LayerType =
   | 'TEMPERATURE'
   | 'REL_HUMIDITY';
 
-interface LayerMeta {
+interface Layer {
   domain: Array<number>;
   range: Array<string>;
   title: string;
@@ -20,7 +22,7 @@ interface LayerMeta {
   units: string;
 }
 
-type LayerInfoMap = {[key: string]: LayerMeta};
+type LayerInfoMap = {[key: string]: Layer};
 
 const aqiDomain = [50, 100, 150, 200, 300, 500];
 const aqiRange = ['#00e400', '#ffff00', '#ff7e00', '#ff0000', '#8b3f97', '#7e0023']
@@ -155,16 +157,44 @@ const testData = [
 
 export interface UseLayerOptions {
   subscribe?: boolean; // Default true
+  pause?: boolean;
 }
 
-export interface Layer extends LayerMeta {
-  queryLayer: () => Array<MapData>;
+export interface LayerResult extends Layer {
+  queryLayer: () => void;
+  readings: Array<MapData>;
+  fetching: boolean;
+  error?: CombinedError;
 }
 
-export function useLayer(layer: LayerType, options?: UseLayerOptions): Layer {
+export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResult {
+  const [result, query] = useQuery({
+    query: ReadingsDocument,
+    pause: options?.pause,
+    variables: {
+      chan: layer,
+    },
+  });
+
+  const filterQuery = (d: any) => 
+    d!.readingsWithin!.nodes.map((rd: any)  => ({
+      lng: rd.geog.longitude,
+      lat: rd.geog.latitude,
+      timestamp: rd.takenAt,
+      val: rd.val,
+    }));
+
+  const { data, fetching, error } = result;
+
+  let readings: Array<MapData> = [];
+
+  if (!fetching && !error) readings = filterQuery(data);
 
   return {
     ...layers[layer],
-    queryLayer: () => testData,
+    readings,
+    fetching,
+    error,
+    queryLayer: () => query(),
   };
 }

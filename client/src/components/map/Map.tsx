@@ -4,7 +4,7 @@ import { ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 import { DeckGL } from "@deck.gl/react";
 import StaticMap from "react-map-gl";
 import Color from "colorjs.io";
-import { useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { Card, Typography } from "@mui/material";
 import { Legend, LegendProps } from "./Legend";
 import { format } from 'd3-format';
@@ -52,7 +52,9 @@ export function Map(props: MapProps) {
   const { data, rangeStart, rangeStop, legend } = props;
   const { title, description, units, domain, range } = legend;
   const f = format('.2s');
+
   const deckRef = useRef<Deck>(null);
+  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
   // Each function takes a domain [0, 1] and returns a Color object
   const colorRanges = useMemo(
@@ -103,7 +105,7 @@ export function Map(props: MapProps) {
       pickable: false,
       getPosition: d => [d.lng, d.lat],
       getText: d => `${f(d.val)}`.replace('−', '-'),  // I'm too lazy to properly load fonts for deck.gl
-      getSize: 18,
+      getSize: d => viewState.zoom > 10 ? 0 : 18,
       getTextAnchor: 'middle',
       getAlignmentBaseline: 'center',
       // fontFamily: 'Roboto',
@@ -113,12 +115,16 @@ export function Map(props: MapProps) {
 
   const getTooltip = ({ object }) => object && `${object.val}`;
 
+  const handleViewStateChange = useCallback(({newViewState}) => setViewState(newViewState), []);
+
+  console.log(viewState);
   return (
     <>
       <DeckGL
         /* @ts-ignore */
         layers={layers}
-        initialViewState={INITIAL_VIEW_STATE}
+        initialViewState={viewState}
+        onViewStateChange={handleViewStateChange}
         controller={true}
         getTooltip={getTooltip}
         style={{ position: 'relative' }}

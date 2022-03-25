@@ -18,7 +18,7 @@ export function MainPage() {
   const navigate = useNavigate();
   const { user } = Auth.useUser();
   const [layer, setLayer] = useState<LayerType>("RAW_AQI");
-  const { domain, range, title, units, queryLayer } = useLayer(layer);
+  const { domain, range, title, units, readings, queryLayer } = useLayer(layer);
 
   let loggedIn = !!user;
 
@@ -46,7 +46,7 @@ export function MainPage() {
 
   return (
     <Sidebar drawer={Drawer}>
-      <Map data={queryLayer()} legend={{ title, domain, range, units }}/>
+      <Map data={readings} legend={{ title, domain, range, units }}/>
     </Sidebar>
   );
 }
