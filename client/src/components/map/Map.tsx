@@ -1,11 +1,13 @@
-import { ScatterplotLayer } from "@deck.gl/layers";
+import { Deck } from '@deck.gl/core';
+import { ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
 import StaticMap from "react-map-gl";
 import Color from "colorjs.io";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { Card, Typography } from "@mui/material";
 import { Legend, LegendProps } from "./Legend";
+import { format } from 'd3-format';
 
 const INITIAL_VIEW_STATE = {
   longitude: -73.75,
@@ -49,6 +51,8 @@ export interface MapProps {
 export function Map(props: MapProps) {
   const { data, rangeStart, rangeStop, legend } = props;
   const { title, description, units, domain, range } = legend;
+  const f = format('.2s');
+  const deckRef = useRef<Deck>(null);
 
   // Each function takes a domain [0, 1] and returns a Color object
   const colorRanges = useMemo(
@@ -76,6 +80,8 @@ export function Map(props: MapProps) {
     return rangeDef.color(pct);
   }
 
+  const isBright = (c: [number, number, number]) => 0.2126 *c[0] + 0.7152 * c[1] + 0.0722 * c[2] > 40;
+
   const layers = [
     new ScatterplotLayer<MapData>({
       id: "scatterplot-layer",
@@ -83,13 +89,24 @@ export function Map(props: MapProps) {
       getPosition: d => [d.lng, d.lat],
       getFillColor: d => getColor(d.val),
       radiusMaxPixels: 100,
-      radiusMinPixels: 10,
+      radiusMinPixels: 25,
       pickable: true,
       opacity: 0.8,
       filled: true,
       updateTriggers: {
         getFillColor: [getColor, colorRanges],
       }
+    }),
+    new TextLayer<MapData>({
+      id: 'text-layer',
+      data,
+      pickable: false,
+      getPosition: d => [d.lng, d.lat],
+      getText: d => `${f(d.val)}`,
+      getSize: 18,
+      getTextAnchor: 'middle',
+      getAlignmentBaseline: 'center',
+      // getColor: (d) => isBright(deckRef.current?.pickObject({x: d.lng, y: d.lat, radius: 10}).)
     }),
   ];
 
@@ -104,6 +121,8 @@ export function Map(props: MapProps) {
         controller={true}
         getTooltip={getTooltip}
         style={{ position: 'relative' }}
+        /* @ts-ignore */
+        ref={deckRef}
       >
         {/* @ts-ignore */}
         <StaticMap
