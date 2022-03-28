@@ -7,21 +7,24 @@ create type gateway_loc_method as enum ('GPS', 'MANUAL');
 create type user_alert_method as enum ('SMS', 'EMAIL');
 
 -- Allow postgraphile to augment user credentials
-do $$
-declare
+do
+$$
+  declare
     rec record;
-begin
-    select oid, rolname
+  begin
+    select
+      oid,
+      rolname
     into rec
-    from pg_roles
+    from
+      pg_roles
     where
         pg_has_role('postgres', oid, 'member')
-    and
-        rolname = 'authenticated';
+    and rolname = 'authenticated';
     if not found then
-        grant authenticated to postgres;
+      grant authenticated to postgres;
     end if;
-end;
+  end;
 $$
 language plpgsql;
 
@@ -125,9 +128,12 @@ create or replace function generate_eui()
   language sql
 as
 $$
-SELECT array_to_string(
-           array(select substr('ABCDEF0123456789', ((random() * (16 - 1) + 1)::integer), 1)
-                 from generate_series(1, 16)), '');
+SELECT
+  array_to_string(
+      array(select
+              substr('ABCDEF0123456789', ((random() * (16 - 1) + 1)::integer), 1)
+            from
+              generate_series(1, 16)), '');
 $$;
 
 ------------------------------------------
@@ -139,9 +145,9 @@ create type lorawan_activation_method as enum ('OTAA', 'ABP');
 create table device
 (
   device_id         integer generated always as identity primary key,
-  profile_id        uuid         not null references profile (profile_id),
-  name              varchar(64)  not null,
-  dev_eui           char(16)     not null unique,
+  profile_id        uuid not null references profile (profile_id),
+  name              varchar(64) not null,
+  dev_eui           char(16) not null unique,
   app_skey          char(32),
   app_key           char(32),
   nwk_skey          char(32),
@@ -160,9 +166,12 @@ create or replace function get_device_owner(req_device_id integer)
   returns uuid
 as
 $$
-select profile_id
-from device
-where device_id = req_device_id
+select
+  profile_id
+from
+  device
+where
+  device_id = req_device_id
 $$
   language sql;
 
@@ -238,12 +247,17 @@ create or replace function get_device_location(id integer)
 as
 $$
 select *
-from location
-where loc_id = (
-  select loc_id
-  from device_meta
-  where device_meta.device_id = id
-);
+from
+  location
+where
+    loc_id = (
+    select
+      loc_id
+    from
+      device_meta
+    where
+      device_meta.device_id = id
+  );
 $$;
 
 -- Functions don't do string length matching - casts char(n) to char(1) for some odd reason?
@@ -253,8 +267,10 @@ create or replace function device_by_deveui(lookup_dev_eui text)
 as
 $$
 select *
-from device
-where device.dev_eui = lookup_dev_eui;
+from
+  device
+where
+  device.dev_eui = lookup_dev_eui;
 $$;
 ------------------------------------------
 --
@@ -264,8 +280,8 @@ $$;
 create table gateway
 (
   gateway_id     integer generated always as identity primary key,
-  profile_id     uuid         not null references profile (profile_id),
-  name           varchar(64)  not null,
+  profile_id     uuid not null references profile (profile_id),
+  name           varchar(64) not null,
   aws_gateway_id varchar(128) not null unique
 );
 create index gateway_profile_id on gateway (profile_id);
@@ -278,9 +294,12 @@ as
 $$
 begin
   return (
-    select profile_id
-    from gateway
-    where gateway_id = req_gateway_id
+    select
+      profile_id
+    from
+      gateway
+    where
+      gateway_id = req_gateway_id
   );
 end;
 $$
@@ -366,12 +385,12 @@ create policy "Only admins can update sensor_chan"
 create table reading
 (
   reading_id     integer generated always as identity primary key,
-  device_id      integer references device (device_id)            not null,
+  device_id      integer references device (device_id) not null,
   loc_id         integer references location (loc_id) not null,
   sensor_chan_id smallint references sensor_chan (sensor_chan_id) not null,
-  taken_at       timestamptz                                      not null,
+  taken_at       timestamptz not null,
   received_at    timestamptz default now(),
-  val            double precision                                 not null
+  val            double precision not null
 );
 create index reading_taken_at on reading (taken_at);
 create index reading_device_id on reading (device_id);
@@ -417,17 +436,19 @@ create policy "Allow unauthenticated reads"
 
 -- Join of reading sensor_chan for convenience
 create or replace view reading_by_chan as
-select reading_id,
-       device_id,
-       loc_geog as geog,
-       taken_at,
-       received_at,
-       val,
-       name  as chan_name,
-       units as chan_units
-from reading
-       join sensor_chan on reading.sensor_chan_id = sensor_chan.sensor_chan_id
-       join location on reading.loc_id = location.loc_id;
+select
+  reading_id,
+  device_id,
+  loc_geog as geog,
+  taken_at,
+  received_at,
+  val,
+  name     as chan_name,
+  units    as chan_units
+from
+  reading
+    join sensor_chan on reading.sensor_chan_id = sensor_chan.sensor_chan_id
+    join location on reading.loc_id = location.loc_id;
 
 -- Join of reading_by_chan and location for doing different types of filtering, like within <radius> or within a time range.
 create type reading_w_loc as
@@ -447,15 +468,18 @@ create or replace function new_reading(dev_eui text, sensor_channel text, at tim
   returns reading
   language sql as
 $$
-with dev as (select * from device_by_deveui(dev_eui))
+with
+  dev as (select * from device_by_deveui(dev_eui))
 insert
-into reading (device_id, loc_id, sensor_chan_id, taken_at, received_at, val)
-values ((select device_id from dev),
-        (select loc_id from get_device_location((select device_id from dev))),
-        (select sensor_chan_id from sensor_chan where sensor_chan.name = sensor_channel),
-        at,
-        now(),
-        value)
+into
+  reading (device_id, loc_id, sensor_chan_id, taken_at, received_at, val)
+values
+  ((select device_id from dev),
+   (select loc_id from get_device_location((select device_id from dev))),
+   (select sensor_chan_id from sensor_chan where sensor_chan.name = sensor_channel),
+   at,
+   now(),
+   value)
 returning *;
 $$;
 
@@ -470,43 +494,49 @@ create or replace function readings_within(start_at timestamptz default '-infini
   language sql
 as
 $$
-select r.reading_id,
-       r.device_id,
-       r.taken_at,
-       r.received_at,
-       r.val,
-       r.geog,
-       r.chan_name,
-       r.chan_units
-from reading_by_chan r
-where start_at <= r.taken_at
-  and end_at >= r.taken_at
-  and st_dwithin(r.geog, st_makepoint(center_lon, center_lat), radius)
-  and case when chan != '' then r.chan_name = chan else true end
-order by r.taken_at;
+select
+  r.reading_id,
+  r.device_id,
+  r.taken_at,
+  r.received_at,
+  r.val,
+  r.geog,
+  r.chan_name,
+  r.chan_units
+from
+  reading_by_chan r
+where
+    start_at <= r.taken_at
+and end_at >= r.taken_at
+and st_dwithin(r.geog, st_makepoint(center_lon, center_lat), radius)
+and case when chan != '' then r.chan_name = chan else true end
+order by
+  r.taken_at;
 $$
   stable;
 
 -- Insert some sensor channels we will support
-insert into sensor_chan (name, units)
-values ('REL_HUMIDITY', 'PERCENT'),
-       ('TEMPERATURE', 'DEG_CELSIUS'),
-       ('AQI', 'NONE'),
-       ('IAQ', 'NONE'),
-       ('PRESSURE', 'PA'),
-       ('GAS_ESTIMATE_1', 'PERCENT'),
-       ('GAS_ESTIMATE_2', 'PERCENT'),
-       ('GAS_ESTIMATE_3', 'PERCENT'),
-       ('GAS_ESTIMATE_4', 'PERCENT'),
-       ('CO2', 'PPM'),
-       ('VOC', 'PPB'),
-       ('PM1.0', 'UG/M^3'),
-       ('PM2.5', 'UG/M^3'),
-       ('PM4.0', 'UG/M^3'),
-       ('PM10', 'UG/M^3'),
-       ('O3', 'PPB'),
-       ('NO2', 'PPB'),
-       ('GAS_RES', 'OHM');
+insert into
+  sensor_chan (name, units)
+values
+  ('REL_HUMIDITY', 'percent'),
+  ('TEMPERATURE', 'celsius'),
+  ('AQI', 'none'),
+  ('IAQ', 'none'),
+  ('PRESSURE', 'Pa'),
+  ('GAS_ESTIMATE_1', 'percent'),
+  ('GAS_ESTIMATE_2', 'percent'),
+  ('GAS_ESTIMATE_3', 'percent'),
+  ('GAS_ESTIMATE_4', 'percent'),
+  ('CO2', 'ppm'),
+  ('VOC', 'ppb'),
+  ('PM1_0', 'ug/m^3'),
+  ('PM2_5', 'ug/m^3'),
+  ('PM4_0', 'ug/m^3'),
+  ('PM10', 'ug/m^3'),
+  ('O3', 'ppb'),
+  ('NO2', 'ppb'),
+  ('GAS_RES', 'ohm');
 
 
 ------------------------------------------
@@ -596,10 +626,11 @@ create or replace function generate_random_point(lat float, lng float, radius fl
   language sql
 as
 $$
-select st_makepoint(
-             lat + random() * radius,
-             lng + random() * radius
-         );
+select
+  st_makepoint(
+        lat + random() * radius,
+        lng + random() * radius
+    );
 $$;
 
 create or replace function generate_random_location(lat float, lng float, radius float)
@@ -607,8 +638,10 @@ create or replace function generate_random_location(lat float, lng float, radius
   language sql
 as
 $$
-insert into location (loc_geog)
-values (generate_random_point(lat, lng, radius))
+insert into
+  location (loc_geog)
+values
+  (generate_random_point(lat, lng, radius))
 returning loc_id;
 $$;
 
