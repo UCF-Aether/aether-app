@@ -131,7 +131,8 @@ create table pollutant_subindex
 );
 
 -- Assumes conc has been truncated
-create or replace function get_pollutant_subindex(pollutant text, for_timeframe_hours int, conc double precision)
+create or replace function get_pollutant_subindex(pollutant text, conc double precision,
+                                                  for_timeframe_hours int default -1)
   returns pollutant_subindex
   language sql
 as
@@ -143,7 +144,15 @@ where
     conc_low <= conc
 and conc_high >= conc
 and pol = pollutant
-and timeframe_hours = for_timeframe_hours;
+and case
+      when for_timeframe_hours > 0 then
+        timeframe_hours = for_timeframe_hours
+      when pollutant = 'O3' then
+        timeframe_hours = 8
+      else true end
+order by
+  timeframe_hours ASC
+limit 1;
 $$;
 
 create or replace function conc_to_aqi(pollutant text, for_timeframe_hours int, conc double precision)
