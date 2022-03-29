@@ -1,6 +1,5 @@
 create table hourly_reading_stats
 (
-  reading_stats_id int generated always as identity not null,
   device_id        int references device (device_id) not null,
   loc_id           int references location (loc_id) not null,
   chan_id          int references sensor_chan (sensor_chan_id) not null,
@@ -12,8 +11,7 @@ create table hourly_reading_stats
   max              double precision,
   min              double precision,
   avg              double precision generated always as ( sum / count ) stored,
-  primary key (loc_id, hour, day, chan_id),
-  unique (day, hour, chan_id, loc_id)
+  primary key (day, hour, chan_id, loc_id)
 );
 create index on hourly_reading_stats (chan_id);
 
@@ -35,7 +33,7 @@ begin
      new.val,
      new.val,
      new.val)
-  on conflict (device_id, hour, day, chan_id) do update
+  on conflict (loc_id, hour, day, chan_id) do update
     set
       cur_time = now(),
       sum = excluded.sum + hourly_reading_stats.sum,
@@ -43,8 +41,8 @@ begin
       max = greatest(excluded.sum, hourly_reading_stats.max),
       min = least(excluded.sum, hourly_reading_stats.min);
 
-  return null;
-end
+  return new;
+end;
 $$;
 
 create trigger reading_hourly_stats_trigger
@@ -182,23 +180,76 @@ create table hourly_aqi
   device_id       int references device (device_id),
   loc_id          int references location (loc_id),
   pollutant_id    smallint references pollutant (pollutant_id),
-  hour            int,
+  hour            smallint,
   day             date,
   aqi             smallint,
-  timeframe_hours smallint
+  timeframe_hours smallint,
+  unique (day, hour, pollutant_id, loc_id, device_id, timeframe_hours)
 );
-
-create index on hourly_aqi (day, hour, pollutant_id, loc_id);
 
 create or replace function update_hourly_aqi()
   returns trigger
-  language sql
+  language plpgsql
 as
 $$
+declare
+  pol_id smallint;
+  pol_name text;
+begin
+  if not new.chan_id in (
+    select
+      sensor_chan_id
+    from
+      sensor_chan sc
+    where
+      sc.name in ('O3', 'PM2_5', 'PM10', 'NO2', 'CO', 'SO2')) then
+    raise notice 'lkdjfkdjf';
+    return new;
+  end if;
+
+  select
+    name
+  from
+    pollutant p
+  where
+      p.name = (select sc.name from sensor_chan sc where sc.sensor_chan_id = new.chan_id)
+  into pol_name;
+
+  select
+    pollutant_id
+  from
+    pollutant p
+  where
+    p.name = pol_name
+  into pol_id;
+
+  raise notice 'id=%', pol_id;
+  insert into
+    hourly_aqi (device_id, loc_id, pollutant_id, hour, day, aqi, timeframe_hours)
+  values
+    (new.device_id,
+     new.loc_id,
+     pol_id,
+     new.hour,
+     new.day,
+     conc_to_aqi(pol_name, 24, new.avg),
+     1)
+  on conflict (day, hour, pollutant_id, loc_id, device_id, timeframe_hours) do update
+    set
+      aqi = conc_to_aqi(pol_name, 24, new.avg);
+
+  return new;
+end;
 $$;
 
+create trigger insert_hourly_aqi_trigger
+  after insert
+  on hourly_reading_stats
+  for each row
+execute procedure update_hourly_aqi();
+
 create trigger update_hourly_aqi_trigger
-  before insert
+  after update
   on hourly_reading_stats
   for each row
 execute procedure update_hourly_aqi();
