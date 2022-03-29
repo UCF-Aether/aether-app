@@ -263,3 +263,33 @@ create trigger update_hourly_aqi_trigger
   on hourly_reading_stats
   for each row
 execute procedure update_hourly_aqi();
+
+
+-- type can be aqi_type or 'MAX'
+create or replace function get_aqi(loc int, at timestamp default now(), for_type text default 'MAX')
+  returns smallint
+  language sql
+as
+$$
+with
+  cur_hours_aqi as (
+    select *
+    from
+      hourly_aqi
+    where
+        loc_id = loc
+    and hour = extract(hour from at)
+    and day = date_trunc('day', at)
+  )
+select
+  max(aqi)
+from
+  cur_hours_aqi
+where
+  case
+    when for_type = 'MAX' then
+      true
+    else
+      type = for_type::aqi_type
+    end;
+$$;
