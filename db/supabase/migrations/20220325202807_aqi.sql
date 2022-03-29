@@ -174,6 +174,7 @@ begin
 end;
 $$;
 
+create type aqi_type as enum ('RAW', 'HOURLY', 'DAILY','NOWCAST');
 create table hourly_aqi
 (
   hourly_aqi_id   int generated always as identity,
@@ -183,8 +184,8 @@ create table hourly_aqi
   hour            smallint,
   day             date,
   aqi             smallint,
-  timeframe_hours smallint,
-  unique (day, hour, pollutant_id, loc_id, device_id, timeframe_hours)
+  type            aqi_type not null,
+  unique (day, hour, pollutant_id, loc_id, device_id, type)
 );
 
 create or replace function update_hourly_aqi()
@@ -225,7 +226,7 @@ begin
 
   raise notice 'id=%', pol_id;
   insert into
-    hourly_aqi (device_id, loc_id, pollutant_id, hour, day, aqi, timeframe_hours)
+    hourly_aqi (device_id, loc_id, pollutant_id, hour, day, aqi, type)
   values
     (new.device_id,
      new.loc_id,
@@ -233,8 +234,8 @@ begin
      new.hour,
      new.day,
      conc_to_aqi(pol_name, 24, new.avg),
-     1)
-  on conflict (day, hour, pollutant_id, loc_id, device_id, timeframe_hours) do update
+     'RAW')
+  on conflict (day, hour, pollutant_id, loc_id, device_id, type) do update
     set
       aqi = conc_to_aqi(pol_name, 24, new.avg);
 
