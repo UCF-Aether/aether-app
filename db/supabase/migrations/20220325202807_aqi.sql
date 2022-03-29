@@ -1,16 +1,16 @@
 create table hourly_reading_stats
 (
-  device_id        int references device (device_id) not null,
-  loc_id           int references location (loc_id) not null,
-  chan_id          int references sensor_chan (sensor_chan_id) not null,
-  hour             smallint    default extract(hour from now()),
-  day              date        default date_trunc('day', now())::date,
-  cur_time         timestamptz default now(),
-  sum              double precision not null,
-  count            int         default 1,
-  max              double precision,
-  min              double precision,
-  avg              double precision generated always as ( sum / count ) stored,
+  device_id int references device (device_id) not null,
+  loc_id    int references location (loc_id) not null,
+  chan_id   int references sensor_chan (sensor_chan_id) not null,
+  hour      smallint    default extract(hour from now()),
+  day       date        default date_trunc('day', now())::date,
+  cur_time  timestamptz default now(),
+  sum       double precision not null,
+  count     int         default 1,
+  max       double precision,
+  min       double precision,
+  avg       double precision generated always as ( sum / count ) stored,
   primary key (day, hour, chan_id, loc_id)
 );
 create index on hourly_reading_stats (chan_id);
@@ -186,14 +186,14 @@ $$;
 create type aqi_type as enum ('RAW', 'HOURLY', 'DAILY','NOWCAST');
 create table hourly_aqi
 (
-  hourly_aqi_id   int generated always as identity,
-  device_id       int references device (device_id),
-  loc_id          int references location (loc_id),
-  pollutant_id    smallint references pollutant (pollutant_id),
-  hour            smallint,
-  day             date,
-  aqi             smallint,
-  type            aqi_type not null,
+  hourly_aqi_id int generated always as identity,
+  device_id     int references device (device_id),
+  loc_id        int references location (loc_id),
+  pollutant_id  smallint references pollutant (pollutant_id),
+  hour          smallint,
+  day           date,
+  aqi           smallint,
+  type          aqi_type not null,
   unique (day, hour, pollutant_id, loc_id, device_id, type)
 );
 
