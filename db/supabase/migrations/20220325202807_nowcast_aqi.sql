@@ -3,17 +3,17 @@ create table hourly_reading_stats
   reading_stats_id int generated always as identity not null,
   device_id        int references device (device_id) not null,
   loc_id           int references location (loc_id) not null,
-  hour             int         default extract(hour from now()),
+  chan_id          int references sensor_chan (sensor_chan_id) not null,
+  hour             smallint    default extract(hour from now()),
   day              date        default date_trunc('day', now())::date,
   cur_time         timestamptz default now(),
-  chan_id          int references sensor_chan (sensor_chan_id) not null,
   sum              double precision not null,
   count            int         default 1,
   max              double precision,
   min              double precision,
   avg              double precision generated always as ( sum / count ) stored,
   primary key (loc_id, hour, day, chan_id),
-  unique (loc_id, hour, day, chan_id)
+  unique (day, hour, chan_id, loc_id)
 );
 create index on hourly_reading_stats (chan_id);
 
@@ -47,7 +47,6 @@ begin
 end
 $$;
 
-drop trigger if exists reading_hourly_stats_trigger on reading;
 create trigger reading_hourly_stats_trigger
   before insert
   on reading
@@ -77,7 +76,9 @@ select
   hour,
   day,
   chan_id,
-  avg
+  avg,
+  device_id,
+  loc_id
 from
   hourly_reading_stats
 where
@@ -88,7 +89,9 @@ select
   hour,
   day,
   chan_id,
-  avg
+  avg,
+  device_id,
+  loc_id
 from
   hourly_reading_stats
 where
@@ -99,30 +102,103 @@ select
   hour,
   day,
   chan_id,
-  avg
+  avg,
+  device_id,
+  loc_id
 from
   hourly_reading_stats
 where
   chan_id = get_sensor_chan_id('PM10');
 
 
-create or replace function o3_nowcast_surrogate_aqi (device_id int, at timestamp)
-  returns double precision
+create table pollutant
+(
+  pollutant_id smallint primary key generated always as identity,
+  name         text unique,
+  trunc_amt    smallint not null
+);
+
+create table pollutant_subindex
+(
+  pollutant_subindex_id int primary key generated always as identity,
+  pol                   text not null references pollutant (name),
+  timeframe_hours       int not null,
+  aqi_low               smallint not null,
+  aqi_high              smallint not null,
+  conc_low              double precision not null,
+  conc_high             double precision not null,
+  advisory_statement    text default '',
+  unique (pol, timeframe_hours, aqi_low, aqi_high),
+  constraint positive_timeframe check ( timeframe_hours >= 0 )
+);
+
+-- Assumes conc has been truncated
+create or replace function get_pollutant_subindex(pollutant text, for_timeframe_hours int, conc double precision)
+  returns pollutant_subindex
+  language sql
+as
+$$
+select *
+from
+  pollutant_subindex
+where
+    conc_low <= conc
+and conc_high >= conc
+and pol = pollutant
+and timeframe_hours = for_timeframe_hours;
+$$;
+
+create or replace function conc_to_aqi(pollutant text, for_timeframe_hours int, conc double precision)
+  returns int
   language plpgsql
-as $$
+as
+$$
+declare
+  trunc_conc double precision;
+  aqi int;
 begin
-end
+  select
+    trunc(conc::numeric, pm.trunc_amt)
+  from
+    pollutant pm
+  where
+    pm.name = pollutant
+  into
+    trunc_conc;
+
+  select
+      aqi_low + (aqi_high - aqi_low) * (trunc_conc - conc_low) / (conc_high - conc_low)
+  from
+    get_pollutant_subindex(pollutant, for_timeframe_hours, trunc_conc)
+  into aqi;
+
+  return aqi;
+end;
 $$;
 
 create table hourly_aqi
 (
-  hourly_aqi_id int generated always as identity,
-  loc_id        int references location (loc_id),
-  hour          int,
-  day           date,
-  pm2_5_aqi     double precision,
-  pm10_aqi      double precision,
-  o3_aqi        double precision,
-  aqi           double precision generated always as ( max([pm2_5_aqi, pm10_aqi, o3_aqi]) ) stored
+  hourly_aqi_id   int generated always as identity,
+  device_id       int references device (device_id),
+  loc_id          int references location (loc_id),
+  pollutant_id    smallint references pollutant (pollutant_id),
+  hour            int,
+  day             date,
+  aqi             smallint,
+  timeframe_hours smallint
 );
 
+create index on hourly_aqi (day, hour, pollutant_id, loc_id);
+
+create or replace function update_hourly_aqi()
+  returns trigger
+  language sql
+as
+$$
+$$;
+
+create trigger update_hourly_aqi_trigger
+  before insert
+  on hourly_reading_stats
+  for each row
+execute procedure update_hourly_aqi();

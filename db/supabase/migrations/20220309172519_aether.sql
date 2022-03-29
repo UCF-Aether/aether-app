@@ -515,30 +515,6 @@ order by
 $$
   stable;
 
--- Insert some sensor channels we will support
-insert into
-  sensor_chan (name, units)
-values
-  ('REL_HUMIDITY', 'percent'),
-  ('TEMPERATURE', 'celsius'),
-  ('AQI', 'none'),
-  ('IAQ', 'none'),
-  ('PRESSURE', 'Pa'),
-  ('GAS_ESTIMATE_1', 'percent'),
-  ('GAS_ESTIMATE_2', 'percent'),
-  ('GAS_ESTIMATE_3', 'percent'),
-  ('GAS_ESTIMATE_4', 'percent'),
-  ('CO2', 'ppm'),
-  ('VOC', 'ppb'),
-  ('PM1_0', 'ug/m^3'),
-  ('PM2_5', 'ug/m^3'),
-  ('PM4_0', 'ug/m^3'),
-  ('PM10', 'ug/m^3'),
-  ('O3', 'ppb'),
-  ('NO2', 'ppb'),
-  ('GAS_RES', 'ohm');
-
-
 ------------------------------------------
 --
 -- Alerts
