@@ -223,7 +223,6 @@ begin
       sensor_chan sc
     where
       sc.name in ('O3', 'PM2_5', 'PM10', 'NO2', 'CO', 'SO2')) then
-    raise notice 'lkdjfkdjf';
     return new;
   end if;
 
