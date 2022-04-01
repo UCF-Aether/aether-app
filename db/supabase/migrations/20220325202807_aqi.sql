@@ -176,7 +176,7 @@ begin
   select
       aqi_low + (aqi_high - aqi_low) * (trunc_conc - conc_low) / (conc_high - conc_low)
   from
-    get_pollutant_subindex(pollutant, for_timeframe_hours, trunc_conc)
+    get_pollutant_subindex(pollutant, trunc_conc, for_timeframe_hours)
   into aqi;
 
   return aqi;
