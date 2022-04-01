@@ -205,6 +205,7 @@ $$
 declare
   pol_id smallint;
   pol_name text;
+  new_aqi smallint;
 begin
   if not new.chan_id in (
     select
@@ -233,6 +234,8 @@ begin
     p.name = pol_name
   into pol_id;
 
+  select conc_to_aqi(pol_name, new.avg) into new_aqi;
+
   raise notice 'id=%', pol_id;
   insert into
     hourly_aqi (device_id, loc_id, pollutant_id, hour, day, aqi, type)
@@ -242,11 +245,11 @@ begin
      pol_id,
      new.hour,
      new.day,
-     conc_to_aqi(pol_name, 24, new.avg),
+     new_aqi,
      'RAW')
   on conflict (day, hour, pollutant_id, loc_id, device_id, type) do update
     set
-      aqi = conc_to_aqi(pol_name, 24, new.avg);
+      aqi = new_aqi;
 
   return new;
 end;
