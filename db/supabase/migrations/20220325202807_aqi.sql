@@ -192,7 +192,7 @@ begin
 end;
 $$;
 
-create type aqi_type as enum ('RAW', 'HOURLY', 'DAILY','NOWCAST');
+create type hourly_aqi_type as enum ('RAW', 'MIDPOINT', 'NOWCAST');
 create table hourly_aqi
 (
   hourly_aqi_id int generated always as identity,
@@ -202,7 +202,7 @@ create table hourly_aqi
   hour          smallint not null,
   day           date not null,
   aqi           smallint not null,
-  type          aqi_type not null,
+  type          hourly_aqi_type not null,
   unique (day, hour, pollutant_id, loc_id, device_id, type)
 );
 
@@ -301,6 +301,6 @@ where
     when for_type = 'MAX' then
       true
     else
-      type = for_type::aqi_type
+      type = for_type::hourly_aqi_type
     end;
 $$;
