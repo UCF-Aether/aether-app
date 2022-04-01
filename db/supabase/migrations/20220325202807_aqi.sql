@@ -187,12 +187,12 @@ create type aqi_type as enum ('RAW', 'HOURLY', 'DAILY','NOWCAST');
 create table hourly_aqi
 (
   hourly_aqi_id int generated always as identity,
-  device_id     int references device (device_id),
-  loc_id        int references location (loc_id),
-  pollutant_id  smallint references pollutant (pollutant_id),
-  hour          smallint,
-  day           date,
-  aqi           smallint,
+  device_id     int references device (device_id) not null,
+  loc_id        int references location (loc_id) not null,
+  pollutant_id  smallint references pollutant (pollutant_id) not null,
+  hour          smallint not null,
+  day           date not null,
+  aqi           smallint not null,
   type          aqi_type not null,
   unique (day, hour, pollutant_id, loc_id, device_id, type)
 );
