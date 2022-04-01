@@ -7,7 +7,7 @@ values
   ('REL_HUMIDITY', 'percent'),
   ('TEMPERATURE', 'deg_celsius'),
   ('AQI', 'none'),
-  ('IAQ', 'none'),
+  ('FAST_AQI', 'none'),
   ('PRESSURE', 'Pa'),
   ('GAS_ESTIMATE_1', 'percent'),
   ('GAS_ESTIMATE_2', 'percent'),
