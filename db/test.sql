@@ -48,8 +48,8 @@ begin
   perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'TEMPERATURE', 0, 40);
   perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'REL_HUMIDITY', 0, 100);
   perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'O3', 0, 100);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'PM1.0', 0, 100);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'PM2.5', 0, 100);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'PM1_0', 0, 100);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'PM2_5', 0, 100);
   perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'VOC', 0, 100);
   return new;
 end;
