@@ -131,6 +131,7 @@ create table pollutant_subindex
 );
 
 -- Assumes conc has been truncated
+-- TODO: handle choosing 1hr or 8hr O3 based on conc
 create or replace function get_pollutant_subindex(pollutant text, conc double precision,
                                                   for_timeframe_hours int default -1)
   returns pollutant_subindex
@@ -155,7 +156,8 @@ order by
 limit 1;
 $$;
 
-create or replace function conc_to_aqi(pollutant text, for_timeframe_hours int, conc double precision)
+
+create or replace function conc_to_aqi(pollutant text, conc double precision, for_timeframe_hours int default -1)
   returns int
   language plpgsql
 as
@@ -174,7 +176,14 @@ begin
     trunc_conc;
 
   select
-      aqi_low + (aqi_high - aqi_low) * (trunc_conc - conc_low) / (conc_high - conc_low)
+      case
+        when trunc_conc < (select min(conc_low) from pollutant_subindex where pol = pollutant) then
+          0
+        when trunc_conc > (select max(conc_high) from pollutant_subindex where pol = pollutant) then
+          500
+        else
+          aqi_low + (aqi_high - aqi_low) * (trunc_conc - conc_low) / (conc_high - conc_low)
+      end
   from
     get_pollutant_subindex(pollutant, trunc_conc, for_timeframe_hours)
   into aqi;
