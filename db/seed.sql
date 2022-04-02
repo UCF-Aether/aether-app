@@ -108,4 +108,21 @@ values
    'Everyone should avoid all physical activity outdoors; people with heart or lung disease, older adults, ' ||
    'children, and people of lower socioeconomic status should remain indoors and keep activity levels low.');
 
+
+insert into cayenne.map (key, val, decode_to)
+values
+  (0, 'TEMPERATURE', 'FLOAT'),
+  (1, 'PRESSURE', 'FLOAT'),
+  (2, 'REL_HUMIDITY', 'FLOAT'),
+  (3, 'GAS_RES', 'FLOAT'),
+  (4, 'FAST_AQI', 'U16'),
+  (5, 'AQI', 'U16'),
+  (6, 'O3', 'FLOAT');
+
+insert into cayenne.channel (key, val)
+values
+  (0, 'BME688'),
+  (1, 'ZMOD4510'),
+  (2, 'SPS30');
+
 commit;
