@@ -143,3 +143,21 @@ GRANT EXECUTE ON FUNCTION public.bytea_to_f32(bytea) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.bytea_to_f32(bytea) TO postgres;
 
 GRANT EXECUTE ON FUNCTION public.bytea_to_f32(bytea) TO service_role;
+
+delete from cayenne.map;
+insert into cayenne.map (key, val, decode_to)
+values
+  (0, 'TEMPERATURE', 'FLOAT'),
+  (1, 'PRESSURE', 'FLOAT'),
+  (2, 'REL_HUMIDITY', 'FLOAT'),
+  (3, 'GAS_RES', 'FLOAT'),
+  (4, 'FAST_AQI', 'U16'),
+  (5, 'AQI', 'U16'),
+  (6, 'O3', 'FLOAT');
+
+delete from cayenne.channel;
+insert into cayenne.channel (key, val)
+values
+  (0, 'BME688'),
+  (1, 'ZMOD4510'),
+  (2, 'SPS30');

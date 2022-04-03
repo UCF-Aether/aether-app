@@ -382,6 +382,30 @@ alter table sensor_chan
 create policy "Only admins can update sensor_chan"
   on sensor_chan for all using (false);
 
+-- Insert some sensor channels we will support
+delete from sensor_chan;
+insert into
+  sensor_chan (name, units)
+values
+  ('REL_HUMIDITY', 'percent'),
+  ('TEMPERATURE', 'deg_celsius'),
+  ('AQI', 'none'),
+  ('FAST_AQI', 'none'),
+  ('PRESSURE', 'Pa'),
+  ('GAS_ESTIMATE_1', 'percent'),
+  ('GAS_ESTIMATE_2', 'percent'),
+  ('GAS_ESTIMATE_3', 'percent'),
+  ('GAS_ESTIMATE_4', 'percent'),
+  ('CO2', 'ppm'),
+  ('VOC', 'ppb'),
+  ('PM1_0', 'ug/m^3'),
+  ('PM2_5', 'ug/m^3'),
+  ('PM4_0', 'ug/m^3'),
+  ('PM10', 'ug/m^3'),
+  ('O3', 'ppb'),
+  ('NO2', 'ppb'),
+  ('GAS_RES', 'ohm');
+
 create table reading
 (
   reading_id     integer generated always as identity primary key,
