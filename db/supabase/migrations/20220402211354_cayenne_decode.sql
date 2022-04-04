@@ -3,31 +3,39 @@
 -- and may require manual changes to the script to ensure changes are applied in the correct order.
 -- Please report an issue for any failure with the reproduction steps.
 
-CREATE SCHEMA IF NOT EXISTS cayenne;
+create schema if not exists cayenne;
 
-CREATE EXTENSION IF NOT EXISTS plv8;
+alter schema cayenne owner to postgres;
+grant create, usage on schema cayenne to postgres;
+grant usage on schema cayenne to anon;
+grant usage on schema cayenne to authenticated;
+grant create, usage on schema cayenne to dashboard_user;
+grant usage on schema cayenne to service_role;
+
+create extension if not exists plv8;
 
 -- Type: reading
 
 -- DROP TYPE IF EXISTS cayenne.reading;
 
-CREATE TYPE cayenne.reading AS
+create type cayenne.reading as
 (
-	chan text,
-	type text,
-	val double precision
+  chan text,
+  type text,
+  val  double precision
 );
 
-ALTER TYPE cayenne.reading
-    OWNER TO postgres;
+alter type cayenne.reading
+  owner to postgres;
 
-CREATE OR REPLACE FUNCTION cayenne.decode(
-	packet bytea)
-    RETURNS cayenne.reading[]
-    LANGUAGE 'plv8'
-    COST 100
-    STABLE PARALLEL UNSAFE
-AS $BODY$
+create or replace function cayenne.decode(
+  packet bytea)
+  returns cayenne.reading[]
+  language 'plv8'
+  cost 100
+  stable parallel unsafe
+as
+$BODY$
   let get_map = (key) => {
     let map = plv8.execute('select * from cayenne.map where key=$1', [key]);
     if (map.length === 0) plv8.elog(ERROR, 'Unknown map key: ' + JSON.stringify(key));
@@ -87,77 +95,76 @@ AS $BODY$
   return readings;
 $BODY$;
 
-ALTER FUNCTION cayenne.decode(bytea)
-    OWNER TO postgres;
+alter function cayenne.decode(bytea)
+  owner to postgres;
 
-CREATE TABLE IF NOT EXISTS cayenne.channel
+create table if not exists cayenne.channel
 (
-    key smallint NOT NULL,
-    val text COLLATE pg_catalog."default",
-    CONSTRAINT channel_pkey PRIMARY KEY (key),
-    CONSTRAINT channel_val_key UNIQUE (val)
+  key smallint not null,
+  val text collate pg_catalog."default",
+  constraint channel_pkey primary key (key),
+  constraint channel_val_key unique (val)
 )
+  tablespace pg_default;
 
-TABLESPACE pg_default;
+alter table if exists cayenne.channel
+  owner to postgres;
 
-ALTER TABLE IF EXISTS cayenne.channel
-    OWNER to postgres;
-
-CREATE TABLE IF NOT EXISTS cayenne.map
+create table if not exists cayenne.map
 (
-    key smallint NOT NULL,
-    val text COLLATE pg_catalog."default",
-    decode_to text COLLATE pg_catalog."default",
-    CONSTRAINT map_pkey PRIMARY KEY (key),
-    CONSTRAINT map_val_key UNIQUE (val)
+  key       smallint not null,
+  val       text collate pg_catalog."default",
+  decode_to text collate pg_catalog."default",
+  constraint map_pkey primary key (key),
+  constraint map_val_key unique (val)
 )
+  tablespace pg_default;
 
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS cayenne.map
-    OWNER to postgres;
+alter table if exists cayenne.map
+  owner to postgres;
 
 
-CREATE OR REPLACE FUNCTION public.bytea_to_f32(
-	data bytea)
-    RETURNS double precision
-    LANGUAGE 'plv8'
-    COST 100
-    IMMUTABLE PARALLEL UNSAFE
-AS $BODY$
+create or replace function public.bytea_to_f32(
+  data bytea)
+  returns double precision
+  language 'plv8'
+  cost 100
+  immutable parallel unsafe
+as
+$BODY$
  if (data.length != 4) plv8.elog(ERROR, 'Invalid data length');
  let bytes = new Uint8Array(data.slice(0, 4).reverse());
  let f32 = new Float32Array(bytes.buffer);
  return f32[0];
 $BODY$;
 
-ALTER FUNCTION public.bytea_to_f32(bytea)
-    OWNER TO postgres;
+alter function public.bytea_to_f32(bytea)
+  owner to postgres;
 
-GRANT EXECUTE ON FUNCTION public.bytea_to_f32(bytea) TO PUBLIC;
+grant execute on function public.bytea_to_f32(bytea) to public;
 
-GRANT EXECUTE ON FUNCTION public.bytea_to_f32(bytea) TO anon;
+grant execute on function public.bytea_to_f32(bytea) to anon;
 
-GRANT EXECUTE ON FUNCTION public.bytea_to_f32(bytea) TO authenticated;
+grant execute on function public.bytea_to_f32(bytea) to authenticated;
 
-GRANT EXECUTE ON FUNCTION public.bytea_to_f32(bytea) TO postgres;
+grant execute on function public.bytea_to_f32(bytea) to postgres;
 
-GRANT EXECUTE ON FUNCTION public.bytea_to_f32(bytea) TO service_role;
+grant execute on function public.bytea_to_f32(bytea) to service_role;
 
-delete from cayenne.map;
+delete
+from cayenne.map;
 insert into cayenne.map (key, val, decode_to)
-values
-  (0, 'TEMPERATURE', 'FLOAT'),
-  (1, 'PRESSURE', 'FLOAT'),
-  (2, 'REL_HUMIDITY', 'FLOAT'),
-  (3, 'GAS_RES', 'FLOAT'),
-  (4, 'FAST_AQI', 'U16'),
-  (5, 'AQI', 'U16'),
-  (6, 'O3', 'FLOAT');
+values (0, 'TEMPERATURE', 'FLOAT'),
+       (1, 'PRESSURE', 'FLOAT'),
+       (2, 'REL_HUMIDITY', 'FLOAT'),
+       (3, 'GAS_RES', 'FLOAT'),
+       (4, 'FAST_AQI', 'U16'),
+       (5, 'AQI', 'U16'),
+       (6, 'O3', 'FLOAT');
 
-delete from cayenne.channel;
+delete
+from cayenne.channel;
 insert into cayenne.channel (key, val)
-values
-  (0, 'BME688'),
-  (1, 'ZMOD4510'),
-  (2, 'SPS30');
+values (0, 'BME688'),
+       (1, 'ZMOD4510'),
+       (2, 'SPS30');
