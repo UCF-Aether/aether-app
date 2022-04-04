@@ -14,7 +14,7 @@ create type binned_reading as
     readings simple_reading[]
 );
 
-create or replace function bin_search_readings(
+create or replace function readings(
     start timestamp default '2000-01-01',
     lng_min float default -180,
     lat_min float default -90,
@@ -40,12 +40,15 @@ begin
                readings.readings_array  as readings
         from location
                  join (
-            select loc_id, array_agg(row (taken_at, device_id, sensor_chan_id, val)::simple_reading) as readings_array
+            select loc_id,
+                   array_agg(
+                           row (taken_at, device_id, sensor_chan_id, val)::simple_reading
+                           order by taken_at ASC) as readings_array
             from reading
             where taken_at >= start
               and case
                       when chan is not null then
-                              sensor_chan_id = chan_id
+                          sensor_chan_id = chan_id
                       else
                           true
                 end
@@ -54,4 +57,5 @@ begin
         where loc_geog && st_makeenvelope(lng_min, lat_min, lng_max, lat_max, 4326);
 end;
 $$
-    language plpgsql stable parallel safe;
+    language plpgsql stable
+                     parallel safe;
