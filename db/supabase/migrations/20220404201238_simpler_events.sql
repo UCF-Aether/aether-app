@@ -5,6 +5,29 @@ grant usage on schema event to authenticated;
 grant create, usage on schema event to dashboard_user;
 grant usage on schema event to service_role;
 
+create table event.type
+(
+  id smallint generated always as identity,
+  name text not null unique,
+  callback text, -- [schema].<function name>(uuid, jsonb, timestamp)
+    -- callback(profile_id uuid, event_data jsonb, at timestamp default now())
+  check (name = lower(name))
+);
+
+alter table event.type
+  enable row level security;
+
+create policy event_type_read_only
+  on event.type
+  for select using (true);
+
+insert into event.type (name, callback)
+values
+  ('device_uplink', null),
+  ('device_downlink', null),
+  ('device_config', null),
+  ('alert_triggered', 'event.post_alert');
+
 alter table event
   set schema event;
 
@@ -12,10 +35,10 @@ alter table event.event
   rename column id to event_id;
 
 alter table event.event
-  rename column raw_event to data;
+  rename column raw_event to body;
 
 alter table event.event
-  alter column data
+  alter column body
     set default '{}'::jsonb;
 
 alter table event.event
@@ -38,20 +61,25 @@ drop table public.node_event;
 drop table public.alert_event;
 
 
-create or replace function event.emit(type text, profile_id uuid, event_data jsonb, at timestamp default now())
+create or replace function event.emit(event_type text, profile_id uuid, event_body jsonb, at timestamp default now())
   returns int as
 $$
 declare
   new_event_id int;
+  cb text default null;
 begin
-  insert into event.event (type, profile_id, time, data)
-  values (emit.type, emit.profile_id, at, event_data)
+  insert into event.event (type, profile_id, time, body)
+  values (event_type, emit.profile_id, at, event_body)
   returning event_id into new_event_id;
 
-  case type
-    when 'EVENT' then raise notice 'Got % event', type;
-    else raise notice 'Implement event action for %', type;
-    end case;
+  select callback
+  from event.type
+  where name = event_type
+  into cb;
+
+  if cb is not null then
+    execute 'select ' || cb || '($1, $2, $3)' using profile_id, event_body, at;
+  end if;
 
   return new_event_id;
 end;
@@ -80,3 +108,10 @@ create view public.node_events as
 create view public.events as
   select *
   from event.event;
+
+create or replace function event.post_alert(profile_id uuid, event jsonb, at timestamp)
+returns void as $$
+begin
+  raise warning 'Sending alert! uid=%, at=%, body=%', profile_id, at, event;
+end;
+$$ language plpgsql;
