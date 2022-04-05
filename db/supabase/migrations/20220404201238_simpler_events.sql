@@ -16,6 +16,10 @@ create table event.type
 alter table event.type
   enable row level security;
 
+grant references, select, trigger on event.type to anon;
+grant references, select, trigger on event.type to authenticated;
+grant references, select, trigger on event.type to service_role;
+
 create policy event_type_read_only
   on event.type
   for select using (true);
@@ -45,6 +49,10 @@ create policy user_events_policy
 
 create index on event.committed (commited_at, profile_id);
 
+grant references, select, trigger on event.committed to anon;
+grant references, select, trigger, insert, update, delete on event.committed to authenticated;
+grant references, select, trigger, insert, update, delete on event.committed to service_role;
+
 create table event.staging
 (
   staged_event_id int generated always as identity,
@@ -55,6 +63,17 @@ create table event.staging
   type            text
 );
 
+alter table event.staging
+  enable row level security;
+
+create policy user_staging_events_policy
+  on event.committed
+  for all using (auth.uid() = profile_id);
+
+grant references, select, trigger on event.staging to anon;
+grant references, select, trigger, insert, update, delete on event.staging to authenticated;
+grant references, select, trigger, insert, update, delete on event.staging to service_role;
+
 create table event.listener
 (
   listener_id   int generated always as identity,
@@ -64,6 +83,7 @@ create table event.listener
 );
 
 create index on event.staging (time, profile_id);
+
 
 create or replace function event.commit(staged_id int)
   returns int as
