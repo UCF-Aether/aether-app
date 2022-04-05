@@ -1,4 +1,7 @@
 -- https://github.com/burggraf/supabase-mailer
+create extension if not exists http;
+create extension if not exists pg_net;
+-- TODO: use pg_net instead of http
 
 create or replace function public.send_email_mailersend(message jsonb)
   returns json
@@ -81,7 +84,6 @@ https://api.mailersend.com/v1/email \
 }'
 */
 
-create extension if not exists http;
 -- drop function send_email_message;
 create or replace function public.send_email_message(message jsonb)
   returns json
