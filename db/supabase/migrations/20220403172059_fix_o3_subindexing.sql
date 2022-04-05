@@ -73,7 +73,7 @@ begin
   select conc_to_aqi(pol_name, new.avg) into new_aqi;
 
   insert into
-    hourly_aqi (device_id, loc_id, pollutant_id, hour, day, aqi, type)
+    raw_hourly_aqi (device_id, loc_id, pollutant_id, hour, day, aqi, type)
   values
     (new.device_id,
      new.loc_id,
