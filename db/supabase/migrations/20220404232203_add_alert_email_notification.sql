@@ -12,32 +12,30 @@ as
 $$
 declare
   profile_email text;
-  sensor text;
-  trig_val float;
-  chan_id int;
+  sensor        text;
+  trig_val      float;
+  ret           json;
 begin
   select email
-  from public.profile
+  from public.profile p
+  join auth.users u on u.id = p.profile_id
   where profile_id = pid
   into profile_email;
 
-  select trigger_val, sensor_chan_id
+  select trigger_val, sc.name
   from public.alert_def
+         join sensor_chan sc on sc.sensor_chan_id = alert_def.sensor_chan_id
   where alert_def_id = def_id
-  into trig_val, chan_id;
+  into trig_val, sensor;
 
-  select name
-  from public.sensor_chan
-  where sensor_chan_id = chan_id
-  into sensor;
-
-  select send_email_message(json_build_object(
-    'sender', 'aethersensor.network',
-    'recipient', profile_email,
-    'subject', 'Trigger alert for ' || sensor,
-    'html_body', 'Your trigger for % was activated at value=%, trigger=%', sensor, value, trig_val
+  select into ret
+    send_email_message(
+    jsonb_build_object(
+      'sender', 'alerts@aethersensor.network',
+      'recipient', profile_email,
+      'subject', 'Trigger alert for ' || sensor,
+      'html_body', 'Your trigger for '|| sensor || ' was activated at value='|| value ||', trigger=' || trig_val
     ));
-
 end;
 $$ language plpgsql;
 
