@@ -1,63 +1,63 @@
 -- https://github.com/burggraf/supabase-mailer
 
-CREATE OR REPLACE FUNCTION public.send_email_mailersend (message JSONB)
-  RETURNS json
-  LANGUAGE plpgsql
-  SECURITY DEFINER -- required in order to read keys in the private schema
-  -- Set a secure search_path: trusted schema(s), then 'pg_temp'.
-  -- SET search_path = admin, pg_temp;
-  AS $$
-DECLARE
-  retval json;
-  MAILERSEND_API_TOKEN text;
-BEGIN
-  SELECT value::text INTO MAILERSEND_API_TOKEN FROM private.keys WHERE key = 'MAILERSEND_API_TOKEN';
-  IF NOT found THEN RAISE 'missing entry in private.keys: MAILERSEND_API_TOKEN'; END IF;
+create or replace function public.send_email_mailersend(message jsonb)
+  returns json
+  language plpgsql
+  security definer -- required in order to read keys in the private schema
+-- Set a secure search_path: trusted schema(s), then 'pg_temp'.
+-- SET search_path = admin, pg_temp;
+as
+$$
+declare
+  retval               json;
+  mailersend_api_token text;
+begin
+  select value::text into mailersend_api_token from private.keys where key = 'MAILERSEND_API_TOKEN';
+  if not found then raise 'missing entry in private.keys: MAILERSEND_API_TOKEN'; end if;
 
-    SELECT
-        * INTO retval
-    FROM
-        http
-        ((
-            'POST',
-            'https://api.mailersend.com/v1/email',
-            ARRAY[http_header ('Authorization',
-            'Bearer ' || MAILERSEND_API_TOKEN
-            ), http_header ('X-Requested-With', 'XMLHttpRequest')],
-            'application/json',
-            json_build_object(
-                  'from', json_build_object(
-                    'email', message->>'sender'
-                  ),
-                  'to', json_build_array(
-                    json_build_object(
-                      'email', message->>'recipient'
-                    )
-                  ),
-                  'subject', message->>'subject',
-                  'text', message->>'text_body',
-                  'html', message->>'html_body' --,
-                  --'CustomID', message->>'messageid'
-            )::text
+  select *
+  into retval
+  from
+    http
+      ((
+        'POST',
+        'https://api.mailersend.com/v1/email',
+        array [http_header('Authorization',
+                           'Bearer ' || mailersend_api_token
+          ), http_header('X-Requested-With', 'XMLHttpRequest')],
+        'application/json',
+        json_build_object(
+            'from', json_build_object(
+            'email', message ->> 'sender'
+          ),
+            'to', json_build_array(
+                json_build_object(
+                    'email', message ->> 'recipient'
+                  )
+              ),
+            'subject', message ->> 'subject',
+            'text', message ->> 'text_body',
+            'html', message ->> 'html_body' --,
+        --'CustomID', message->>'messageid'
+          )::text
+      ));
+  -- if the message table exists,
+  -- and the response from the mail server contains an id
+  -- and the message from the mail server starts wtih 'Queued'
+  -- mark this message as 'queued' in our message table, otherwise leave it as 'ready'
 
-        ));
-        -- if the message table exists,
-        -- and the response from the mail server contains an id
-        -- and the message from the mail server starts wtih 'Queued'
-        -- mark this message as 'queued' in our message table, otherwise leave it as 'ready'
+  if (select to_regclass('public.messages')) is not null and
+     retval::text = '202' then
+    update public.messages set status = 'queued' where id = (message ->> 'messageid')::uuid;
+  elseif retval::text != '202' then
+    raise 'error sending message with mailersend: %', retval;
+  end if;
 
-        IF (SELECT to_regclass('public.messages')) IS NOT NULL AND
-            retval::text = '202' THEN
-          UPDATE public.messages SET status = 'queued' WHERE id = (message->>'messageid')::UUID;
-        ELSE
-          RAISE 'error sending message with mailjet: %',retval;
-        END IF;
-
-  RETURN retval;
-END;
+  return retval;
+end;
 $$;
 -- Do not allow this function to be called by public users (or called at all from the client)
-REVOKE EXECUTE on function public.send_email_mailersend FROM PUBLIC;
+revoke execute on function public.send_email_mailersend from public;
 
 /*
 curl -X POST \
@@ -80,50 +80,55 @@ https://api.mailersend.com/v1/email \
 }'
 */
 
-CREATE EXTENSION IF NOT EXISTS HTTP;
+create extension if not exists http;
 -- drop function send_email_message;
-CREATE OR REPLACE FUNCTION public.send_email_message (message JSONB)
-  RETURNS json
-  LANGUAGE plpgsql
-  SECURITY DEFINER -- required in order to read keys in the private schema
-  -- Set a secure search_path: trusted schema(s), then 'pg_temp'.
-  -- SET search_path = admin, pg_temp;
-  AS $$
-DECLARE
+create or replace function public.send_email_message(message jsonb)
+  returns json
+  language plpgsql
+  security definer -- required in order to read keys in the private schema
+-- Set a secure search_path: trusted schema(s), then 'pg_temp'.
+-- SET search_path = admin, pg_temp;
+as
+$$
+declare
   -- variable declaration
   email_provider text := 'mailersend'; -- 'mailgun', 'sendgrid', 'sendinblue', 'mailjet', 'mailersend'
-  retval json;
-  messageid text;
-BEGIN
+  retval         json;
+  messageid      text;
+begin
 
 
-  IF message->'text_body' IS NULL AND message->'html_body' IS NULL THEN RAISE 'message.text_body or message.html_body is required'; END IF;
+  if message -> 'text_body' is null and message -> 'html_body' is null then
+    raise 'message.text_body or message.html_body is required';
+  end if;
 
-  IF message->'text_body' IS NULL THEN
-     select message || jsonb_build_object('text_body',message->>'html_body') into message;
-  END IF;
+  if message -> 'text_body' is null then
+    select message || jsonb_build_object('text_body', message ->> 'html_body') into message;
+  end if;
 
-  IF message->'html_body' IS NULL THEN
-     select message || jsonb_build_object('html_body',message->>'text_body') into message;
-  END IF;
+  if message -> 'html_body' is null then
+    select message || jsonb_build_object('html_body', message ->> 'text_body') into message;
+  end if;
 
-  IF message->'recipient' IS NULL THEN RAISE 'message.recipient is required'; END IF;
-  IF message->'sender' IS NULL THEN RAISE 'message.sender is required'; END IF;
-  IF message->'subject' IS NULL THEN RAISE 'message.subject is required'; END IF;
+  if message -> 'recipient' is null then raise 'message.recipient is required'; end if;
+  if message -> 'sender' is null then raise 'message.sender is required'; end if;
+  if message -> 'subject' is null then raise 'message.subject is required'; end if;
 
-  IF message->'messageid' IS NULL AND (SELECT to_regclass('public.messages')) IS NOT NULL THEN
+  if message -> 'messageid' is null and (select to_regclass('public.messages')) is not null then
     -- messages table exists, so save this message in the messages table
-    INSERT INTO public.messages(recipient, sender, cc, bcc, subject, text_body, html_body, status, log)
-    VALUES (message->'recipient', message->'sender', message->'cc', message->'bcc', message->'subject', message->'text_body', message->'html_body', 'ready', '[]'::jsonb) RETURNING id INTO messageid;
-    select message || jsonb_build_object('messageid',messageid) into message;
-  END IF;
+    insert into public.messages(recipient, sender, cc, bcc, subject, text_body, html_body, status, log)
+    values (message -> 'recipient', message -> 'sender', message -> 'cc', message -> 'bcc', message -> 'subject',
+            message -> 'text_body', message -> 'html_body', 'ready', '[]'::jsonb)
+    returning id into messageid;
+    select message || jsonb_build_object('messageid', messageid) into message;
+  end if;
 
-  EXECUTE 'SELECT send_email_' || email_provider || '($1)' INTO retval USING message;
+  execute 'SELECT send_email_' || email_provider || '($1)' into retval using message;
   -- SELECT send_email_mailgun(message) INTO retval;
   -- SELECT send_email_sendgrid(message) INTO retval;
 
-  RETURN retval;
-END;
+  return retval;
+end;
 $$;
 -- Do not allow this function to be called by public users (or called at all from the client)
-REVOKE EXECUTE on function public.send_email_message FROM PUBLIC;
+revoke execute on function public.send_email_message from public;
