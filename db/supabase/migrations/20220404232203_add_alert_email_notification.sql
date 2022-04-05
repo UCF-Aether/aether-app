@@ -10,7 +10,9 @@ create table alert.definition
 (
   definition_id int generated always as identity,
   profile_id uuid not null,
-  fid int not null
+  fid int not null,
+  source text,
+  trigger float
 );
 
 create or replace function alert.post(pid uuid, def_id int, value float)
