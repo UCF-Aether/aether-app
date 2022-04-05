@@ -16,7 +16,7 @@ create table alert.definition
   trigger       float
 );
 
-create or replace function alert.post(pid uuid, source text, trigger_val float, operator text, value float)
+create or replace function alert.post(pid uuid, source text, trigger_val float, value float)
   returns jsonb
   security definer
 as
