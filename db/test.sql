@@ -44,13 +44,13 @@ as
 $$
 begin
   perform create_random_devices(new.profile_id, 100);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'AQI', 0, 500);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'TEMPERATURE', 0, 40);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'REL_HUMIDITY', 0, 100);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'O3', 0, 0.604);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'PM10', 0, 604);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'PM2_5', 0, 500.4);
-  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 100, -7, 'VOC', 0, 100);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 20, -7, 'AQI', 0, 500);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 20, -7, 'TEMPERATURE', 0, 40);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 20, -7, 'REL_HUMIDITY', 0, 100);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 20, -7, 'O3', 0, 0.604);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 20, -7, 'PM10', 0, 604);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 20, -7, 'PM2_5', 0, 500.4);
+  perform create_random_readings(new.profile_id, st_makepoint(28.611644, -81.209604), 360, 20, -7, 'VOC', 0, 100);
   return new;
 end;
 $$;
