@@ -32,16 +32,5 @@ values ('REL_HUMIDITY', '{"REL_HUMIDITY"}', 'reading'),
        ('AQI_PM2_5', '{"PM2_5"}', 'aqi'),
        ('AQI_PM10', '{"PM10"}', 'aqi');
 
-select * from profile;
-select * from device;
-select create_alert(
-  'My test alert',
-  '817feee3-98a5-4602-9912-893bf8c96b8c',
-  2,
-  'AQI_O3_PM',
-  50
-  );
-select * from layer;
-select * from alert.definition;
 -- Get info about layers, including data
 -- create or replace function layers (lyrs text[], )
