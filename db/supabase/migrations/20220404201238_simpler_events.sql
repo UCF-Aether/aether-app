@@ -23,8 +23,7 @@ create policy event_type_read_only
 insert into event.type (name, require_staging)
 values ('device_uplink', false),
        ('device_downlink', false),
-       ('device_config', false),
-       ('alert_triggered', true);
+       ('device_config', false);
 
 create table event.committed
 (
@@ -85,6 +84,14 @@ begin
   return new_event_id;
 end;
 $$ language plpgsql;
+
+create or replace function event.create_type (type_name text, stage bool)
+returns int as
+$$
+  insert into event.type (name, require_staging)
+  values (type_name, stage)
+  returning type_id;
+$$ language sql;
 
 create or replace function event.listen_to (event_type text, cb text)
 returns void as $$
