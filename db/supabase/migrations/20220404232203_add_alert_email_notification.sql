@@ -5,6 +5,14 @@ grant usage on schema alert to authenticated;
 grant create, usage on schema alert to dashboard_user;
 grant usage on schema alert to service_role;
 
+
+create table alert.definition
+(
+  definition_id int generated always as identity,
+  profile_id uuid not null,
+  fid int not null
+);
+
 create or replace function alert.post(pid uuid, def_id int, value float)
   returns void
   security definer
@@ -40,3 +48,14 @@ end;
 $$ language plpgsql;
 
 revoke execute on function alert.post from public;
+
+-- I know this would probably be done better in a trigger, but I'm experimenting
+create or replace function handle_trigger_event(pid uuid, body jsonb, at timestamp)
+returns void
+stable
+parallel safe as $$
+declare
+begin
+
+end;
+$$ language plpgsql;
