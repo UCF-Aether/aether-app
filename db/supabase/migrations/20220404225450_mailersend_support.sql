@@ -22,9 +22,10 @@ begin
       ((
         'POST',
         'https://api.mailersend.com/v1/email',
-        array [http_header('Authorization',
-                           'Bearer ' || mailersend_api_token
-          ), http_header('X-Requested-With', 'XMLHttpRequest')],
+        array [
+          http_header('Authorization', 'Bearer ' || mailersend_api_token),
+          http_header('X-Requested-With', 'XMLHttpRequest')
+          ],
         'application/json',
         json_build_object(
             'from', json_build_object(
