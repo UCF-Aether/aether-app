@@ -18,7 +18,7 @@ create table alert.definition
   name          text,
   device_id     int not null,
   profile_id    uuid not null,
-  fid           int  not null, -- foreign id - sensor_chan_id or pollutant_id
+  fid           text[]  not null,
   source        text,          -- reading (public.reading) or aqi (public.raw_hourly_aqi)
   trigger       float
 );
@@ -88,20 +88,20 @@ $$ language plpgsql volatile
 
 revoke execute on function alert.post from public;
 
-create or replace function alert.get_triggered(src text, foreign_id int, val float, to_test alert.filter default null)
+create or replace function alert.get_triggered(src text, foreign_id text, val float, to_test alert.filter default null)
   returns setof alert.definition as
 $$
 select *
 from alert.definition
 where source = src
-  and fid = foreign_id
+  and foreign_id = any(fid)
   and trigger <= val
   and device_id = to_test.device_id;
 --   and (to_test is null or alert.test_filters(filters, to_test))
 $$ language sql immutable
                 parallel safe;
 
-create or replace function alert.try_trigger_for(src text, foreign_id int, val float, to_test alert.filter default null)
+create or replace function alert.try_trigger_for(src text, foreign_id text, val float, to_test alert.filter default null)
   returns void as
 $$
 declare
@@ -137,11 +137,11 @@ $$ language plpgsql volatile
                     parallel safe;
 
 
-create or replace function alert.new(pid uuid, src text, foreign_id int, trigger_val float)
+create or replace function alert.new(pid uuid, did int, src text, foreign_id text[], trigger_val float)
   returns int as
 $$
-insert into alert.definition (profile_id, source, fid, trigger)
-values (pid, src, foreign_id, trigger_val)
+insert into alert.definition (profile_id, device_id, source, fid, trigger)
+values (pid, did, src, foreign_id, trigger_val)
 returning definition_id;
 $$ language sql;
 
