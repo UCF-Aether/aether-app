@@ -1,10 +1,4 @@
 -- Allowable time-series data to read
-create table layer
-(
-  layer_id int primary key generated always as identity,
-  name text not null unique,
-  tv_ref text not null -- table-view reference [schema].<table/view name>
-);
 
 
 create or replace function check_if_aqi_alert_triggered()
