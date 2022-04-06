@@ -1,6 +1,5 @@
 // import logo from "./logo.svg";
 import { createTheme, LinkProps as MuiLinkProps, ThemeProvider } from "@mui/material";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { forwardRef, useMemo, useState } from "react";
 import { Link, LinkProps, Route, Routes } from "react-router-dom";
 import { createClient as createUrqlClient, Provider as UrqlProvider } from "urql";
@@ -12,17 +11,14 @@ import { SupabaseProvider } from "./components/SupabaseContext";
 import { Dashboard } from "./pages/Dashboard";
 import { LoginSignup } from "./pages/LoginSignup";
 import { MainPage } from "./pages/Main";
+import { supabase } from './supabaseClient';
 
-const supabaseClient = createSupabaseClient(
-  process.env.REACT_APP_SUPABASE_URL!,
-  process.env.REACT_APP_SUPABASE_PUBLIC_ANON_KEY!
-);
-console.log(supabaseClient);
+console.log(supabase);
 
 const urqlClient = createUrqlClient({
   url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 4000}/graphql`,
   fetchOptions: () => {
-    const token = supabaseClient.auth.session()?.access_token;
+    const token = supabase.auth.session()?.access_token;
 
     return {
       headers: { authorization: token ? `Bearer ${token}` : "" },
@@ -91,7 +87,7 @@ export default function App() {
 
   const Clients = (props: { children?: JSX.Element[] | JSX.Element }) => {
     return (
-      <SupabaseProvider supabaseClient={supabaseClient}>
+      <SupabaseProvider supabaseClient={supabase}>
         <UrqlProvider value={urqlClient}>
           {props.children}
         </UrqlProvider>
