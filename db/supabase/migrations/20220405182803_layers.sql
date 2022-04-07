@@ -1,23 +1,24 @@
+-- Layers just collate everything you can query about sensor readings/aqi along with descriptions, how to create alerts, etc
 create table layer
 (
   layer_id    int primary key generated always as identity,
   name        text   not null unique,
   description text default '',
   tv_ref      text   not null, -- table-view reference for viewing data [schema].<table/view name>
-  fnames      text[] not null,
+  fkeys      text[] not null, -- foreign keys belonging to this layer
   trig_source text   not null
 );
 
-create or replace function create_alert(alert_name text, pid uuid, did int, layer_name text, val float)
+create or replace function create_alert(layer_name text, alert_name text, pid uuid, did int, val float)
   returns void as
 $$
-insert into alert.definition (name, device_id, profile_id, fid, source, trigger)
-select alert_name, did, pid, fnames, trig_source, val
+insert into alert.definition (name, device_id, profile_id, fkeys, source, trigger)
+select alert_name, did, pid, layer.fkeys, trig_source, val
 from layer
 where name = layer_name;
 $$ language sql;
 
-insert into layer (name, tv_ref, fnames, trig_source)
+insert into layer (name, tv_ref, fkeys, trig_source)
 values ('REL_HUMIDITY', 'rel_humidity_view', '{"REL_HUMIDITY"}', 'reading'),
        ('TEMPERATURE', 'temperature_view', '{"TEMPERATURE"}', 'reading'),
        ('PRESSURE', 'pressure_view', '{"PRESSURE"}', 'reading'),
@@ -35,14 +36,8 @@ values ('REL_HUMIDITY', 'rel_humidity_view', '{"REL_HUMIDITY"}', 'reading'),
 
 create type layer_data as
 (
+  loc_id int,
   device_id int,
-  timestamp timestamp,
-  val       double precision
-);
-
-create type layer_view_data as
-(
-  loc_id    int,
   timestamp timestamp,
   val       double precision
 );
@@ -60,55 +55,52 @@ create type contexted_binned_layer_data as
   layer_data  binned_layer_data[]
 );
 
+
+create type lat_lon_pair as
+(
+  lat float,
+  lng float
+);
+
+create or replace function get_layer_tv(ref text)
+returns setof layer_data as $$
+$$ language plpgsql;
+
+
 -- Get info about layers, including data
 create or replace function get_layer_data(
   layer_name text,
   beginning_at timestamp default now() - interval '7 days'
-) returns setof binned_layer_data as
+) returns jsonb as
 $$
 declare
   _tv_ref      text;
   _trig_source text;
+  ret jsonb;
 begin
   select tv_ref, trig_source
   from layer
   where name = layer_name
   into strict _tv_ref, _trig_source;
 
-  return query execute ('
-  select st_x(loc_geog::geometry) as lng,
-         st_y(loc_geog::geometry) as lat,
-         data.data
-  from location join (
-    select loc_id,
-           array_agg(
-             row (device_id, timestamp, val)::layer_data
-             order by timestamp
-             ) as data
+  execute ('
+    select jsonb_build_object(
+      ''locations'', jsonb_object_agg(loc_id,  row(st_y(loc_geog::geometry), st_x(loc_geog::geometry))::lat_lon_pair),
+      ''data'', array_agg(row(loc_id, device_id, timestamp, val)::layer_data order by timestamp)
+      )
     from ' || _tv_ref || '
+           join location using (loc_id)
     where timestamp >= $1
-    group by loc_id
-    ) as data using (loc_id)
-  ') using beginning_at;
+    limit 5000
+  ') into ret using beginning_at;
+
+  return ret;
 
 exception
   when no_data_found then
     raise exception 'Layer % does not exist!', layer_name;
 end;
 $$ language plpgsql;
-
-create or replace function get_layer(
-  layer_name text,
-  beginning_at timestamp default now() - interval '7 days'
-) returns contexted_binned_layer_data as
-$$
-
-select (select trig_source from layer where name = layer_name) as layer_data,
-       array_agg(ld)                                           as data
-from get_layer_data(layer_name, beginning_at) as ld;
-
-$$ language sql;
-
 
 
 drop view if exists hourly_o3;
