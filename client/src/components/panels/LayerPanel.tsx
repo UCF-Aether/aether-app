@@ -1,6 +1,6 @@
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { layers, LayerType } from '../../hooks/layers';
 import { Panel } from './Panel';
-import { layers, LayerType } from '../../layers';
 
 export interface LayerPanelProps {
   onChange: (layer: LayerType) => void;

@@ -1,8 +1,8 @@
 // import logo from "./logo.svg";
 import { createTheme, LinkProps as MuiLinkProps, ThemeProvider } from "@mui/material";
 import { forwardRef, useMemo, useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { Link, LinkProps, Route, Routes } from "react-router-dom";
-import { createClient as createUrqlClient, Provider as UrqlProvider } from "urql";
 import "./App.css";
 import { ColorModeContext } from "./components/ColorModeContext";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
@@ -15,16 +15,8 @@ import { supabase } from './supabaseClient';
 
 console.log(supabase);
 
-const urqlClient = createUrqlClient({
-  url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 4000}/graphql`,
-  fetchOptions: () => {
-    const token = supabase.auth.session()?.access_token;
 
-    return {
-      headers: { authorization: token ? `Bearer ${token}` : "" },
-    };
-  },
-});
+const queryClient = new QueryClient();
 
 // https://github.com/mui/material-ui/issues/29942
 const LinkBehavior = forwardRef<any, Omit<LinkProps, "to"> & { href: LinkProps["to"] }>(
@@ -88,9 +80,9 @@ export default function App() {
   const Clients = (props: { children?: JSX.Element[] | JSX.Element }) => {
     return (
       <SupabaseProvider supabaseClient={supabase}>
-        <UrqlProvider value={urqlClient}>
+        <QueryClientProvider client={queryClient}>
           {props.children}
-        </UrqlProvider>
+        </QueryClientProvider>
       </SupabaseProvider>
     );
   }

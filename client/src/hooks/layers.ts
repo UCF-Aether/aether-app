@@ -1,5 +1,5 @@
 import { useQuery } from 'react-query';
-import { supabase } from './supabaseClient';
+import { supabase } from '../supabaseClient';
 
 export type LayerType = 
   'AQI'
@@ -77,13 +77,13 @@ export const layers: LayerInfoMap = {
     units: 'ppm',
     triggerSource: 'reading',
   },
-  NO: {
-    domain: [0, 54, 101, 361, 650, 1250, 2049],
-    range: aqiRange,
-    title: 'NO',
-    units: 'ppb',
-    triggerSource: 'reading',
-  },
+  // NO: {
+  //   domain: [0, 54, 101, 361, 650, 1250, 2049],
+  //   range: aqiRange,
+  //   title: 'NO',
+  //   units: 'ppb',
+  //   triggerSource: 'reading',
+  // },
   TEMPERATURE: {
     domain: [-18, -12, -7, -1, 4, 10, 16, 21, 27, 32, 38],  // Every 10 F
     range: [
@@ -134,13 +134,14 @@ export interface LayerResult extends Layer {
 
 const fetchLayerData = async (layer: LayerType) => {
   const { data, error } = await supabase
-    .rpc<BinnedLayerData>('get_layer_data', { layer_name: layer});
+    .rpc<BinnedLayerData>('get_layer_data', { layer_name: layer})
+    .single();
 
   if (error || !data) throw Error('Error fetching layer ' + error);
   console.debug('fetchLayer', data, error);
 
   // Supabase! This isn't an array! >:(
-  return (data as any) as BinnedLayerData;
+  return data;
 }
 
 export function useLayerInfo(layer: LayerType): Layer {
