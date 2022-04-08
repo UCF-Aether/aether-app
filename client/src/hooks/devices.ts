@@ -2,6 +2,8 @@ import { useQuery } from "react-query";
 
 import { supabase } from "../supabaseClient";
 
+export type ActivationMethod = 'OTAA' | 'ABP';
+
 export interface Device {
   device_id: number;
   name: string;
@@ -13,6 +15,7 @@ export interface Device {
   loc_updated_at?: Date;
   last_uplink_at?: Date;
   last_downlink_at?: Date;
+  activation_method?: ActivationMethod;
 }
 
 export interface UseDevicesOptions {

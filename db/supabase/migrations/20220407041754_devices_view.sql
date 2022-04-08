@@ -7,7 +7,8 @@ select device.device_id,
        loc_updated_at,
        last_downlink_at,
        last_uplink_at,
-       created_at
+       created_at,
+       activation_method
 from device
        left join device_meta dm on device.device_id = dm.device_id
        left join location l on dm.loc_id = l.loc_id;

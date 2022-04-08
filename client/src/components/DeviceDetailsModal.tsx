@@ -93,7 +93,7 @@ export function DeviceDetailsModal() {
           devEui: device.dev_eui,
           createdAt: device.created_at,
           updatedAt: device.updated_at,
-          activationMethod: 'TODO',
+          activationMethod: device.activation_method,
           lat: device.lat,
           lng: device.lng,
           locUpdatedAt: device.loc_updated_at,
