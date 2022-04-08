@@ -109,15 +109,11 @@ export const layers: LayerInfoMap = {
 };
 
 export interface LayerData {
-  loc_id: number;
+  lng: number;
+  lat: number;
   device_id: number;
   timestamp: Date;
   val: number
-}
-
-export interface BinnedLayerData {
-  locations: { lat: number, lng: number };
-  data: LayerData[];
 }
 
 export interface UseLayerOptions {
@@ -129,13 +125,12 @@ export interface LayerResult extends Layer {
   isLoading: boolean;
   isError: boolean;
   error: any;
-  data?: BinnedLayerData;
+  data?: LayerData[];
 }
 
 const fetchLayerData = async (layer: LayerType) => {
   const { data, error } = await supabase
-    .rpc<BinnedLayerData>('get_layer_data', { layer_name: layer})
-    .single();
+    .rpc<LayerData>('get_layer', { layer_name: layer});
 
   if (error || !data) throw Error('Error fetching layer ' + error);
   console.debug('fetchLayer', data, error);

@@ -7,7 +7,7 @@ import Color from "colorjs.io";
 import { format } from "d3-format";
 import { useCallback, useMemo, useRef, useState } from "react";
 import StaticMap from "react-map-gl";
-import { BinnedLayerData, LayerData } from "../../hooks/layers";
+import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
 
 const INITIAL_VIEW_STATE = {
@@ -42,7 +42,7 @@ export interface MapLegendProps extends LegendProps {
 }
 
 export interface MapProps {
-  binnedData: Array<BinnedLayerData>;
+  data: Array<LayerData>;
   isLoading?: boolean;
   isError?: boolean;
   legend: MapLegendProps;
@@ -92,19 +92,11 @@ export function Map(props: any) {
     [colorRanges]
   );
 
-  const isBright = (c: [number, number, number]) =>
-    0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2] > 40;
-
-  const getPosition = (ld: LayerData) => {
-    const pos = binnedData.locations[ld.loc_id];
-    return [pos.lng, pos.lat] as [number, number];
-  }
-
   const layers =  [
     new ScatterplotLayer<LayerData>({
       id: "scatterplot-layer",
       data: binnedData?.data ?? null,
-      getPosition,
+      getPosition: d => [d.lng, d.lat],
       getFillColor: (d) => getColor(d.val),
       radiusMaxPixels: 100,
       radiusMinPixels: 25,
@@ -119,7 +111,7 @@ export function Map(props: any) {
       id: "text-layer",
       data: binnedData?.data ?? null,
       pickable: false,
-      getPosition,
+      getPosition: d => [d.lng, d.lat],
       getText: (d) => `${f(d.val)}`.replace("−", "-"), // I'm too lazy to properly load fonts for deck.gl
       getTextAnchor: "middle",
       getAlignmentBaseline: "center",
