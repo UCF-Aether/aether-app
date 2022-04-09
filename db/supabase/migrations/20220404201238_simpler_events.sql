@@ -26,6 +26,7 @@ create policy event_type_read_only
 
 insert into event.type (name, require_staging)
 values ('device_uplink', false),
+       ('device_uplink_error', false),
        ('device_downlink', false),
        ('device_config', false);
 
