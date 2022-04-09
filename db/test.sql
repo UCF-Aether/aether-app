@@ -11,6 +11,9 @@ select for_profile            as profile_id,
        eui                    as aws_device_id
 from (select generate_series(1, num), generate_eui() as eui) as ids;
 
+update device_meta
+  set loc_id = generate_random_location(0, 0, 180)
+  where true;
 $$;
 
 create or replace function create_random_readings(
@@ -29,12 +32,13 @@ as
 $$
 insert into reading (device_id, loc_id, sensor_chan_id, taken_at, val)
 select device_id,
-       generate_random_location(st_x(loc::geometry), st_y(loc::geometry), radius),
+       loc_id,
        (select sensor_chan_id from sensor_chan where sensor_chan.name = channel),
        random_time(last_days),
        min_val + random() * (max_val - min_val)
 from generate_series(1, num)
-       cross join lateral (select * from device where profile_id = for_profile) as d;
+       cross join lateral (
+         select * from device join device_meta using (device_id) where profile_id = for_profile ) as d;
 $$;
 
 create or replace function create_random_test_data()

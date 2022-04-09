@@ -1,9 +1,8 @@
 // import logo from "./logo.svg";
 import { createTheme, LinkProps as MuiLinkProps, ThemeProvider } from "@mui/material";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { forwardRef, useMemo, useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { Link, LinkProps, Route, Routes } from "react-router-dom";
-import { createClient as createUrqlClient, Provider as UrqlProvider } from "urql";
 import "./App.css";
 import { ColorModeContext } from "./components/ColorModeContext";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
@@ -12,23 +11,12 @@ import { SupabaseProvider } from "./components/SupabaseContext";
 import { Dashboard } from "./pages/Dashboard";
 import { LoginSignup } from "./pages/LoginSignup";
 import { MainPage } from "./pages/Main";
+import { supabase } from './supabaseClient';
 
-const supabaseClient = createSupabaseClient(
-  process.env.REACT_APP_SUPABASE_URL!,
-  process.env.REACT_APP_SUPABASE_PUBLIC_ANON_KEY!
-);
-console.log(supabaseClient);
+console.log(supabase);
 
-const urqlClient = createUrqlClient({
-  url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 4000}/graphql`,
-  fetchOptions: () => {
-    const token = supabaseClient.auth.session()?.access_token;
 
-    return {
-      headers: { authorization: token ? `Bearer ${token}` : "" },
-    };
-  },
-});
+const queryClient = new QueryClient();
 
 // https://github.com/mui/material-ui/issues/29942
 const LinkBehavior = forwardRef<any, Omit<LinkProps, "to"> & { href: LinkProps["to"] }>(
@@ -91,10 +79,10 @@ export default function App() {
 
   const Clients = (props: { children?: JSX.Element[] | JSX.Element }) => {
     return (
-      <SupabaseProvider supabaseClient={supabaseClient}>
-        <UrqlProvider value={urqlClient}>
+      <SupabaseProvider supabaseClient={supabase}>
+        <QueryClientProvider client={queryClient}>
           {props.children}
-        </UrqlProvider>
+        </QueryClientProvider>
       </SupabaseProvider>
     );
   }

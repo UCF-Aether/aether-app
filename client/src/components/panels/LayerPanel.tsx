@@ -1,6 +1,6 @@
 import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { useLayersInfo, LayerType } from '../../hooks/layers';
 import { Panel } from './Panel';
-import { layers, LayerType } from '../../layers';
 
 export interface LayerPanelProps {
   onChange: (layer: LayerType) => void;
@@ -9,6 +9,7 @@ export interface LayerPanelProps {
 
 export function LayerPanel(props: LayerPanelProps) {
   const { onChange, value } = props;
+  const layers = useLayersInfo();
 
   return (
     <Panel title="Layers" contentSx={{ p: 2, height: '20vh', overflow: 'auto' }}>

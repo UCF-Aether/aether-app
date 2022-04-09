@@ -11,8 +11,8 @@ declare
   rd                 cayenne.reading;
   row                public.reading;
   inserted           public.reading[] default '{}';
-  pid                uuid;
-  did                int;
+  pid                uuid default null;
+  did                int default null;
 begin
   payload := req -> 'uplink_message' ->> 'frm_payload';
   deveui := req -> 'end_device_ids' ->> 'dev_eui';
@@ -27,9 +27,17 @@ begin
   where dev_eui = deveui
   into pid, did;
 
+  if did is null or pid is null then
+    perform event.emit(
+        'device_uplink_error',
+        null,
+        payload,
+        null);
+    raise exception 'lorawan uplink: invalid DEVEUI';
+  end if;
+
   perform event.emit('device_uplink', pid,
                      jsonb_build_object(
-                         'profile_id', pid,
                          'device_id', did,
                          'payload', payload,
                          'request', req

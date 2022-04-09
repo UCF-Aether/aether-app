@@ -1,5 +1,6 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Card, IconButton, Modal, Typography } from "@mui/material";
+import {DataFilterExtension} from '@deck.gl/extensions';
 
 export interface InfoOverlayProps {
   children?: JSX.Element[] | JSX.Element;
@@ -22,8 +23,9 @@ export function DetailsModal(props: InfoOverlayProps) {
           position: "absolute",
           float: "right",
           right: 0,
-          width: "30%",
+          width: "50vw",
           minWidth: 325,
+          maxWidth: 700,
           height: "100vh",
           pointerEvents: "auto",
           border: 0,

@@ -1,23 +1,34 @@
-create table layer
+create schema layer;
+grant create, usage on schema layer to postgres;
+grant usage on schema layer to authenticated;
+grant create, usage on schema layer to dashboard_user;
+grant usage on schema layer to service_role;
+
+-- Layers just collate everything you can query about sensor readings/aqi along with descriptions, how to create alerts, etc
+create table layer.definition
 (
   layer_id    int primary key generated always as identity,
   name        text   not null unique,
   description text default '',
   tv_ref      text   not null, -- table-view reference for viewing data [schema].<table/view name>
-  fnames      text[] not null,
+  fkeys       text[] not null, -- foreign keys belonging to this layer, can represent a combination
   trig_source text   not null
 );
 
-create or replace function create_alert(alert_name text, pid uuid, did int, layer_name text, val float)
+grant select, references on layer.definition to anon;
+grant select, references on layer.definition to authenticated;
+grant select, references on layer.definition to service_role;
+
+create or replace function create_alert(layer_name text, alert_name text, pid uuid, did int, val float)
   returns void as
 $$
-insert into alert.definition (name, device_id, profile_id, fid, source, trigger)
-select alert_name, did, pid, fnames, trig_source, val
-from layer
+insert into alert.definition (name, device_id, profile_id, fkeys, source, trigger)
+select alert_name, did, pid, l.fkeys, trig_source, val
+from layer.definition l
 where name = layer_name;
 $$ language sql;
 
-insert into layer (name, tv_ref, fnames, trig_source)
+insert into layer.definition (name, tv_ref, fkeys, trig_source)
 values ('REL_HUMIDITY', 'rel_humidity_view', '{"REL_HUMIDITY"}', 'reading'),
        ('TEMPERATURE', 'temperature_view', '{"TEMPERATURE"}', 'reading'),
        ('PRESSURE', 'pressure_view', '{"PRESSURE"}', 'reading'),
@@ -33,82 +44,73 @@ values ('REL_HUMIDITY', 'rel_humidity_view', '{"REL_HUMIDITY"}', 'reading'),
        ('AQI_PM2_5', 'aqi_pm2_5_view', '{"PM2_5"}', 'aqi'),
        ('AQI_PM10', 'aqi_pm10_view', '{"PM10"}', 'aqi');
 
-create type layer_data as
+create type layer.view_data as
 (
+  loc_id    int,
   device_id int,
   timestamp timestamp,
   val       double precision
 );
 
-create type layer_view_data as
+create type layer.data as
 (
-  loc_id    int,
+  device_id int,
+  lng       float,
+  lat       float,
   timestamp timestamp,
   val       double precision
 );
 
-create type binned_layer_data as
+create type lat_lon_pair as
 (
-  lat  float,
-  lng  float,
-  data layer_data[]
+  lat float,
+  lng float
 );
 
-create type contexted_binned_layer_data as
-(
-  trig_source text,
-  layer_data  binned_layer_data[]
-);
-
--- Get info about layers, including data
-create or replace function get_layer_data(
-  layer_name text,
-  beginning_at timestamp default now() - interval '7 days'
-) returns setof binned_layer_data as
+create or replace function layer.select_tv(view text)
+  returns setof layer.view_data as
 $$
 declare
-  _tv_ref      text;
-  _trig_source text;
 begin
-  select tv_ref, trig_source
-  from layer
-  where name = layer_name
-  into strict _tv_ref, _trig_source;
+  return query execute ('select loc_id, device_id, timestamp, val::double precision from ' || view);
+end;
+$$ language plpgsql;
 
-  return query execute ('
-  select st_x(loc_geog::geometry) as lng,
-         st_y(loc_geog::geometry) as lat,
-         data.data
-  from location join (
-    select loc_id,
-           array_agg(
-             row (device_id, timestamp, val)::layer_data
-             order by timestamp
-             ) as data
-    from ' || _tv_ref || '
-    where timestamp >= $1
-    group by loc_id
-    ) as data using (loc_id)
-  ') using beginning_at;
+
+-- Get info about layers, including data
+create or replace function public.get_layer(
+  layer_name text,
+  start timestamp default now() - interval '7 days',
+  "end" timestamp default null
+)
+  returns setof layer.data
+  security definer as
+$$
+declare
+  _tv_ref text;
+begin
+  select tv_ref
+  from layer.definition
+  where name = layer_name
+  into strict _tv_ref;
+
+  return query
+    select device_id,
+           st_x(loc_geog::geometry) as lng,
+           st_y(loc_geog::geometry) as lat,
+           timestamp,
+           val::double precision
+    from layer.select_tv(_tv_ref)
+           join location using (loc_id)
+    where timestamp >= start
+      and ("end" is null or timestamp <= "end")
+    order by timestamp;
 
 exception
   when no_data_found then
     raise exception 'Layer % does not exist!', layer_name;
-end;
+end ;
 $$ language plpgsql;
-
-create or replace function get_layer(
-  layer_name text,
-  beginning_at timestamp default now() - interval '7 days'
-) returns contexted_binned_layer_data as
-$$
-
-select (select trig_source from layer where name = layer_name) as layer_data,
-       array_agg(ld)                                           as data
-from get_layer_data(layer_name, beginning_at) as ld;
-
-$$ language sql;
-
 
 
 drop view if exists hourly_o3;
@@ -120,27 +122,11 @@ create or replace function private.create_reading_layer_view(chan text)
 $$
 begin
   execute ('
-  create view public.' || lower(chan) || '_view(timestamp, val, device_id, loc_id) as
-  SELECT ''1hr''::interval * hr.hour::double precision + hr.day AS "timestamp",
-         hr.avg                                               AS val,
+  create or replace view public.' || lower(chan) || '_view as
+  select hr.loc_id,
          hr.device_id,
-         hr.loc_id
-  FROM hourly_reading_stats hr
-  WHERE hr.chan_id = get_sensor_chan_id(''' || chan || ''');
-    ');
-end;
-$$ language plpgsql;
-
-create or replace function private.create_aqi_layer_view(chan text)
-  returns void as
-$$
-begin
-  execute ('
-  create view public.' || lower(chan) || '_view(timestamp, val, device_id, loc_id) as
-  SELECT ''1hr''::interval * hr.hour::double precision + hr.day AS "timestamp",
-         hr.avg                                               AS val,
-         hr.device_id,
-         hr.loc_id
+         ''1hr''::interval * hr.hour::double precision + hr.day AS "timestamp",
+         hr.avg                                               AS val
   FROM hourly_reading_stats hr
   WHERE hr.chan_id = get_sensor_chan_id(''' || chan || ''');
     ');
@@ -157,51 +143,51 @@ select private.create_reading_layer_view('REL_HUMIDITY');
 select private.create_reading_layer_view('TEMPERATURE');
 select private.create_reading_layer_view('PRESSURE');
 
-create view public.aqi_view (timestamp, val, device_id, loc_id) as
-select timestamp,
-       aqi as val,
-       loc_id,
-       device_id
+create view public.aqi_view as
+select loc_id,
+       device_id,
+       timestamp,
+       aqi as val
 from hourly_aqi;
 
-create view public.aqi_o3_pm_view (timestamp, val, device_id, loc_id) as
-select timestamp,
-       aqi as val,
-       loc_id,
-       device_id
+create view public.aqi_o3_pm_view as
+select loc_id,
+       device_id,
+       timestamp,
+       aqi as val
 from hourly_aqi
 where pollutant_id in (
   select pollutant_id
   from pollutant
   where name = any (array ['O3', 'PM2_5', 'PM10']));
 
-create view public.aqi_o3_view (timestamp, val, device_id, loc_id) as
-select timestamp,
-       aqi as val,
-       loc_id,
-       device_id
+create view public.aqi_o3_view as
+select loc_id,
+       device_id,
+       timestamp,
+       aqi as val
 from hourly_aqi
 where pollutant_id in (
   select pollutant_id
   from pollutant
   where name = 'O3');
 
-create view public.aqi_pm2_5_view (timestamp, val, device_id, loc_id) as
-select timestamp,
-       aqi as val,
-       loc_id,
-       device_id
+create view public.aqi_pm2_5_view as
+select loc_id,
+       device_id,
+       timestamp,
+       aqi as val
 from hourly_aqi
 where pollutant_id in (
   select pollutant_id
   from pollutant
   where name = 'PM2_5');
 
-create view public.aqi_pm10_view (timestamp, val, device_id, loc_id) as
-select timestamp,
-       aqi as val,
-       loc_id,
-       device_id
+create view public.aqi_pm10_view as
+select loc_id,
+       device_id,
+       timestamp,
+       aqi as val
 from hourly_aqi
 where pollutant_id in (
   select pollutant_id

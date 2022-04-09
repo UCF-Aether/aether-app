@@ -18,7 +18,7 @@ create table alert.definition
   name          text,
   device_id     int not null,
   profile_id    uuid not null,
-  fid           text[]  not null,
+  fkeys           text[]  not null,   -- foreign keys that can potentially trigger alerts for this definition
   source        text,          -- reading (public.reading) or aqi (public.raw_hourly_aqi)
   trigger       float
 );
@@ -88,20 +88,20 @@ $$ language plpgsql volatile
 
 revoke execute on function alert.post from public;
 
-create or replace function alert.get_triggered(src text, foreign_id text, val float, to_test alert.filter default null)
+create or replace function alert.get_triggered(src text, fkey text, val float, to_test alert.filter default null)
   returns setof alert.definition as
 $$
 select *
 from alert.definition
 where source = src
-  and foreign_id = any(fid)
+  and fkey = any(fkeys)
   and trigger <= val
   and device_id = to_test.device_id;
 --   and (to_test is null or alert.test_filters(filters, to_test))
 $$ language sql immutable
                 parallel safe;
 
-create or replace function alert.try_trigger_for(src text, foreign_id text, val float, to_test alert.filter default null)
+create or replace function alert.try_trigger_for(src text, fkey text, val float, to_test alert.filter default null)
   returns void as
 $$
 declare
@@ -111,18 +111,18 @@ declare
 begin
   for alert_def in
     select *
-    from alert.get_triggered(src, foreign_id, val, to_test)
+    from alert.get_triggered(src, fkey, val, to_test)
     loop
       body := jsonb_build_object(
           'profile_id', alert_def.profile_id,
           'device_id', alert_def.device_id,
           'source', src,
-          'fid', foreign_id,
+          'fkey', fkey,
           'trigger_val', alert_def.trigger,
           'val', val
         );
-      raise notice 'Sending email for %, source=%, fid=%, trigger=%, value=%',
-        alert_def.profile_id, src, alert_def.fid, alert_def.trigger, val;
+      raise notice 'Sending email for %, source=%, fkey=%, trigger=%, value=%',
+        alert_def.profile_id, src, alert_def.fkeys, alert_def.trigger, val;
       perform event.emit('alert_triggered', alert_def.profile_id, body, alert_def.definition_id);
       begin
         -- For now, just call it manually
@@ -137,11 +137,11 @@ $$ language plpgsql volatile
                     parallel safe;
 
 
-create or replace function alert.new(pid uuid, did int, src text, foreign_id text[], trigger_val float)
+create or replace function alert.new(pid uuid, did int, src text, fkey text[], trigger_val float)
   returns int as
 $$
-insert into alert.definition (profile_id, device_id, source, fid, trigger)
-values (pid, did, src, foreign_id, trigger_val)
+insert into alert.definition (profile_id, device_id, source, fkeys, trigger)
+values (pid, did, src, fkey, trigger_val)
 returning definition_id;
 $$ language sql;
 
