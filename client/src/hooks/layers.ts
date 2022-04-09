@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQueries, useQuery, UseQueryResult } from 'react-query';
 import { supabase } from '../supabaseClient';
 
 export type LayerType = 
@@ -27,7 +27,7 @@ type LayerInfoMap = {[key: string]: Layer};
 const aqiDomain = [50, 100, 150, 200, 300, 500];
 const aqiRange = ['#00e400', '#ffff00', '#ff7e00', '#ff0000', '#8b3f97', '#7e0023']
 
-export const layers: LayerInfoMap = {
+const layersInfo: LayerInfoMap = {
   AQI: {
     domain: aqiDomain,
     range: aqiRange,
@@ -108,17 +108,18 @@ export const layers: LayerInfoMap = {
   },
 };
 
-export interface LayerData {
+export interface LayerData<TS = Date> {
   lng: number;
   lat: number;
   device_id: number;
-  timestamp: Date;
+  timestamp: TS;
   val: number
 }
 
 export interface UseLayerOptions {
   subscribe?: boolean; // Default true
   pause?: boolean;
+  deviceId?: number;
 }
 
 export interface LayerResult extends Layer {
@@ -128,28 +129,37 @@ export interface LayerResult extends Layer {
   data?: LayerData[];
 }
 
-const fetchLayerData = async (layer: LayerType) => {
-  const { data, error } = await supabase
+const fetchLayerData = async (layer: LayerType, deviceId?: number) => {
+  let query = supabase
     .rpc<LayerData>('get_layer', { layer_name: layer});
-
+  if (deviceId) query = query.eq('device_id', deviceId);
+  
+  const { data, error } = await query;
   if (error || !data) throw Error('Error fetching layer ' + error);
-  console.debug('fetchLayer', data, error);
 
-  // Supabase! This isn't an array! >:(
-  return data;
+  return data.map(d => ({ ...d, timestamp: new Date(d.timestamp) }));
 }
 
 export function useLayerInfo(layer: LayerType): Layer {
-  return layers[layer];
+  return layersInfo[layer];
+}
+
+export function useLayersInfo() {
+  return layersInfo;
+}
+
+function layerQueryKeys(layer: string, options?: UseLayerOptions) {
+  if (options?.deviceId) return ['layer', layer, options.deviceId];
+  return ['layer', layer];
 }
 
 export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResult {
   const { isError, isLoading, data, error } = useQuery(
-    ['layer', layer], 
-    () => fetchLayerData(layer), 
+    layerQueryKeys(layer, options), 
+    () => fetchLayerData(layer, options?.deviceId), 
   );
 
-  const layerInfo = layers[layer];
+  const layerInfo = layersInfo[layer];
 
   return {
     isError,
@@ -158,4 +168,24 @@ export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResu
     ...layerInfo,
     data,
   };
+}
+
+export function useLayers(layers: LayerType[], options?: UseLayerOptions): {[key: string]: LayerResult} {
+  let ret = {};
+  const layerQueries = useQueries(
+    layers.map(layer => {
+      return {
+        queryKey: layerQueryKeys(layer, options),
+        queryFn: () => fetchLayerData(layer, options?.deviceId),
+      }
+    })
+  );
+  console.log('useLayers', options?.deviceId, layerQueries);
+  layers.forEach((layer, i) => ret[layer] = {
+    data: layerQueries[i].data,
+    isError: layerQueries[i].isError,
+    isLoading: layerQueries[i].isLoading,
+    ...layersInfo[layer]
+  });
+  return ret;
 }
