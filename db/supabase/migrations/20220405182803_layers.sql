@@ -78,16 +78,16 @@ $$ language plpgsql;
 
 
 -- Get info about layers, including data
-create or replace function public.get_layer (
+create or replace function public.get_layer(
   layer_name text,
   start timestamp default now() - interval '7 days',
   "end" timestamp default null
 )
-returns setof layer.data
-  security definer  as
+  returns setof layer.data
+  security definer as
 $$
 declare
-  _tv_ref      text;
+  _tv_ref text;
 begin
   select tv_ref
   from layer.definition
@@ -103,12 +103,13 @@ begin
     from layer.select_tv(_tv_ref)
            join location using (loc_id)
     where timestamp >= start
-      and ("end" is null or timestamp <= "end");
+      and ("end" is null or timestamp <= "end")
+    order by timestamp;
 
 exception
   when no_data_found then
     raise exception 'Layer % does not exist!', layer_name;
-end;
+end ;
 $$ language plpgsql;
 
 
@@ -149,7 +150,7 @@ select loc_id,
        aqi as val
 from hourly_aqi;
 
-create view public.aqi_o3_pm_view (timestamp, val, device_id, loc_id) as
+create view public.aqi_o3_pm_view as
 select loc_id,
        device_id,
        timestamp,
@@ -160,7 +161,7 @@ where pollutant_id in (
   from pollutant
   where name = any (array ['O3', 'PM2_5', 'PM10']));
 
-create view public.aqi_o3_view (timestamp, val, device_id, loc_id) as
+create view public.aqi_o3_view as
 select loc_id,
        device_id,
        timestamp,
@@ -171,7 +172,7 @@ where pollutant_id in (
   from pollutant
   where name = 'O3');
 
-create view public.aqi_pm2_5_view (timestamp, val, device_id, loc_id) as
+create view public.aqi_pm2_5_view as
 select loc_id,
        device_id,
        timestamp,
@@ -182,7 +183,7 @@ where pollutant_id in (
   from pollutant
   where name = 'PM2_5');
 
-create view public.aqi_pm10_view (timestamp, val, device_id, loc_id) as
+create view public.aqi_pm10_view as
 select loc_id,
        device_id,
        timestamp,
