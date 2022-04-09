@@ -1,6 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
 import { Box, Card, IconButton, Modal, Typography } from "@mui/material";
-import {DataFilterExtension} from '@deck.gl/extensions';
 
 export interface InfoOverlayProps {
   children?: JSX.Element[] | JSX.Element;

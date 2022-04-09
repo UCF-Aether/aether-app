@@ -1,14 +1,15 @@
-import { Deck } from "@deck.gl/core";
+import { Deck, Layer as DeckLayer } from "@deck.gl/core";
 import { ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
-import { Card } from "@mui/material";
+import { Box, Card, Slider } from "@mui/material";
 import Color from "colorjs.io";
 import { format } from "d3-format";
 import { useCallback, useMemo, useRef, useState } from "react";
 import StaticMap from "react-map-gl";
 import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
+import {DataFilterExtension} from '@deck.gl/extensions';
 
 const INITIAL_VIEW_STATE = {
   longitude: -73.75,
@@ -18,6 +19,8 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
   bearing: 0,
 };
+
+const UNIX_MS_HOUR = 3600 * 1000;
 
 export interface Reading {
   val: number;
@@ -42,7 +45,7 @@ export interface MapLegendProps extends LegendProps {
 }
 
 export interface MapProps {
-  data: Array<LayerData>;
+  data?: Array<LayerData>;
   isLoading?: boolean;
   isError?: boolean;
   legend: MapLegendProps;
@@ -50,11 +53,16 @@ export interface MapProps {
   rangeStop?: Date;
 }
 
+const dataFilter = new DataFilterExtension({
+  filterSize: 1,
+  fp64: false
+});
+
 /* eslint-disable react/no-deprecated */
-export function Map(props: any) {
-  const { binnedData, isLoading, isError, rangeStart, rangeStop, legend } = props;
+export function Map(props: MapProps) {
+  const { data, isLoading, isError, rangeStart, rangeStop, legend } = props;
   const { title, description, units, domain, range } = legend;
-  const f = format(".2s");
+  const f = format(".3s");
 
   const deckRef = useRef<Deck>(null);
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
@@ -92,46 +100,55 @@ export function Map(props: any) {
     [colorRanges]
   );
 
-  const layers =  [
-    new ScatterplotLayer<LayerData>({
-      id: "scatterplot-layer",
-      data: binnedData?.data ?? null,
-      getPosition: d => [d.lng, d.lat],
-      getFillColor: (d) => getColor(d.val),
-      radiusMaxPixels: 100,
-      radiusMinPixels: 25,
-      pickable: true,
-      opacity: 0.2,
-      filled: true,
-      updateTriggers: {
-        getFillColor: [getColor, colorRanges],
-      },
-    }),
-    new TextLayer<LayerData>({
-      id: "text-layer",
-      data: binnedData?.data ?? null,
-      pickable: false,
-      getPosition: d => [d.lng, d.lat],
-      getText: (d) => `${f(d.val)}`.replace("−", "-"), // I'm too lazy to properly load fonts for deck.gl
-      getTextAnchor: "middle",
-      getAlignmentBaseline: "center",
-      // fontFamily: 'Roboto',
-      // getColor: (d) => isBright(deckRef.current?.pickObject({x: d.lng, y: d.lat, radius: 10}).)
-    }),
+  console.log(isLoading, isError, data);
+  // const mapData = (data ?? []).map(d => ({ ...d, timestamp: d.timestamp.getTime() / 1000 }))
+  // console.log(mapData);
+
+  const layers = [
+    data &&
+      new ScatterplotLayer<LayerData>({
+        id: "scatterplot-layer",
+        data,
+        wrapLongitude: true,
+        getPosition: d => [d.lng, d.lat],
+        getFillColor: d => getColor(d.val),
+        // @ts-ignore
+        getFilterValue: d => d.timestamp.getTime(),
+        filterEnabled: true,
+        filterRange: [1648876300000, 1648896400000],
+        radiusMaxPixels: 100,
+        radiusMinPixels: 25,
+        pickable: true,
+        opacity: 0.5,
+        filled: true,
+        updateTriggers: {
+          getFillColor: [getColor, colorRanges],
+        },
+        extensions:[dataFilter],
+      }),
+      // new TextLayer<LayerData>({
+      //   id: "text-layer",
+      //   data,
+      //   pickable: false,
+      //   getPosition: d => [d.lng, d.lat],
+      //   getText: (d) => `${f(d.val)}`.replace("−", "-"), // I'm too lazy to properly load fonts for deck.gl
+      //   getSize: viewState.zoom > 4.5 ? viewState.zoom * 2.5 : 0,
+      //   getTextAnchor: "middle",
+      //   getAlignmentBaseline: "center",
+      //   sizeMaxPixels: 15,
+      //   sizeMinPixels: 0,
+      // }),
   ];
 
   const getTooltip = ({ object }) => object && `${object.val}`;
 
-  const handleViewStateChange = useCallback(({ newViewState }) => setViewState(newViewState), []);
-
-  console.log(viewState);
   return (
-    <>
+    <Box sx={{ width: '100%', height: '100%' }}>
       <DeckGL
         /* @ts-ignore */
         layers={layers}
-        initialViewState={viewState}
-        onViewStateChange={handleViewStateChange}
+        viewState={viewState}
+        onViewStateChange={e => setViewState(e.viewState)}
         controller={true}
         getTooltip={getTooltip}
         style={{ position: "relative" }}
@@ -161,6 +178,19 @@ export function Map(props: any) {
       >
         <Legend title={title} domain={domain} range={range} units={units} />
       </Card>
-    </>
+      <Box
+        sx={{
+          zIndex: 10,
+          alignItems: "center",
+          justifyContent: "center",
+          width: '100%',
+          display: "flex",
+          position: "relative",
+          bottom: '40px',
+        }}
+      >
+        <Slider sx={{ width: '50vh'}} defaultValue={30} step={10} marks min={10} max={110} />
+      </Box>
+    </Box>
   );
 }

@@ -25,6 +25,7 @@ module.exports = {
   },
   rules: {
     "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/no-shadow": "off",
     "react/prop-types": "off",
   },
 };

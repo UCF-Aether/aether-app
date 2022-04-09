@@ -36,7 +36,7 @@ export function Sidebar(props: SidebarProps) {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: '100%', width: '100%' }}>
       {toolbar}
       <Box
         component="nav"
@@ -70,10 +70,10 @@ export function Sidebar(props: SidebarProps) {
       </Box>
       <Box
         component="main"
-        height="100vh"
         display="flex"
         flexDirection="column"
         sx={{
+          height: '100%',
           flexGrow: 1,
           p: 0,
           width: { sm: `calc(100% - ${drawerWidth}px)` },

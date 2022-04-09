@@ -2,12 +2,11 @@ lockfileVersion: 5.3
 
 specifiers:
   '@danmarshall/deckgl-typings': ^4.9.15
-  '@deck.gl/aggregation-layers': ^8.7.0
-  '@deck.gl/core': ^8.7.0
-  '@deck.gl/extensions': ^8.7.2
-  '@deck.gl/google-maps': ^8.7.0
-  '@deck.gl/layers': ^8.7.2
-  '@deck.gl/react': ^8.7.0
+  '@deck.gl/aggregation-layers': ^8.7.5
+  '@deck.gl/core': ^8.7.5
+  '@deck.gl/extensions': ^8.7.5
+  '@deck.gl/layers': ^8.7.5
+  '@deck.gl/react': ^8.7.5
   '@emotion/react': ^11.7.1
   '@emotion/styled': ^11.6.0
   '@fontsource/roboto': ^4.5.1
@@ -26,6 +25,7 @@ specifiers:
   '@testing-library/jest-dom': ^5.16.1
   '@testing-library/react': ^12.1.2
   '@testing-library/user-event': ^13.5.0
+  '@types/geojson': ^7946.0.8
   '@types/google-maps': ^3.2.3
   '@types/google.maps': ^3.47.2
   '@types/jest': ^27.4.0
@@ -67,12 +67,11 @@ specifiers:
 
 dependencies:
   '@danmarshall/deckgl-typings': 4.9.15
-  '@deck.gl/aggregation-layers': 8.7.0_60661eda146a3a8cd3a6b836883875f3
-  '@deck.gl/core': 8.7.0
-  '@deck.gl/extensions': 8.7.2_@deck.gl+core@8.7.0
-  '@deck.gl/google-maps': 8.7.0_@deck.gl+core@8.7.0
-  '@deck.gl/layers': 8.7.2_@deck.gl+core@8.7.0
-  '@deck.gl/react': 8.7.0_ce8eb0b11b6273692454d209443eb00c
+  '@deck.gl/aggregation-layers': 8.7.5_8de07d602f0820ef002b9b0e8b5f4dbc
+  '@deck.gl/core': 8.7.5
+  '@deck.gl/extensions': 8.7.5_@deck.gl+core@8.7.5
+  '@deck.gl/layers': 8.7.5_@deck.gl+core@8.7.5
+  '@deck.gl/react': 8.7.5_3df789b0c127463ab1fe3910a1d4a5bd
   '@emotion/react': 11.8.1_a0c521d4794c7ad97f5f4c1c4a7d5818
   '@emotion/styled': 11.8.1_d24c5a2cd50724e2cbcff1306f0cc72d
   '@fontsource/roboto': 4.5.3
@@ -91,6 +90,7 @@ dependencies:
   '@testing-library/jest-dom': 5.16.2
   '@testing-library/react': 12.1.3_react-dom@17.0.2+react@17.0.2
   '@testing-library/user-event': 13.5.0
+  '@types/geojson': 7946.0.8
   '@types/google-maps': 3.2.3
   '@types/jest': 27.4.1
   '@types/mapbox-gl': 2.6.2
@@ -1609,19 +1609,6 @@ packages:
       indefinitely-typed: 1.1.0
     dev: false
 
-  /@deck.gl/aggregation-layers/8.7.0_60661eda146a3a8cd3a6b836883875f3:
-    resolution: {integrity: sha512-Wgv+anQccFcMlNN/tx1AO51XJxMtze/YzMfTFbLuhou0YErnRLkG6VITCOJUx9TESE006gPdsjqMmrljk64UqA==}
-    peerDependencies:
-      '@deck.gl/core': ^8.0.0
-      '@deck.gl/layers': ^8.0.0
-    dependencies:
-      '@deck.gl/core': 8.7.0
-      '@deck.gl/layers': 8.7.2_@deck.gl+core@8.7.0
-      '@luma.gl/shadertools': 8.5.10
-      '@math.gl/web-mercator': 3.5.7
-      d3-hexbin: 0.2.2
-    dev: false
-
   /@deck.gl/aggregation-layers/8.7.0_896097169083b0c2ca47eb8fcca7afc8:
     resolution: {integrity: sha512-Wgv+anQccFcMlNN/tx1AO51XJxMtze/YzMfTFbLuhou0YErnRLkG6VITCOJUx9TESE006gPdsjqMmrljk64UqA==}
     peerDependencies:
@@ -1630,6 +1617,19 @@ packages:
     dependencies:
       '@deck.gl/core': 8.7.0
       '@deck.gl/layers': 8.7.0_@deck.gl+core@8.7.0
+      '@luma.gl/shadertools': 8.5.10
+      '@math.gl/web-mercator': 3.5.7
+      d3-hexbin: 0.2.2
+    dev: false
+
+  /@deck.gl/aggregation-layers/8.7.5_8de07d602f0820ef002b9b0e8b5f4dbc:
+    resolution: {integrity: sha512-DZ3thV3+zZhBWaBRLYG1cd8toIkQq3MiSMgLDPGjH8bGf7LGIMmHri/QyaCEiICjKrUPvP3tToODkQS3eyzAVQ==}
+    peerDependencies:
+      '@deck.gl/core': ^8.0.0
+      '@deck.gl/layers': ^8.0.0
+    dependencies:
+      '@deck.gl/core': 8.7.5
+      '@deck.gl/layers': 8.7.5_@deck.gl+core@8.7.5
       '@luma.gl/shadertools': 8.5.10
       '@math.gl/web-mercator': 3.5.7
       d3-hexbin: 0.2.2
@@ -1678,6 +1678,23 @@ packages:
       mjolnir.js: 2.6.0
     dev: false
 
+  /@deck.gl/core/8.7.5:
+    resolution: {integrity: sha512-6VbbgY7Bzt+bsBp/fZvQIM/+48tv4TeByra6nLVsJiYg6iT7O1DlhG5dPVPksZnGXiMADn/cG/iQbbPe/v1UzA==}
+    dependencies:
+      '@loaders.gl/core': 3.1.8
+      '@loaders.gl/images': 3.1.8
+      '@luma.gl/constants': 8.5.10
+      '@luma.gl/core': 8.5.10
+      '@math.gl/core': 3.5.7
+      '@math.gl/web-mercator': 3.5.7
+      '@probe.gl/env': 3.5.0
+      '@probe.gl/log': 3.5.0
+      '@probe.gl/stats': 3.5.0
+      gl-matrix: 3.4.3
+      math.gl: 3.5.7
+      mjolnir.js: 2.6.0
+    dev: false
+
   /@deck.gl/extensions/8.7.0_@deck.gl+core@8.7.0:
     resolution: {integrity: sha512-4u+hSJgnMavz4LYzAWR8bIjQ4mbPRkqyBZ+nPqbu8PDmtEBbvbUKLU988ctuBXmC2oZ74sKYlcc4SsuZiTnU9w==}
     peerDependencies:
@@ -1688,13 +1705,13 @@ packages:
       '@luma.gl/shadertools': 8.5.10
     dev: false
 
-  /@deck.gl/extensions/8.7.2_@deck.gl+core@8.7.0:
-    resolution: {integrity: sha512-Fy2SQApie3h2DC/eESHEkXDtAKqHpTahWVO1tMpRdAyfz/FMGv7N4M1FB1tpYFyLxpl1e+cjBKQ4N2ZwlvVppg==}
+  /@deck.gl/extensions/8.7.5_@deck.gl+core@8.7.5:
+    resolution: {integrity: sha512-ALUUYuEOYDpW12H0Vx0tdXHKde6iQwnKULwKI33W8Xb65TMS4tbvAwQGmzNdohlwqtdG+4c3wwDqV+nJLIEbnA==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
       gl-matrix: ^3.0.0
     dependencies:
-      '@deck.gl/core': 8.7.0
+      '@deck.gl/core': 8.7.5
       '@luma.gl/shadertools': 8.5.10
     dev: false
 
@@ -1763,13 +1780,13 @@ packages:
       earcut: 2.2.3
     dev: false
 
-  /@deck.gl/layers/8.7.2_@deck.gl+core@8.7.0:
-    resolution: {integrity: sha512-5jee5f9pafMatbu1Ijwcsz6CT21nouut2h3TIDHLHrhMNmYsRKdWIaxDcXfh45FWZUbR0v04xo0GH5vjBQWd6g==}
+  /@deck.gl/layers/8.7.5_@deck.gl+core@8.7.5:
+    resolution: {integrity: sha512-7DExC6mzIsxwvJRR0CFBfE+b5N98163U3+vCuBRCrmGEIvAohcijiDFRiDPA1eN6WussYVF3e3AxmNElvMC+Iw==}
     peerDependencies:
       '@deck.gl/core': ^8.0.0
       '@loaders.gl/core': ^3.1.5
     dependencies:
-      '@deck.gl/core': 8.7.0
+      '@deck.gl/core': 8.7.5
       '@loaders.gl/images': 3.1.8
       '@mapbox/tiny-sdf': 1.2.5
       '@math.gl/polygon': 3.5.7
@@ -1811,6 +1828,19 @@ packages:
       react-dom: '>=16.3'
     dependencies:
       '@deck.gl/core': 8.7.0
+      prop-types: 15.8.1
+      react: 17.0.2
+      react-dom: 17.0.2_react@17.0.2
+    dev: false
+
+  /@deck.gl/react/8.7.5_3df789b0c127463ab1fe3910a1d4a5bd:
+    resolution: {integrity: sha512-pxZiXVTEW+loFHBYgE9DGomXvjnoApaPVFiB1iLprU3aCSbLb7Rt6y9K2bjtBXsjWgzq3wmQ4GoyXRMlZcIRQw==}
+    peerDependencies:
+      '@deck.gl/core': ^8.0.0
+      react: '>=16.3'
+      react-dom: '>=16.3'
+    dependencies:
+      '@deck.gl/core': 8.7.5
       prop-types: 15.8.1
       react: 17.0.2
       react-dom: 17.0.2_react@17.0.2
