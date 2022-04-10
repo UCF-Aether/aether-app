@@ -2,12 +2,15 @@ import { LegendThreshold, LegendLabel, LegendItem } from "@visx/legend";
 import { scaleThreshold } from "@visx/scale";
 import { LinearGradient } from "@visx/gradient";
 import { Typography } from "@mui/material";
+import { useCallback } from "react";
 
 export interface LegendProps {
   domain: Array<number>;
   range: Array<string>;
   units?: string;
   title: string;
+  width?: number; // default 15
+  height?: number; // default 22
 }
 
 function LegendContainer({
@@ -50,18 +53,22 @@ function LegendContainer({
   );
 }
 
+function shouldPutLabel(height: number, i: number) {
+}
+
 export function Legend(props: LegendProps) {
-  const { title, units, domain, range } = props;
-  const legendGlyphSize = 15;
+  const { title, units, domain, range, width, height } = props;
+  const glyphWidth = width ?? 15;
+  const glyphHeight = height ? height / range.length : 22;
+  const minLabelHeight = 10;
 
   const thresholdScale = scaleThreshold({ domain, range });
 
   return (
     <LegendContainer title={title} subTitle={units}>
-      <LegendThreshold scale={thresholdScale}>
+      <LegendThreshold scale={thresholdScale} itemMargin={0}>
         {(labels) =>
           labels
-            .slice(0)
             .reverse()
             .map((label, i) => (
               <LegendItem
@@ -70,18 +77,24 @@ export function Legend(props: LegendProps) {
                   alert(`clicked: ${JSON.stringify(label)}`);
                 }}
               >
-                <svg width={legendGlyphSize} height={legendGlyphSize * 1.5}>
-                  <LinearGradient
-                    from={range[range.length - 1 - i]}
-                    to={range[Math.max(range.length - i - 2, 0)]}
-                    id={`legend-grad-${i}`}
-                  />
-                  <rect
-                    fill={`url('#legend-grad-${i}')`}
-                    width={legendGlyphSize}
-                    height={legendGlyphSize * 1.5}
-                  />
+                
+                <svg width={glyphWidth} height={glyphHeight}>
+                  <rect fill={label.value} width={glyphWidth} height={glyphHeight} />
                 </svg>
+                {//<svg width={glyphWidth} height={glyphHeight}>
+                //   <LinearGradient
+                //     from={range[range.length - 1 - i]}
+                //     to={range[Math.max(range.length - i - 2, 0)]}
+                //     id={`legend-grad-${i}`}
+                //   />
+                //   <rect
+                //     fill={`url('#legend-grad-${i}')`}
+                //     width={glyphWidth}
+                //     height={glyphHeight}
+                //   />
+                // </svg>
+                // { shouldPutLabel(i) && <LegendLabel margin="0px 0 0 8px">{label.text}</LegendLabel>}
+                }
                 <LegendLabel margin="0px 0 0 8px">{label.text}</LegendLabel>
               </LegendItem>
             ))
