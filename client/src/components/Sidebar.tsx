@@ -74,6 +74,7 @@ export function Sidebar(props: SidebarProps) {
         flexDirection="column"
         sx={{
           height: '100%',
+          position: 'relative',
           flexGrow: 1,
           p: 0,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
