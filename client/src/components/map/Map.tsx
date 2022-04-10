@@ -191,15 +191,24 @@ function MapLegend(props: LegendProps) {
     >
       <Legend title={title} domain={domain} range={range} units={units} />
     </Card>
-  )
+  );
 }
 
-function getTooltip ({ object }) {
+function MapBackdrop({ isLoading }) {
+  return (
+    <Backdrop sx={{ zIndex: 10, position: "absolute" }} open={!!isLoading}>
+      <CircularProgress />
+    </Backdrop>
+  );
+}
+
+function getTooltip({ object }) {
   return object && `${object.val}`;
 }
 
 const MemoizedMapSlider = memo(MapSlider);
 const MemoizedLegend = memo(MapLegend);
+const MemoizedBackdrop = memo(MapBackdrop);
 
 const f = format(".3s");
 /* eslint-disable react/no-deprecated */
@@ -292,12 +301,7 @@ export function Map(props: MapProps) {
       </DeckGL>
       <MemoizedLegend title={title} domain={domain} range={range} units={units} />
       <MemoizedMapSlider value={slider} onChange={handleSliderChange} hour={unixCurHour} />
-      <Backdrop 
-        sx={{ zIndex: 10, position: 'absolute' }}
-        open={!!isLoading}
-      >
-        <CircularProgress />
-      </Backdrop>
+      <MemoizedBackdrop isLoading={isLoading} />
     </Box>
   );
 }
