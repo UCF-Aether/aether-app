@@ -1,6 +1,6 @@
 import { ResponsiveLine, Serie } from "@nivo/line";
 import { useCallback } from "react";
-import { LayerData, LayerType, useLayers } from "../hooks/layers";
+import { LayerData, LayerResult, LayerType, useLayers } from "../hooks/layers";
 import { Panel } from "./panels/Panel";
 import { Error } from "./Error";
 import { Skeleton } from "@mui/material";
@@ -19,20 +19,12 @@ const FetchingContent = () => (
   <Skeleton animation="wave" variant="rectangular" width="100%" height="30%" sx={{ my: 2 }} />
 );
 
+const toSerie = (layerQueries: {[key: string]: LayerResult }) =>
+  Object.entries(layerQueries).map(([layer, result]) => ({ id: layer, data: result.data.map(d => ({ x: d.timestamp, y: d.val })) }));
+
 export function LayersLine(props: LayersLineProps) {
   const { layers, title, deviceId } = props;
   const layerQueries = useLayers(layers, { deviceId });
-
-  const toDatum = useCallback(
-    (layer) => (layerQueries[layer].data ?? [])
-      .map(ld => ({ x: new Date(ld.timestamp), y: ld.val })),
-    [layerQueries]
-  );
-
-  const toSerie = useCallback(
-    () => layers.map(l => ({ id: l, data: toDatum(l) })),
-    [layers]
-  );
 
   const anyLoading = (layers: LayerType[]) =>
       layers.reduce<Boolean>((prev, next) => prev || layerQueries[next].isLoading, false);
@@ -51,7 +43,7 @@ export function LayersLine(props: LayersLineProps) {
   return (
     <Panel title={props.title} contentSx={{ height: 400 }}>
       <ResponsiveLine
-        data={toSerie()}
+        data={toSerie(layerQueries)}
         margin={{ top: 50, right: 40, bottom: 60, left: 60 }}
         xScale={{ type: "time", format: "native" }}
         curve="linear"

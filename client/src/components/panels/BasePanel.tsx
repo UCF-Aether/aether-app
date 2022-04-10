@@ -17,7 +17,6 @@ export function BasePanel(props: BasePanelProps) {
     <Box 
       sx={{ 
         m: 2,
-        height: '100%',
         ...(props.sx || {})
       }} 
       style={{ textAlign: 'left' }}>
