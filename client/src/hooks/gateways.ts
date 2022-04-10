@@ -29,5 +29,6 @@ const getGatewaysQuery = async () => {
 
 
 export function useGateways() {
-  return useQuery('gateways', getGatewaysQuery);
+  const { isLoading, isError, data: gateways, error } = useQuery('gateways', getGatewaysQuery);
+  return { isLoading, isError, gateways, error };
 }

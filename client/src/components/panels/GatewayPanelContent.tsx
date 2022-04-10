@@ -7,7 +7,7 @@ import { useGateways } from "../../hooks/gateways";
 
 export function GatewayPanelContent() {
   const navigate = useNavigate();
-  const { data, error, isLoading, isError } = useGateways();
+  const { gateways, error, isLoading, isError } = useGateways();
 
   if (isError) return <ErrorIcon color="error" />;
 
@@ -15,7 +15,7 @@ export function GatewayPanelContent() {
 
   return (
     <List sx={{ listStylePosition: 'inside', height: '35vh', display: 'block', overflow: 'auto' }}>
-      {(data ?? []).map(g => {
+      {(gateways ?? []).map(g => {
         if (!g) return <></>
         return <Item primary={g.name} key={g.gateway_id} onClick={() => navigate('gateway/' + g.gateway_id)} />
       })}
