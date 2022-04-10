@@ -8,11 +8,11 @@ import { Panel } from "./Panel";
 export interface DeviceInfo {
   devEui?: string | null;
   activationMethod?: string | null;
-  createdAt?: string | null;
-  updatedAt?: string | null;
-  locUpdatedAt?: string | null;
-  lastUplink?: string | null;
-  lastDownlink?: string | null;
+  createdAt?: Date | null;
+  updatedAt?: Date | null;
+  locUpdatedAt?: Date | null;
+  lastUplink?: Date | null;
+  lastDownlink?: Date | null;
   lat?: number | null;
   lng?: number | null;
 }

@@ -6,6 +6,7 @@
   "main": "",
   "scripts": {
     "start": "supabase start || true",
-    "stop": "supabase stop"
+    "stop": "supabase stop",
+    "reset": "supabase db reset"
   }
 }

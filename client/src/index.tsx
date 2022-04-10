@@ -6,7 +6,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter } from "react-router-dom";
-import { createClient as createUrqlClient, Provider as UrqlProvider } from "urql";
 import App from "./App";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
@@ -20,18 +19,12 @@ import reportWebVitals from "./reportWebVitals";
   if (!process.env[key]) throw new Error(`${key} is not defined!`);
 });
 
-const urqlClient = createUrqlClient({
-  url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 4000}/graphql`,
-});
-
 ReactDOM.render(
   <React.StrictMode>
-    <UrqlProvider value={urqlClient}>
-      <CssBaseline enableColorScheme />
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </UrqlProvider>
+    <CssBaseline enableColorScheme />
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>,
   document.getElementById("root")
 );

@@ -24,9 +24,9 @@ export function Sidebar(props: SidebarProps) {
   };
 
   const toolbar = (
-    <AppBar style={{ background: "transparent", boxShadow: "none" }}>
+    <AppBar style={{ pointerEvents: 'none', background: "transparent", boxShadow: "none" }}>
       <Toolbar>
-        <Card>
+        <Card style={{ pointerEvents: 'auto' }}>
           <IconButton onClick={handleDrawerToggle}>
             <MenuIcon />
           </IconButton>
@@ -36,7 +36,7 @@ export function Sidebar(props: SidebarProps) {
   );
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: '100%', width: '100%' }}>
       {toolbar}
       <Box
         component="nav"
@@ -70,10 +70,11 @@ export function Sidebar(props: SidebarProps) {
       </Box>
       <Box
         component="main"
-        height="100vh"
         display="flex"
         flexDirection="column"
         sx={{
+          height: '100%',
+          position: 'relative',
           flexGrow: 1,
           p: 0,
           width: { sm: `calc(100% - ${drawerWidth}px)` },
