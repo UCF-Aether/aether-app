@@ -17,6 +17,7 @@ import { Gateways } from "./pages/dashboard/Gateways";
 import { Alerts } from "./pages/dashboard/Alerts";
 import { Account } from "./pages/dashboard/Account";
 import { RequireAuth } from "./components/RequireAuth";
+import { supabase } from "./supabaseClient";
 
 console.log(supabase);
 
