@@ -126,7 +126,7 @@ export interface LayerResult extends Layer {
   isLoading: boolean;
   isError: boolean;
   error: any;
-  data?: LayerData[];
+  data: LayerData[];
 }
 
 const fetchLayerData = async (layer: LayerType, deviceId?: number) => {
@@ -166,7 +166,7 @@ export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResu
     isLoading,
     error,
     ...layerInfo,
-    data,
+    data: data ?? [],
   };
 }
 
