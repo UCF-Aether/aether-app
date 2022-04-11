@@ -15,11 +15,11 @@ const dashy = [
     icon: null,
     key: "devices",
   },
-  {
-    text: "Gateways",
-    icon: null,
-    key: "gateways",
-  },
+  // {
+  //   text: "Gateways",
+  //   icon: null,
+  //   key: "gateways",
+  // },
   {
     text: "Alerts",
     icon: null,

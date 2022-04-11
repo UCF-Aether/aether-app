@@ -81,7 +81,6 @@ export function NodePanel() {
   const tabs = (
     <TabsList>
       <Tab>Devices</Tab>
-      <Tab>Gateways</Tab>
     </TabsList>
   );
 
@@ -91,9 +90,6 @@ export function NodePanel() {
         <nav>
           <TabPanel value={0}>
             <DevicePanelContent />
-          </TabPanel>
-          <TabPanel value={1}>
-            <GatewayPanelContent />
           </TabPanel>
         </nav>
       </BasePanel>
