@@ -22,7 +22,7 @@ const getGatewaysQuery = async () => {
     .from<Gateway>('gateways')
     .select('*');
 
-  if (error || !data) throw Error('Error fetching devices ' + error);
+  if (error || !data) throw new Error('Error fetching devices ' + error);
 
   return data;
 }
