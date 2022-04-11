@@ -59,4 +59,4 @@ jobs:
       run: pnpm lint -r
       
     - name: Build
-      run: pnpm build:prod
+      run: pnpm build
