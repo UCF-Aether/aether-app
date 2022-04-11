@@ -27,7 +27,7 @@ create table alert.definition
   trigger       float not null,
   created_at    timestamp default now(),
   times_triggered int default 0,
-  last_trigger_at timestamp default null
+  last_triggered_at timestamp default null
 );
 
 grant select, references on alert.definition to anon;
@@ -146,7 +146,7 @@ begin
       raise notice 'Sending email for %, source=%, fkey=%, trigger=%, value=%',
         alert_def.profile_id, src, alert_def.fkeys, alert_def.trigger, val;
       update alert.definition
-        set last_trigger_at = now(),
+        set last_triggered_at = now(),
             times_triggered = alert_def.times_triggered + 1
         where definition_id = alert_def.definition_id;
       perform event.emit('alert_triggered', alert_def.profile_id, body, alert_def.definition_id);
@@ -162,7 +162,7 @@ end;
 $$ language plpgsql volatile
                     parallel safe;
 
-
+select * from alert.definition;
 create or replace function alert.new(pid uuid, did int, src text, fkey text[], trigger_val float)
   returns int as
 $$

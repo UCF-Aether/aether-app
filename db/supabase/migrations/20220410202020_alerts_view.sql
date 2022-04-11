@@ -11,5 +11,3 @@ create or replace view public.alerts as
          ad.description
   from alert.definition ad
   join device d on ad.device_id = d.device_id;
-
-select * from alerts;
