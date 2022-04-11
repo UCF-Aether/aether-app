@@ -39,6 +39,7 @@ export function NewAlertForm() {
       layer: values.layer,
       deviceId: values.device,
       value: values.triggerValue,
+      description: values.description,
     });
   }
 

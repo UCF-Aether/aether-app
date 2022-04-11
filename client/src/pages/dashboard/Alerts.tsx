@@ -8,7 +8,7 @@ import { useAlerts } from "../../hooks/alerts";
 const columns: GridColumns = [
   { field: 'name', headerName: 'Name', flex: 1},
   { field: 'dev_eui', headerName: 'Device EUI', flex: 1},
-  { field: 'layer', headerName: 'Layer', flex: 1},
+  { field: 'layer_name', headerName: 'Layer', flex: 1},
   { field: 'trigger', headerName: 'Triggers At', flex: 1},
 ];
 
