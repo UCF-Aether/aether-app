@@ -12,7 +12,7 @@ export interface Alert {
   name: string;
   dev_eui: string;
   fkeys: string[];
-  layer_name?: string;
+  layer_name: string;
   trigger: number;
   created_at: Date;
   times_triggered: number;
@@ -64,10 +64,13 @@ async function createAlert(props: CreateAlertProps) {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { name: alert_name, layer: layer_name, deviceId: did, value: val, description } = props;
   console.log(props);
-  const { data, error } = await supabase.rpc(
-    "create_alert", 
-    { alert_name, layer_name, did, val, description }
-  );
+  const { data, error } = await supabase.rpc("create_alert", {
+    alert_name,
+    layer_name,
+    did,
+    val,
+    description,
+  });
 
   if (error || !data) throw new Error("Error creating alert: " + error);
   return data;

@@ -1,7 +1,8 @@
-
 create or replace view public.alerts as
   select ad.definition_id as alert_id,
          ad.name,
+         ad.fname as layer_name,
+         dev_eui,
          ad.fkeys,
          "trigger",
          last_triggered_at,
@@ -10,3 +11,5 @@ create or replace view public.alerts as
          ad.description
   from alert.definition ad
   join device d on ad.device_id = d.device_id;
+
+select * from alerts;

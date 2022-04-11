@@ -22,8 +22,8 @@ grant select, references on layer.definition to service_role;
 create or replace function create_alert(layer_name text, alert_name text, did int, val float, description text default '', pid uuid default auth.uid())
   returns int as
 $$
-insert into alert.definition (name, description, device_id, profile_id, fkeys, source, trigger)
-select alert_name, create_alert.description, did, pid, l.fkeys, trig_source, val
+insert into alert.definition (name, description, device_id, profile_id, fname, fkeys, source, trigger)
+select alert_name, create_alert.description, did, pid, layer_name, l.fkeys, trig_source, val
 from layer.definition l
 where name = layer_name
 returning definition_id;

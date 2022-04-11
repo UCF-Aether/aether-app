@@ -19,9 +19,12 @@ create table alert.definition
   description   text default '',
   device_id     int not null,
   profile_id    uuid not null,
-  fkeys         text[]  not null,   -- foreign keys that can potentially trigger alerts for this definition
-  source        text,          -- reading (public.reading) or aqi (public.raw_hourly_aqi)
-  trigger       float,
+  fname         text default '',     -- Name of the collection of fkeys (AQI is derived from PM, O3, NO, SO)
+                                     --   fname would be 'AQI' and fkeys would be those gases
+                                     --   Only used for front-end user ATM.
+  fkeys         text[] not null,     -- Foreign keys that can potentially trigger alerts for this definition
+  source        text not null,       -- Basically, the "subscription key" that the alert listens to
+  trigger       float not null,
   created_at    timestamp default now(),
   times_triggered int default 0,
   last_trigger_at timestamp default null
@@ -39,7 +42,7 @@ create policy users_only_alerts
   for all
   using ( auth.uid() = profile_id);
 
-
+-- Unimplemented
 create or replace function alert.test_filter (filter alert.filter, to_test alert.filter)
 returns bool as $$
 begin
@@ -49,6 +52,7 @@ begin
 end;
 $$ language plpgsql;
 
+-- Unimplemented
 create or replace function alert.test_filters (filters alert.filter[], to_test alert.filter)
   returns bool as $$
 declare
@@ -135,6 +139,7 @@ begin
           'device_id', alert_def.device_id,
           'source', src,
           'fkey', fkey,
+          'fname', alert_def.fname,
           'trigger_val', alert_def.trigger,
           'val', val
         );
