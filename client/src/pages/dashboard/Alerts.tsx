@@ -1,4 +1,4 @@
-import { Box, LinearProgress, Button } from "@mui/material";
+import { Box, Button, LinearProgress } from "@mui/material";
 import { DataGrid, GridColumns } from "@mui/x-data-grid";
 import { useMemo } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -14,7 +14,7 @@ const columns: GridColumns = [
 
 export function Alerts() {
   const navigate = useNavigate();
-  const { isLoading, isError, alerts, error } = useAlerts();
+  const { isLoading, isError, alerts } = useAlerts();
   const rows = useMemo(
     () => (alerts ?? []).map(al => ({
       ...al,
@@ -31,6 +31,7 @@ export function Alerts() {
           columns={columns} 
           rows={rows} 
           loading={isLoading}
+          error={isError}
           components={{ LoadingOverlay: LinearProgress }}
         />
       </BasePanel>

@@ -1,13 +1,12 @@
+import ErrorIcon from "@mui/icons-material/Error";
+import { CircularProgress, List } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDevices } from "../../hooks/devices";
-import ErrorIcon from "@mui/icons-material/Error";
-import { CircularProgress } from "@mui/material";
 import { NodeListItem as Item } from "../NodeListItem";
-import { List } from "@mui/material";
 
 export function DevicePanelContent() {
   const navigate = useNavigate();
-  const { devices, error, isLoading, isError } = useDevices();
+  const { devices, isLoading, isError } = useDevices();
 
   if (isError) return <ErrorIcon color="error" />;
   if (isLoading) return <CircularProgress />;

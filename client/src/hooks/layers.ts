@@ -1,4 +1,4 @@
-import { useQueries, useQuery, UseQueryResult } from 'react-query';
+import { useQueries, useQuery } from 'react-query';
 import { supabase } from '../supabaseClient';
 
 export type LayerType = 

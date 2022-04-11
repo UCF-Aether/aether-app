@@ -29,6 +29,7 @@ export function Gateways() {
           columns={columns} 
           rows={rows} 
           loading={isLoading}
+          error={isError}
           components={{ LoadingOverlay: LinearProgress }}
         />
       </BasePanel>

@@ -12,7 +12,7 @@ export function AlertModal(props?: AlertModalProps) {
     navigate("..");
   };
 
-  console.log('hi');
+  console.log('hi', props);
   return (
     <DetailsModal title='Alert' subTitle='99' open onClose={handleClose}>
       <p>hi</p>

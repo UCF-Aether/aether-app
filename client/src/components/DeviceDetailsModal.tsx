@@ -27,7 +27,7 @@ export function DeviceDetailsModal() {
   );
 
   const Info = () => {
-    if (isError) return <Error/>;
+    if (isError) return <Error message={error.message}/>;
     if (isLoading || !device) return <FetchingContent />;
     return (
       <DeviceInfoPanel

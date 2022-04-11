@@ -46,6 +46,6 @@ export function useDevices() {
 }
 
 export function useDeviceInfo(deviceId: number) {
-  const { isLoading, isError, data: device, error } = useQuery<Device>(["device", deviceId], () => fetchDevice(deviceId));
+  const { isLoading, isError, data: device, error } = useQuery<Device, Error>(["device", deviceId], () => fetchDevice(deviceId));
   return { isLoading, isError, device, error };
 }

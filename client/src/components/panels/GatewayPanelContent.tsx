@@ -1,13 +1,12 @@
-import { useNavigate } from "react-router-dom";
 import ErrorIcon from "@mui/icons-material/Error";
-import { CircularProgress } from "@mui/material";
-import { NodeListItem as Item } from "../NodeListItem";
-import { List } from "@mui/material";
+import { CircularProgress, List } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useGateways } from "../../hooks/gateways";
+import { NodeListItem as Item } from "../NodeListItem";
 
 export function GatewayPanelContent() {
   const navigate = useNavigate();
-  const { gateways, error, isLoading, isError } = useGateways();
+  const { gateways, isLoading, isError } = useGateways();
 
   if (isError) return <ErrorIcon color="error" />;
 

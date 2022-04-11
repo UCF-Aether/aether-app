@@ -1,9 +1,8 @@
-import { ResponsiveLine, Serie } from "@nivo/line";
-import { useCallback } from "react";
-import { LayerData, LayerResult, LayerType, useLayers } from "../hooks/layers";
-import { Panel } from "./panels/Panel";
-import { Error } from "./Error";
 import { Skeleton } from "@mui/material";
+import { ResponsiveLine, Serie } from "@nivo/line";
+import { LayerData, LayerResult, LayerType, useLayers } from "../hooks/layers";
+import { Error } from "./Error";
+import { Panel } from "./panels/Panel";
 
 export interface LayerSerie extends Serie {
   data: LayerData[];
@@ -23,7 +22,7 @@ const toSerie = (layerQueries: {[key: string]: LayerResult }) =>
   Object.entries(layerQueries).map(([layer, result]) => ({ id: layer, data: result.data.map(d => ({ x: d.timestamp, y: d.val })) }));
 
 export function LayersLine(props: LayersLineProps) {
-  const { layers, title, deviceId } = props;
+  const { layers, deviceId } = props;
   const layerQueries = useLayers(layers, { deviceId });
 
   const anyLoading = (layers: LayerType[]) =>

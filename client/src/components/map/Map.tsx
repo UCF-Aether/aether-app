@@ -1,15 +1,15 @@
-import { Deck, Layer as DeckLayer, MapView } from "@deck.gl/core";
+import { MapView } from "@deck.gl/core";
+import { DataFilterExtension } from "@deck.gl/extensions";
 import { ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
 import { Backdrop, Box, Card, CircularProgress, Slider, Typography } from "@mui/material";
 import Color from "colorjs.io";
 import { format } from "d3-format";
-import { memo, useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import StaticMap from "react-map-gl";
 import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
-import { DataFilterExtension } from "@deck.gl/extensions";
 
 const INITIAL_VIEW_STATE = {
   longitude: -73.75,
@@ -72,7 +72,7 @@ function genColorRanges(range: string[], domain: number[]) {
     const width = i === domain.length - 1 ? -1 : domain[i + 1] - dm;
     return {
       start: dm,
-      color: (pct: number) => colorRange(Math.min(pct, 1)).srgb.map((c) => c * 256),
+      color: (pct: number) => colorRange(Math.min(pct, 1)).srgb.map((c: any) => c * 256),
       width,
     };
   });
@@ -80,7 +80,7 @@ function genColorRanges(range: string[], domain: number[]) {
 
 // Given color ranges, get color for a specific value
 function getColor(ranges: any, val: number) {
-  const i = ranges.findIndex((cr) => val <= cr.start);
+  const i = ranges.findIndex((cr: any) => val <= cr.start);
   if (i === -1) return ranges[ranges.length - 1].color(0);
   if (i === 0 && val < ranges[0].start) return ranges[0].color(0);
 
@@ -112,7 +112,7 @@ function genHourlySliderMarks(
   const endUnix = end instanceof Date ? end.getTime() : end;
   const endHour = unixHourTrunc(endUnix);
   const startHour = endHour - numHours * UNIX_MS_HOUR;
-  const marks = Array.from(new Array(1 + numHours / stepHours), (v, i) => {
+  const marks = Array.from(new Array(1 + numHours / stepHours), (v: any, i) => {
     const value = endHour - i * UNIX_MS_HOUR * stepHours;
     return {
       value,
@@ -215,8 +215,8 @@ const MemoizedBackdrop = memo(MapBackdrop);
 const f = format(".3s");
 /* eslint-disable react/no-deprecated */
 export function Map(props: MapProps) {
-  const { data, isLoading, isError, legend } = props;
-  const { title, description, units, domain, range } = legend;
+  const { data, isLoading, legend } = props;
+  const { title, units, domain, range } = legend;
 
   const [slider, setSlider] = useState<number>(new Date().getTime());
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);

@@ -1,10 +1,10 @@
 import { Box, Button } from "@mui/material";
-import { DataGrid, GridRowParams } from "@mui/x-data-grid";
 import LinearProgress from '@mui/material/LinearProgress';
-import { BasePanel } from "../../components/panels/BasePanel";
-import { Device, useDevices } from "../../hooks/devices";
+import { DataGrid } from "@mui/x-data-grid";
 import { useMemo } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import { BasePanel } from "../../components/panels/BasePanel";
+import { useDevices } from "../../hooks/devices";
 
 const columns = [
   { field: "name", headerName: "Name", flex: 1 },
@@ -36,6 +36,7 @@ export function Devices() {
           columns={columns} 
           rows={rows} 
           loading={isLoading}
+          error={isError}
           components={{ LoadingOverlay: LinearProgress }}
           onRowClick={handleRowClick}
         />

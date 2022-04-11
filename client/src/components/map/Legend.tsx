@@ -1,8 +1,6 @@
-import { LegendThreshold, LegendLabel, LegendItem } from "@visx/legend";
-import { scaleThreshold } from "@visx/scale";
-import { LinearGradient } from "@visx/gradient";
 import { Typography } from "@mui/material";
-import { useCallback } from "react";
+import { LegendItem, LegendLabel, LegendThreshold } from "@visx/legend";
+import { scaleThreshold } from "@visx/scale";
 
 export interface LegendProps {
   domain: Array<number>;
@@ -53,14 +51,11 @@ function LegendContainer({
   );
 }
 
-function shouldPutLabel(height: number, i: number) {
-}
 
 export function Legend(props: LegendProps) {
   const { title, units, domain, range, width, height } = props;
   const glyphWidth = width ?? 15;
   const glyphHeight = height ? height / range.length : 22;
-  const minLabelHeight = 10;
 
   const thresholdScale = scaleThreshold({ domain, range });
 
