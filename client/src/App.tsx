@@ -18,6 +18,8 @@ import { Alerts } from "./pages/dashboard/Alerts";
 import { Account } from "./pages/dashboard/Account";
 import { RequireAuth } from "./components/RequireAuth";
 import { supabase } from "./supabaseClient";
+import { AlertModal } from "./components/AlertModal";
+import { NewAlertModal } from "./components/NewAlertModal";
 
 console.log(supabase);
 
@@ -115,11 +117,14 @@ export default function App() {
               <Route path="gateway/:gatewayId" element={<GatewayDetailsModal />} />
             </Route>
             <Route path="/auth" element={<LoginSignup />} />
-            <Route path="/dashboard/*" element={<RequireAuth><Dashboard /></RequireAuth>}>
+            <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>}>
               <Route index element={<Overview />} />
               <Route path='devices' element={<Devices />} />
               <Route path='gateways' element={<Gateways />} />
-              <Route path='alerts' element={<Alerts />} />
+              <Route path='alerts' element={<Alerts />}>
+                <Route path=':alertId' element={<AlertModal />} />
+                <Route path='new' element={<NewAlertModal />} />
+              </Route>
               <Route path='account' element={<Account />} />
             </Route>
           </Routes>
