@@ -14,14 +14,31 @@ create type alert.filter as
 
 create table alert.definition
 (
-  definition_id int generated always as identity,
+  definition_id int primary key generated always as identity,
   name          text,
+  description   text default '',
   device_id     int not null,
   profile_id    uuid not null,
-  fkeys           text[]  not null,   -- foreign keys that can potentially trigger alerts for this definition
+  fkeys         text[]  not null,   -- foreign keys that can potentially trigger alerts for this definition
   source        text,          -- reading (public.reading) or aqi (public.raw_hourly_aqi)
-  trigger       float
+  trigger       float,
+  created_at    timestamp default now(),
+  times_triggered int default 0,
+  last_trigger_at timestamp default null
 );
+
+grant select, references on alert.definition to anon;
+grant insert, update, select, references on alert.definition to authenticated;
+grant insert, update, truncate, select, references on alert.definition to service_role;
+
+alter table alert.definition
+  enable row level security;
+
+create policy users_only_alerts
+  on alert.definition
+  for all
+  using ( auth.uid() = profile_id);
+
 
 create or replace function alert.test_filter (filter alert.filter, to_test alert.filter)
 returns bool as $$
@@ -123,6 +140,10 @@ begin
         );
       raise notice 'Sending email for %, source=%, fkey=%, trigger=%, value=%',
         alert_def.profile_id, src, alert_def.fkeys, alert_def.trigger, val;
+      update alert.definition
+        set last_trigger_at = now(),
+            times_triggered = alert_def.times_triggered + 1
+        where definition_id = alert_def.definition_id;
       perform event.emit('alert_triggered', alert_def.profile_id, body, alert_def.definition_id);
       begin
         -- For now, just call it manually
