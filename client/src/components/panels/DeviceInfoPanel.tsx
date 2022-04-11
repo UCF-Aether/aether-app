@@ -60,7 +60,7 @@ export function DeviceInfoPanel(props: DeviceInfoPanelProps) {
     },
     {
       key: "Location",
-      value: info.lat && info.lng ? `(${info.lat}, ${info.lng})` : undefined,
+      value: info.lat != undefined && info.lng != undefined ? `(${info.lat}, ${info.lng})` : undefined,
     },
     {
       key: "Location Updated At",
