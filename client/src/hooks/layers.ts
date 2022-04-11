@@ -180,7 +180,6 @@ export function useLayers(layers: LayerType[], options?: UseLayerOptions): {[key
       }
     })
   );
-  console.log('useLayers', options?.deviceId, layerQueries);
   layers.forEach((layer, i) => ret[layer] = {
     data: layerQueries[i].data,
     isError: layerQueries[i].isError,
