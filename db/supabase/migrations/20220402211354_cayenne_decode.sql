@@ -16,7 +16,7 @@ create extension if not exists plv8;
 
 -- Type: reading
 
-DROP TYPE IF EXISTS cayenne.reading cascade;
+-- DROP TYPE IF EXISTS cayenne.reading cascade;
 create type cayenne.reading as
 (
   chan text,

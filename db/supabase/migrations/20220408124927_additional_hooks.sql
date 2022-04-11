@@ -1,4 +1,4 @@
-create or replace function device_uplink_hook(pid int, body jsonb, at timestamp)
+create or replace function device_uplink_hook(pid uuid, body jsonb, at timestamp)
   returns void as
 $$
 update public.device_meta
