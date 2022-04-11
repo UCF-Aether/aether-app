@@ -20,6 +20,7 @@ import { RequireAuth } from "./components/RequireAuth";
 import { supabase } from "./supabaseClient";
 import { AlertModal } from "./components/AlertModal";
 import { NewAlertModal } from "./components/NewAlertModal";
+import { NewDeviceModal } from "./components/NewDeviceModal";
 
 console.log(supabase);
 
@@ -120,6 +121,7 @@ export default function App() {
             <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>}>
               <Route index element={<Overview />} />
               <Route path='devices' element={<Devices />} >
+                <Route path='new' element={<NewDeviceModal />} />
                 <Route path=':deviceId' element={<DeviceDetailsModal />} />
               </Route>
               <Route path='gateways' element={<Gateways />} />
