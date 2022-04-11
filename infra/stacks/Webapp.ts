@@ -6,7 +6,7 @@ import { RemovalPolicy } from "aws-cdk-lib";
 import { CfnOutput } from "aws-cdk-lib";
 
 export interface WebappStackProps extends sst.StackProps {
-  graphqlUrl: string;
+  graphqlUrl?: string;
   domain?: string;
   certificateArn?: string;
 }
@@ -28,7 +28,7 @@ export class WebappStack extends sst.Stack {
         priceClass: cloudfront.PriceClass.PRICE_CLASS_100,
       },
       environment: {
-        REACT_APP_GRAPHQL_URL: props.graphqlUrl,
+        // REACT_APP_GRAPHQL_URL: props.graphqlUrl,
         REACT_APP_SUPABASE_PUBLIC_ANON_KEY: process.env.SUPABASE_PUBLIC_ANON_KEY!,
         REACT_APP_MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_ACCESS_TOKEN!,
         REACT_APP_SUPABASE_URL: process.env.SUPABASE_URL!,
