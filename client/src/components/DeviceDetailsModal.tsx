@@ -18,7 +18,7 @@ export function DeviceDetailsModal() {
   } = useDeviceInfo(deviceId);
 
   const handleClose = () => {
-    navigate("/");
+    navigate("..");
   };
 
 

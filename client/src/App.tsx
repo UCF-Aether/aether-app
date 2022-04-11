@@ -119,7 +119,9 @@ export default function App() {
             <Route path="/auth" element={<LoginSignup />} />
             <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>}>
               <Route index element={<Overview />} />
-              <Route path='devices' element={<Devices />} />
+              <Route path='devices' element={<Devices />} >
+                <Route path=':deviceId' element={<DeviceDetailsModal />} />
+              </Route>
               <Route path='gateways' element={<Gateways />} />
               <Route path='alerts' element={<Alerts />}>
                 <Route path=':alertId' element={<AlertModal />} />

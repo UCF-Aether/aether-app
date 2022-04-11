@@ -1,9 +1,10 @@
 import { Box, Button } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridRowParams } from "@mui/x-data-grid";
 import LinearProgress from '@mui/material/LinearProgress';
 import { BasePanel } from "../../components/panels/BasePanel";
-import { useDevices } from "../../hooks/devices";
+import { Device, useDevices } from "../../hooks/devices";
 import { useMemo } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const columns = [
   { field: "name", headerName: "Name", flex: 1 },
@@ -12,6 +13,7 @@ const columns = [
 ];
 
 export function Devices() {
+  const navigate = useNavigate();
   const { isLoading, isError, devices } = useDevices();
   const rows = useMemo(
     () => (devices ?? []).map(d => ({
@@ -20,6 +22,11 @@ export function Devices() {
       updated_at: d.updated_at ?? '-',
     })), 
     [devices]);
+
+  const handleRowClick = (params: any) => {
+    console.log(params);
+    navigate(`${params.row.device_id}`);
+  }
 
   return (
     <Box sx={{ height: '100vh', m: 2  }}>
@@ -30,8 +37,10 @@ export function Devices() {
           rows={rows} 
           loading={isLoading}
           components={{ LoadingOverlay: LinearProgress }}
+          onRowClick={handleRowClick}
         />
       </BasePanel>
+      <Outlet />
     </Box>
   );
 }
