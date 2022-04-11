@@ -1,6 +1,3 @@
 packages:
   - client/**
-  - api/**
   - infra/**
-  - lambda/**
-  - db/**
