@@ -17,10 +17,8 @@ export function DeviceDetailsModal() {
     isError,
   } = useDeviceInfo(deviceId);
 
-  console.log('device model', deviceId, isLoading, isError);
-
   const handleClose = () => {
-    navigate("/");
+    navigate("..");
   };
 
 

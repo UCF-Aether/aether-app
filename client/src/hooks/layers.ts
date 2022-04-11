@@ -135,7 +135,7 @@ const fetchLayerData = async (layer: LayerType, deviceId?: number) => {
   if (deviceId) query = query.eq('device_id', deviceId);
   
   const { data, error } = await query;
-  if (error || !data) throw Error('Error fetching layer ' + error);
+  if (error || !data) throw new Error('Error fetching layer ' + error);
 
   return data.map(d => ({ ...d, timestamp: new Date(d.timestamp) }));
 }

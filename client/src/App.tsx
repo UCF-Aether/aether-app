@@ -8,10 +8,18 @@ import { ColorModeContext } from "./components/ColorModeContext";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
 import { SupabaseProvider } from "./components/SupabaseContext";
-import { Dashboard } from "./pages/Dashboard";
 import { LoginSignup } from "./pages/LoginSignup";
 import { MainPage } from "./pages/Main";
-import { supabase } from './supabaseClient';
+import { Dashboard } from "./pages/Dashboard";
+import { Overview } from "./pages/dashboard/Overview";
+import { Devices } from "./pages/dashboard/Devices";
+import { Gateways } from "./pages/dashboard/Gateways";
+import { Alerts } from "./pages/dashboard/Alerts";
+import { Account } from "./pages/dashboard/Account";
+import { RequireAuth } from "./components/RequireAuth";
+import { supabase } from "./supabaseClient";
+import { AlertModal } from "./components/AlertModal";
+import { NewAlertModal } from "./components/NewAlertModal";
 
 console.log(supabase);
 
@@ -109,7 +117,18 @@ export default function App() {
               <Route path="gateway/:gatewayId" element={<GatewayDetailsModal />} />
             </Route>
             <Route path="/auth" element={<LoginSignup />} />
-            <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>}>
+              <Route index element={<Overview />} />
+              <Route path='devices' element={<Devices />} >
+                <Route path=':deviceId' element={<DeviceDetailsModal />} />
+              </Route>
+              <Route path='gateways' element={<Gateways />} />
+              <Route path='alerts' element={<Alerts />}>
+                <Route path=':alertId' element={<AlertModal />} />
+                <Route path='new' element={<NewAlertModal />} />
+              </Route>
+              <Route path='account' element={<Account />} />
+            </Route>
           </Routes>
         </div>
       </Providers>

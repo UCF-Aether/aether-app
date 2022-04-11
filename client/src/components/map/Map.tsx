@@ -182,13 +182,13 @@ function MapLegend(props: LegendProps) {
       sx={{
         zIndex: 10,
         alignSelf: "end",
-        justifyContent: "left",
+        justifyContent: "center",
         display: "flex",
         position: "absolute",
         right: 5,
         top: 5,
-        width: '15%',
-        height: '25%'
+        width: 140,
+        height: 200,
       }}
     >
       <Legend title={title} domain={domain} range={range} units={units} height={100}/>

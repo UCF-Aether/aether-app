@@ -25,7 +25,7 @@ export interface UseDevicesOptions {
 const fetchDeviceList = async () => {
   const { data, error } = await supabase.from<Device>("devices").select("*");
 
-  if (error || !data) throw Error(`Error fetching devices ${error}`);
+  if (error || !data) throw new Error(`Error fetching devices ${error}`);
   return data;
 };
 
@@ -36,7 +36,7 @@ const fetchDevice = async (deviceId: number) => {
     .eq("device_id", deviceId)
     .maybeSingle();
 
-  if (error || !data) throw Error(`Error fetching device ${deviceId} ${error}`);
+  if (error || !data) throw new Error(`Error fetching device ${deviceId} ${error}`);
   return data;
 };
 

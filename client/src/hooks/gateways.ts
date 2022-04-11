@@ -22,12 +22,13 @@ const getGatewaysQuery = async () => {
     .from<Gateway>('gateways')
     .select('*');
 
-  if (error || !data) throw Error('Error fetching devices ' + error);
+  if (error || !data) throw new Error('Error fetching devices ' + error);
 
   return data;
 }
 
 
 export function useGateways() {
-  return useQuery('gateways', getGatewaysQuery);
+  const { isLoading, isError, data: gateways, error } = useQuery('gateways', getGatewaysQuery);
+  return { isLoading, isError, gateways, error };
 }
