@@ -11,7 +11,7 @@ export function NewAlertModal() {
 
   return (
     <DetailsModal title='New Alert' open onClose={handleClose}>
-      <NewAlertForm />
+      <NewAlertForm onCancel={handleClose}/>
     </DetailsModal>
   )
 }

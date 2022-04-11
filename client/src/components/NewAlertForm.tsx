@@ -18,12 +18,16 @@ function Fetching() {
   );
 }
 
+export interface NewAlertFormProps {
+  onCancel?: () => void;
+}
 
-export function NewAlertForm() {
+export function NewAlertForm(props?: NewAlertFormProps) {
   const { isLoading, isError, devices, error } = useDevices();
   const layers = useLayersInfo();
   const [values, setValues] = useState<any>({});
   const mutation = useCreateAlert();
+  const handleCancel = props?.onCancel ?? undefined;
 
   if (isError) return <Error message={error.message} />
   if (isLoading) return <Fetching />
@@ -122,7 +126,7 @@ export function NewAlertForm() {
             />
           </Grid>
           <Grid container item xs={6} justifyContent='center'>
-            <Button sx={{ marginTop: 4 }} variant='outlined' >
+            <Button sx={{ marginTop: 4 }} variant='outlined' onClick={handleCancel}>
               Cancel
             </Button>
           </Grid>
