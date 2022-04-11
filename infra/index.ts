@@ -1,14 +1,9 @@
 import * as sst from "@serverless-stack/resources";
-import { InfraConfig, StageConfig } from "./util/InfraConfig";
-import { WebappStack } from "./stacks/Webapp";
-import { ApiStack } from "./stacks/Api";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
-
-import * as _config from "./infra.config.json";
-import { IotStack } from "./stacks/Iot";
-import { VpcStack } from "./stacks/Vpc";
 import dotenv from "dotenv";
-import { Cluster, TtsCommunityIntegrationStack } from "./stacks/Tts";
+import * as _config from "./infra.config.json";
+import { WebappStack } from "./stacks/Webapp";
+import { InfraConfig, StageConfig } from "./util/InfraConfig";
+
 
 const config = _config as InfraConfig;
 
@@ -41,7 +36,7 @@ export default function main(app: sst.App) {
     "SUPABASE_SERVICE_ROLE_KEY",
     "SUPABASE_SECRET_JWT",
     "MAPBOX_ACCESS_TOKEN",
-    "DATABASE_URL",
+    // "DATABASE_URL",
   ].forEach((env) => {
     if (!process.env[env]) missingEnv.push(env);
   });
@@ -49,56 +44,12 @@ export default function main(app: sst.App) {
   if (missingEnv.length > 0)
     throw new Error(`Missing environment variables: ${missingEnv}`);
 
-  const vpcStack = new VpcStack(app, "Vpc");
-
-  app.setDefaultFunctionProps((stack) => {
-    const appVpc = vpcStack.vpc;
-    // Secret values suck, and I'm losing my mind over this. Using process env (provided by user or github actions).
-    // console.log(SecretValue.secretsManager("SupabaseSecrets"));
-
-    return {
-      runtime: Runtime.NODEJS_14_X,
-      vpc: appVpc,
-      vpcSubnets: { subnets: appVpc.privateSubnets },
-      securityGroups: [vpcStack.sgs.lambda],
-      environment: {
-        SUPABASE_URL: process.env.SUPABASE_URL!,
-        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        SUPABASE_PUBLIC_ANON_KEY: process.env.SUPABASE_PUBLIC_ANON_KEY!,
-        DATABASE_URL: process.env.DATABASE_URL!,
-        APP_STAGE: app.stage.toUpperCase(),
-      },
-      bundle: {
-        externalModules: ["pg-native"],
-        installCommands: ["pnpm install"]
-      },
-    };
-  });
-
-  const api = new ApiStack(app, "Api", {
-    vpc: vpcStack.vpc,
-    containerPort: config.graphql.containerPort,
-    domain: apiDomain,
-    certificateArn: stageConfig
-      ? config.dnsCertificates[apiDomain!]
-      : undefined,
-  });
 
   new WebappStack(app, "Webapp", {
-    graphqlUrl: api.graphqlUrl,
     domain: siteDomain,
     certificateArn: stageConfig
       ? config.dnsCertificates[siteDomain!]
       : undefined,
   });
 
-  // Using supabase - plugin other postgres rds // new DatabaseStack(app, "Database");
-
-  new IotStack(app, "IoT", {});
-
-  new TtsCommunityIntegrationStack(app, "TtsCommunityIntegration", {
-    applicationId: "aether",
-    applicationApiKey: process.env.TTS_COMMUNITY_API_KEY!,
-    clusterAddress: Cluster.NAM1,
-  });
 }

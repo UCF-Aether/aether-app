@@ -1,31 +1,22 @@
 import ErrorIcon from "@mui/icons-material/Error";
 import { CircularProgress, List } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "urql";
-import { GatewaysDocument } from "../../generated/graphql";
+import { useGateways } from "../../hooks/gateways";
 import { NodeListItem as Item } from "../NodeListItem";
 
 export function GatewayPanelContent() {
   const navigate = useNavigate();
+  const { gateways, isLoading, isError } = useGateways();
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
-  const [result, reexecuteQuery] = useQuery({
-    query: GatewaysDocument,
-  });
+  if (isError) return <ErrorIcon color="error" />;
 
-  const { data, fetching, error } = result;
-
-  if (error) return <ErrorIcon color="error" />;
-
-  if (fetching) return <CircularProgress />;
-
-  const gateways = data?.gateways?.nodes || [];
+  if (isLoading) return <CircularProgress />;
 
   return (
     <List sx={{ listStylePosition: 'inside', height: '35vh', display: 'block', overflow: 'auto' }}>
-      {gateways.map(g => {
+      {(gateways ?? []).map(g => {
         if (!g) return <></>
-        return <Item primary={g.name} key={g.gatewayId} onClick={() => navigate('gateway/' + g.gatewayId)} />
+        return <Item primary={g.name} key={g.gateway_id} onClick={() => navigate('gateway/' + g.gateway_id)} />
       })}
     </List>
   );

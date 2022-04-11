@@ -1,34 +1,30 @@
 // import logo from "./logo.svg";
 import { createTheme, LinkProps as MuiLinkProps, ThemeProvider } from "@mui/material";
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { forwardRef, useMemo, useState } from "react";
+import { QueryClient, QueryClientProvider } from "react-query";
 import { Link, LinkProps, Route, Routes } from "react-router-dom";
-import { createClient as createUrqlClient, Provider as UrqlProvider } from "urql";
 import "./App.css";
 import { ColorModeContext } from "./components/ColorModeContext";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
 import { SupabaseProvider } from "./components/SupabaseContext";
-import { Dashboard } from "./pages/Dashboard";
 import { LoginSignup } from "./pages/LoginSignup";
 import { MainPage } from "./pages/Main";
+import { Dashboard } from "./pages/Dashboard";
+import { Overview } from "./pages/dashboard/Overview";
+import { Devices } from "./pages/dashboard/Devices";
+import { Gateways } from "./pages/dashboard/Gateways";
+import { Alerts } from "./pages/dashboard/Alerts";
+import { Account } from "./pages/dashboard/Account";
+import { RequireAuth } from "./components/RequireAuth";
+import { supabase } from "./supabaseClient";
+import { AlertModal } from "./components/AlertModal";
+import { NewAlertModal } from "./components/NewAlertModal";
 
-const supabaseClient = createSupabaseClient(
-  process.env.REACT_APP_SUPABASE_URL!,
-  process.env.REACT_APP_SUPABASE_PUBLIC_ANON_KEY!
-);
-console.log(supabaseClient);
+console.log(supabase);
 
-const urqlClient = createUrqlClient({
-  url: process.env.REACT_APP_GRAPHQL_URL || `http://localhost:${process.env.PORT || 4000}/graphql`,
-  fetchOptions: () => {
-    const token = supabaseClient.auth.session()?.access_token;
 
-    return {
-      headers: { authorization: token ? `Bearer ${token}` : "" },
-    };
-  },
-});
+const queryClient = new QueryClient();
 
 // https://github.com/mui/material-ui/issues/29942
 const LinkBehavior = forwardRef<any, Omit<LinkProps, "to"> & { href: LinkProps["to"] }>(
@@ -91,10 +87,10 @@ export default function App() {
 
   const Clients = (props: { children?: JSX.Element[] | JSX.Element }) => {
     return (
-      <SupabaseProvider supabaseClient={supabaseClient}>
-        <UrqlProvider value={urqlClient}>
+      <SupabaseProvider supabaseClient={supabase}>
+        <QueryClientProvider client={queryClient}>
           {props.children}
-        </UrqlProvider>
+        </QueryClientProvider>
       </SupabaseProvider>
     );
   }
@@ -121,7 +117,18 @@ export default function App() {
               <Route path="gateway/:gatewayId" element={<GatewayDetailsModal />} />
             </Route>
             <Route path="/auth" element={<LoginSignup />} />
-            <Route path="/dashboard/*" element={<Dashboard />} />
+            <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>}>
+              <Route index element={<Overview />} />
+              <Route path='devices' element={<Devices />} >
+                <Route path=':deviceId' element={<DeviceDetailsModal />} />
+              </Route>
+              <Route path='gateways' element={<Gateways />} />
+              <Route path='alerts' element={<Alerts />}>
+                <Route path=':alertId' element={<AlertModal />} />
+                <Route path='new' element={<NewAlertModal />} />
+              </Route>
+              <Route path='account' element={<Account />} />
+            </Route>
           </Routes>
         </div>
       </Providers>

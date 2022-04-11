@@ -14,16 +14,23 @@ export function DetailsModal(props: InfoOverlayProps) {
     <Modal
       open={props.open}
       onClose={props.onClose}
-      sx={{ pointerEvents: "none", border: 0, outline: "none" }}
+      sx={{ 
+        pointerEvents: "none", 
+        border: 0, 
+        outline: "none",
+        overflow: 'hidden',
+      }}
       hideBackdrop
     >
       <Box
         sx={{
           position: "absolute",
+          overflow: 'hidden',
           float: "right",
           right: 0,
-          width: "30%",
+          width: "50vw",
           minWidth: 325,
+          maxWidth: 700,
           height: "100vh",
           pointerEvents: "auto",
           border: 0,
@@ -39,7 +46,7 @@ export function DetailsModal(props: InfoOverlayProps) {
             {props.title}
           </Typography>
           <Typography variant="h5">{props.subTitle}</Typography>
-          <Box sx={{ p: 1, width: '100%', height: '85%', overflow: 'scroll' }}>
+          <Box sx={{ p: 1, width: '100%', height: '85%', overflowX: 'hidden' }}>
             {props.children}
           </Box>
         </Card>

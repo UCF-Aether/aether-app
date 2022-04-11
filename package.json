@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "author": "Paul Wood",
   "scripts": {
-    "start": "source .env && pnpm run start --filter !infra",
+    "start": "pnpm run start --filter !infra",
     "build": "sst build",
     "deploy": "sst deploy",
     "deploy:prod": "sst deploy --stage prod",

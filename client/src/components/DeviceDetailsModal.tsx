@@ -1,155 +1,57 @@
-import ErrorIcon from "@mui/icons-material/Error";
-import { Skeleton, Typography } from '@mui/material';
-import { ResponsiveLine, Serie } from '@nivo/line';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery } from 'urql';
-import { DeviceDetailsDocument } from '../generated/graphql';
-import { DetailsModal } from './DetailsModal';
-import { DeviceInfoPanel } from './panels/DeviceInfoPanel';
-import { Panel } from './panels/Panel';
-import { SwitchErrorComponentProps, UrqlSwitch } from './UrqlSwitch';
-
-interface ReadingsLineGraphProps {
-  data: Serie[];
-  title: string;
-  yAxisLengend: string;
-}
-
-const ReadingsLineGraph = (props: ReadingsLineGraphProps) => (
-  <Panel title={props.title} contentSx={{ height: 400}}>
-    <ResponsiveLine
-      data={props.data}
-      margin={{ top: 50, right: 40, bottom: 60, left: 60 }}
-      xScale={{ type: 'time', format: 'native' }}
-      yScale={{
-        type: 'linear',
-        min: 'auto',
-        max: 'auto',
-        stacked: true,
-        reverse: false
-      }}
-      yFormat=" >-.2f"
-      axisTop={null}
-      axisRight={null}
-      axisBottom={{
-        format: '%m/%d',
-        tickValues: 'every 1 day',
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legend: 'time',
-        legendOffset: 45,
-        legendPosition: 'middle'
-      }}
-      axisLeft={{
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legend: props.yAxisLengend,
-        legendOffset: -40,
-        legendPosition: 'middle'
-      }}
-      colors={{ scheme: 'nivo' }}
-      pointSize={10}
-      pointColor={{ theme: 'background' }}
-      pointBorderWidth={2}
-      pointBorderColor={{ from: 'serieColor' }}
-      pointLabelYOffset={-12}
-      useMesh={true}
-    />
-  </Panel>
-);
+import { Skeleton } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
+import { useDeviceInfo } from "../hooks/devices";
+import { DetailsModal } from "./DetailsModal";
+import { Error } from "./Error";
+import { LayersLine } from "./LayersLineGraph";
+import { DeviceInfoPanel } from "./panels/DeviceInfoPanel";
 
 export function DeviceDetailsModal() {
   const params = useParams();
   const navigate = useNavigate();
-  const deviceId = Number(params.deviceId ?? '-1');
-
-  const [result, reexecuteQuery] = useQuery({
-    query: DeviceDetailsDocument,
-    variables: { deviceId }
-  });
+  const deviceId = Number(params.deviceId ?? "-1");
+  const {
+    device,
+    error,
+    isLoading,
+    isError,
+  } = useDeviceInfo(deviceId);
 
   const handleClose = () => {
-    navigate('/');
-  }
+    navigate("..");
+  };
 
-
-  const { data } = result;
-  console.log(data);
-
-  // TODO: handle no device found
-  const device = data?.device;
-  const meta = device?.deviceMeta;
-
-  const ErrorContent = (props?: SwitchErrorComponentProps) => (
-    <>
-      <ErrorIcon color='error' />
-      <Typography>{props?.error ?? ''}</Typography>
-    </>
-  );
 
   const FetchingContent = () => (
-    <>
-      <Skeleton animation='wave' variant='rectangular' width='100%' height='30%' sx={{ my: 2 }} />
-      <Skeleton animation='wave' variant='rectangular' width='100%' height='30%' sx={{ my: 4 }} />
-      <Skeleton animation='wave' variant='rectangular' width='100%' height='30%' sx={{ my: 4 }} />
-    </>
+    <Skeleton animation="wave" variant="rectangular" width="100%" height="30%" sx={{ my: 2 }} />
   );
 
-  const DataContent = () => {
-    if (!device) return <ErrorContent error='Device not found' />
-
-    const aqi = data?.aqi?.nodes.map(n => ({
-      x: new Date(n?.takenAt),
-      y: n?.val,
-    })) || [];
-
-    const pm2p5 = data?.pm2_5?.nodes.map(n => ({
-      x: new Date(n?.takenAt),
-      y: n?.val,
-    })) || [];
-
-    const voc = data?.voc?.nodes.map(n => ({
-      x: new Date(n?.takenAt),
-      y: n?.val,
-    })) || [];
-
+  const Info = () => {
+    if (isError) return <Error message={error.message}/>;
+    if (isLoading || !device) return <FetchingContent />;
     return (
-      <>
-        <DeviceInfoPanel info={{
-          devEui: device?.devEui,
-          createdAt: meta?.createdAt,
-          updatedAt: meta?.updatedAt,
-          activationMethod: device?.activationMethod,
-          lat: meta?.loc?.locGeog.latitude,
-          lng: meta?.loc?.locGeog.longitude,
-          locUpdatedAt: meta?.locUpdatedAt,
-          lastUplink: meta?.lastUplinkAt,
-          lastDownlink: meta?.lastDownlinkAt,
-        }} />
-        <ReadingsLineGraph title='AQI Over Time' yAxisLengend='AQI' data={[{ id: 'AQI', data: aqi }]}/>
-        <ReadingsLineGraph 
-          title='Gases Over Time' 
-          yAxisLengend='ppb' 
-          data={[
-            { id: 'PM2.5', data: pm2p5 },
-            { id: 'VOC', data: voc },
-          ]}
-        />
-      </>
+      <DeviceInfoPanel
+        info={{
+          devEui: device.dev_eui,
+          createdAt: device.created_at,
+          updatedAt: device.updated_at,
+          activationMethod: device.activation_method,
+          lat: device.lat,
+          lng: device.lng,
+          locUpdatedAt: device.loc_updated_at,
+          lastUplink: device.last_uplink_at,
+          lastDownlink: device.last_downlink_at,
+        }}
+      />
     );
   };
 
   return (
-    <DetailsModal title='Device' subTitle={device?.name} open onClose={handleClose}>
-      <UrqlSwitch
-        fade={750}
-        query={[result, reexecuteQuery]}
-        error={ErrorContent}
-        fetching={FetchingContent}
-        loaded={DataContent}
-      />
+    <DetailsModal title="Device" subTitle={device?.name} open onClose={handleClose}>
+      <Info />
+      <LayersLine title="AQI" deviceId={deviceId} layers={["AQI_O3", "AQI_O3_PM"]} />
+      <LayersLine title="Particulate Matter" deviceId={deviceId} layers={["PM2_5", "PM10"]} />
+      <LayersLine title="Gases" deviceId={deviceId} layers={["O3"]} />
     </DetailsModal>
   );
 }

@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "noImplicitThis": true,
     "noImplicitAny": false,
     "forceConsistentCasingInFileNames": true,
