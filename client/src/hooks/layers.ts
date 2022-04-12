@@ -269,6 +269,26 @@ function convertToDates(result: FetchResult): FetchResult {
 //
 //
 //
+type UTCDateArray = [number, number, number, number];
+function findUpsertIndex(readings: LayerReading[], utcDate: UTCDateArray, locId: number, deviceId: number) {
+  const year = utcDate[0];
+  const month = utcDate[1];
+  const date = utcDate[2];
+  const hours = utcDate[3];
+
+  const cmpDate = (d: Date) =>
+    d.getUTCDate() === date && d.getUTCMonth() === month && d.getUTCHours() === hours;
+  return readings.findIndex((element) => {
+    if (element.device_id === deviceId)
+      console.log(element, new Date(element.timestamp).getMonth());
+    return (
+      element.loc_id === locId &&
+      element.device_id === deviceId &&
+      cmpDate(new Date(element.timestamp))
+    );
+  });
+}
+
 function updateReading(
   client: QueryClient,
   oldData: FetchResult,
@@ -284,17 +304,7 @@ function updateReading(
   const hours = payload.hour;
 
   console.log(readings, payload, year, month, date, hours);
-  const cmpDate = (d: Date) =>
-    d.getUTCDate() === date && d.getUTCMonth() === month && d.getUTCHours() === hours;
-  const upsertIndex = readings.findIndex((element) => {
-    if (element.device_id === payload.device_id)
-      console.log(element, new Date(element.timestamp).getMonth());
-    return (
-      element.loc_id === payload.loc_id &&
-      element.device_id === payload.device_id &&
-      cmpDate(new Date(element.timestamp))
-    );
-  });
+  const upsertIndex = findUpsertIndex(readings, [year, month, date, hours], payload.loc_id, payload.device_id);
   if (upsertIndex > -1) {
     console.log("updating ", upsertIndex, " new avg", payload.avg);
     // Do update
@@ -314,6 +324,20 @@ function updateAqi(
   const { locations, readings } = oldData;
 
   console.log("got aqi payload update ", payload);
+  const datesAreAnnoying = new Date(payload.day);
+  const year = datesAreAnnoying.getUTCFullYear();
+  const month = datesAreAnnoying.getUTCMonth();
+  const date = datesAreAnnoying.getUTCDate();
+  const hours = payload.hour;
+
+  const upsertIndex = findUpsertIndex(readings, [year, month, date, hours], payload.loc_id, payload.device_id);
+  if (upsertIndex > -1) {
+    console.log("updating ", upsertIndex, " new avg", payload.aqi);
+    // Do update
+    readings[upsertIndex].val = payload.aqi;
+  } else {
+    console.log("Error finding update index ");
+  }
 
   return { locations, readings };
 }
@@ -340,7 +364,7 @@ function insertReading(client: QueryClient, oldData: FetchResult, payload: Chann
 
 function insertAqi(client: QueryClient, oldData: FetchResult, payload: AqiReadingPayload) {
   const { locations, readings } = oldData;
-  const datesAreAnnoying = new Date(payload.day);
+  const datesAreAnnoying = new Date(payload.timestamp);
   const year = datesAreAnnoying.getUTCFullYear();
   const month = datesAreAnnoying.getUTCMonth();
   const date = datesAreAnnoying.getUTCDate();
@@ -348,6 +372,12 @@ function insertAqi(client: QueryClient, oldData: FetchResult, payload: AqiReadin
   const stupidDate = new Date(Date.UTC(year, month, date, hours));
 
   console.log("got aqi payload insert ", payload, stupidDate);
+  readings.unshift({
+    timestamp: stupidDate,
+    loc_id: payload.loc_id,
+    device_id: payload.device_id,
+    val: payload.aqi,
+  });
   return { locations, readings };
 }
 
