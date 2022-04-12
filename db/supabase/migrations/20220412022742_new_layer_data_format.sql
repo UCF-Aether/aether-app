@@ -1,5 +1,13 @@
 drop function get_layer(layer_name text, start timestamp without time zone, "end" timestamp without time zone);
 
+create type layer.view_data_with_tz as
+(
+  loc_id    integer,
+  device_id integer,
+  timestamp timestamptz,
+  val       double precision
+);
+
 create or replace function get_layer(layer_name text, start_time timestamp without time zone DEFAULT (now() - '7 days'::interval),
                           end_time timestamp without time zone DEFAULT NULL::timestamp without time zone,
                           did int default null)
@@ -21,7 +29,7 @@ begin
              'locations',
              coalesce(jsonb_object_agg(loc_id, (st_y(loc_geog::geometry), st_x(loc_geog::geometry))::lat_lon_pair),
                       '{}'::jsonb),
-             'readings', coalesce(jsonb_agg((loc_id, device_id, tv.timestamp, val)::layer.view_data order by tv.timestamp desc),
+             'readings', coalesce(jsonb_agg((loc_id, device_id, tv.timestamp::timestamptz, val)::layer.view_data_with_tz order by tv.timestamp desc),
                                   '[]'::jsonb)
            )
   from layer.select_tv(_tv_ref) tv
@@ -38,3 +46,5 @@ exception
     raise exception 'Layer % does not exist!', layer_name;
 end ;
 $$;
+
+select get_layer('O3');

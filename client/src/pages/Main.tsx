@@ -18,7 +18,7 @@ export function MainPage() {
   const navigate = useNavigate();
   const { user } = Auth.useUser();
   const [layer, setLayer] = useState<LayerType>('AQI');
-  const { domain, range, title, units, data, isLoading, isError } = useLayer(layer);
+  const { domain, range, title, units, data, isLoading, isError } = useLayer(layer, { subscribe: true });
 
   let loggedIn = !!user;
 
@@ -40,7 +40,6 @@ export function MainPage() {
           <LoginSignupPanel />
         </>
       )}
-      <ColorModeToggle />
     </Stack>
   );
 
