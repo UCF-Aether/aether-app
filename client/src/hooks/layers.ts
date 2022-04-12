@@ -241,6 +241,7 @@ function layerQueryKeys(layer: string, options?: UseLayerOptions) {
   const keys = ["layer", layer];
   if (options?.type === "raw") keys[1] = 'RAW_' + keys[1];
   if (options?.deviceId) keys.push(`${options.deviceId}`);
+  console.log('keys', keys);
   return keys;
 }
 
@@ -417,7 +418,7 @@ export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResu
   const { isError, isLoading, data, error } = useQuery(
     layerQueryKeys(layer, options),
     () => fetchLayerData(layer, options),
-    { select: convertToDates }
+    { select: convertToDates, staleTime: Infinity }
   );
 
   const layerInfo = layersInfo[layer];
