@@ -21,6 +21,7 @@ import { supabase } from "./supabaseClient";
 import { AlertModal } from "./components/AlertModal";
 import { NewAlertModal } from "./components/NewAlertModal";
 import { NewDeviceModal } from "./components/NewDeviceModal";
+import { ReactQueryDevtools } from 'react-query/devtools';
 
 console.log(supabase);
 
@@ -90,7 +91,8 @@ export default function App() {
     return (
       <SupabaseProvider supabaseClient={supabase}>
         <QueryClientProvider client={queryClient}>
-          {props.children}
+            {props.children}
+          <ReactQueryDevtools initialIsOpen />
         </QueryClientProvider>
       </SupabaseProvider>
     );
