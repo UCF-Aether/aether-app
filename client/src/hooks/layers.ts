@@ -300,7 +300,7 @@ function findUpsertIndex(
     d.getUTCDate() === date && d.getUTCMonth() === month && d.getUTCHours() === hours;
   return readings.findIndex((element) => {
     if (element.device_id === deviceId)
-      console.log(element, new Date(element.timestamp).getMonth());
+      // console.log(element, new Date(element.timestamp).getMonth());
     return (
       element.loc_id === locId &&
       element.device_id === deviceId &&
@@ -319,7 +319,7 @@ function updateReading(oldData: FetchResult, payload: ChannelReadingPayload): Fe
   const date = datesAreAnnoying.getUTCDate();
   const hours = payload.hour;
 
-  console.log(readings, payload, year, month, date, hours);
+  // console.log(readings, payload, year, month, date, hours);
   const upsertIndex = findUpsertIndex(
     readings,
     [year, month, date, hours],
@@ -327,11 +327,11 @@ function updateReading(oldData: FetchResult, payload: ChannelReadingPayload): Fe
     payload.device_id
   );
   if (upsertIndex > -1) {
-    console.log("updating ", upsertIndex, " new avg", payload.avg);
+    // console.log("updating ", upsertIndex, " new avg", payload.avg);
     // Do update
     readings[upsertIndex].val = payload.avg;
   } else {
-    console.log("Error finding update index ");
+    console.error("Error finding update index ");
   }
 
   return { locations, readings };
@@ -340,7 +340,7 @@ function updateReading(oldData: FetchResult, payload: ChannelReadingPayload): Fe
 function updateAqi(oldData: FetchResult, payload: AqiReadingPayload): FetchResult {
   const { locations, readings } = oldData;
 
-  console.log("got aqi payload update ", payload);
+  // console.log("got aqi payload update ", payload);
   const datesAreAnnoying = new Date(payload.day);
   const year = datesAreAnnoying.getUTCFullYear();
   const month = datesAreAnnoying.getUTCMonth();
@@ -354,7 +354,7 @@ function updateAqi(oldData: FetchResult, payload: AqiReadingPayload): FetchResul
     payload.device_id
   );
   if (upsertIndex > -1) {
-    console.log("updating ", upsertIndex, " new avg", payload.aqi);
+    // console.log("updating ", upsertIndex, " new avg", payload.aqi);
     // Do update
     readings[upsertIndex].val = payload.aqi;
   } else {
@@ -373,7 +373,7 @@ function insertReading(oldData: FetchResult, payload: ChannelReadingPayload) {
   const hours = payload.hour;
   const stupidDate = new Date(Date.UTC(year, month, date, hours));
 
-  console.log("got reading payload insert ", payload, stupidDate);
+  // console.log("got reading payload insert ", payload, stupidDate);
 
   readings.unshift({
     timestamp: stupidDate,
@@ -393,7 +393,7 @@ function insertAqi(oldData: FetchResult, payload: AqiReadingPayload) {
   const hours = payload.hour;
   const stupidDate = new Date(Date.UTC(year, month, date, hours));
 
-  console.log("got aqi payload insert ", payload, stupidDate);
+  // console.log("got aqi payload insert ", payload, stupidDate);
   readings.unshift({
     timestamp: stupidDate,
     loc_id: payload.loc_id,
@@ -419,7 +419,7 @@ function insertRawReading(oldData: FetchResult, payload: RawReadingPayload) {
   const minutes = datesAreAnnoying.getMinutes();
   const stupidDate = new Date(Date.UTC(year, month, date, hours, minutes));
 
-  console.log("got raw reading payload insert ", payload, stupidDate);
+  // console.log("got raw reading payload insert ", payload, stupidDate);
   readings.unshift({
     timestamp: stupidDate,
     loc_id: payload.loc_id,
@@ -545,7 +545,7 @@ function useSubscriptionChannel(
           // Check if new reading is using a new location -> get lat, lng
           const locId = payload.new.loc_id;
           if (locId != undefined && !locations[locId]) {
-            console.log("unknown loc_id ", locId, " fetching...");
+            // console.log("unknown loc_id ", locId, " fetching...");
             try {
               const { lat, lng } = await fetchLocation(locId);
               locations[locId] = { lat, lng };

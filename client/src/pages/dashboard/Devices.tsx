@@ -24,7 +24,7 @@ export function Devices() {
     [devices]);
 
   const handleRowClick = (params: any) => {
-    console.log(params);
+    // console.log(params);
     navigate(`${params.row.device_id}`);
   }
 

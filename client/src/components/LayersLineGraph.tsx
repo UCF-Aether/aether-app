@@ -60,7 +60,7 @@ export function LayersLine(props: LayersLineProps) {
       .flatMap((l) => l.data!)
       .map((d) => d.val)
   );
-  console.log(layerQueries);
+  // console.log(layerQueries);
 
   return (
     <Panel title={props.title} contentSx={{ height: 400 }}>
