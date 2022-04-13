@@ -1,30 +1,27 @@
 // import logo from "./logo.svg";
 import { createTheme, LinkProps as MuiLinkProps, ThemeProvider } from "@mui/material";
 import { forwardRef, useMemo, useState } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
 import { Link, LinkProps, Route, Routes } from "react-router-dom";
 import "./App.css";
+import { AlertModal } from "./components/AlertModal";
 import { ColorModeContext } from "./components/ColorModeContext";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
-import { SupabaseProvider } from "./components/SupabaseContext";
-import { LoginSignup } from "./pages/LoginSignup";
-import { MainPage } from "./pages/Main";
+import { NewAlertModal } from "./components/NewAlertModal";
+import { NewDeviceModal } from "./components/NewDeviceModal";
+import { RequireAuth } from "./components/RequireAuth";
+import { useLayerSubscriptions } from "./hooks/layers";
 import { Dashboard } from "./pages/Dashboard";
-import { Overview } from "./pages/dashboard/Overview";
+import { Account } from "./pages/dashboard/Account";
+import { Alerts } from "./pages/dashboard/Alerts";
 import { Devices } from "./pages/dashboard/Devices";
 import { Gateways } from "./pages/dashboard/Gateways";
-import { Alerts } from "./pages/dashboard/Alerts";
-import { Account } from "./pages/dashboard/Account";
-import { RequireAuth } from "./components/RequireAuth";
+import { Overview } from "./pages/dashboard/Overview";
+import { LoginSignup } from "./pages/LoginSignup";
+import { MainPage } from "./pages/Main";
 import { supabase } from "./supabaseClient";
-import { AlertModal } from "./components/AlertModal";
-import { NewAlertModal } from "./components/NewAlertModal";
 
 console.log(supabase);
-
-
-const queryClient = new QueryClient();
 
 // https://github.com/mui/material-ui/issues/29942
 const LinkBehavior = forwardRef<any, Omit<LinkProps, "to"> & { href: LinkProps["to"] }>(
@@ -55,7 +52,10 @@ const linkTheme = createTheme({
   },
 });
 
+
+
 export default function App() {
+  useLayerSubscriptions();
   const [mode, setMode] = useState<"light" | "dark">("light");
   const colorMode = useMemo(
     () => ({
@@ -85,17 +85,7 @@ export default function App() {
     [mode]
   );
 
-  const Clients = (props: { children?: JSX.Element[] | JSX.Element }) => {
-    return (
-      <SupabaseProvider supabaseClient={supabase}>
-        <QueryClientProvider client={queryClient}>
-          {props.children}
-        </QueryClientProvider>
-      </SupabaseProvider>
-    );
-  }
-
-  const Providers = (props: { children?: JSX.Element[] | JSX.Element }) => {
+  const ThemeProviders = (props: { children?: JSX.Element[] | JSX.Element }) => {
     return (
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={linkTheme}>
@@ -108,8 +98,7 @@ export default function App() {
   }
 
   return (
-    <Clients>
-      <Providers>
+      <ThemeProviders>
         <div className="App">
           <Routes>
             <Route path="/*" element={<MainPage />}>
@@ -120,6 +109,7 @@ export default function App() {
             <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>}>
               <Route index element={<Overview />} />
               <Route path='devices' element={<Devices />} >
+                <Route path='new' element={<NewDeviceModal />} />
                 <Route path=':deviceId' element={<DeviceDetailsModal />} />
               </Route>
               <Route path='gateways' element={<Gateways />} />
@@ -131,7 +121,6 @@ export default function App() {
             </Route>
           </Routes>
         </div>
-      </Providers>
-    </Clients>
+      </ThemeProviders>
   );
 }

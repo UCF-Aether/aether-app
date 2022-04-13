@@ -6,7 +6,6 @@ import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
 import { styled } from '@mui/material/styles';
 import { BasePanel } from './BasePanel';
 import { DevicePanelContent } from './DevicePanelContent';
-import { GatewayPanelContent } from './GatewayPanelContent';
 
 const blue = {
   50: '#F0F7FF',
@@ -81,7 +80,6 @@ export function NodePanel() {
   const tabs = (
     <TabsList>
       <Tab>Devices</Tab>
-      <Tab>Gateways</Tab>
     </TabsList>
   );
 
@@ -91,9 +89,6 @@ export function NodePanel() {
         <nav>
           <TabPanel value={0}>
             <DevicePanelContent />
-          </TabPanel>
-          <TabPanel value={1}>
-            <GatewayPanelContent />
           </TabPanel>
         </nav>
       </BasePanel>

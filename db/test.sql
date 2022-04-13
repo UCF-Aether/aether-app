@@ -4,11 +4,10 @@ create or replace function create_random_devices(for_profile uuid, num integer)
   language sql
 as
 $$
-insert into device (profile_id, name, dev_eui, aws_device_id)
+insert into device (profile_id, name, dev_eui)
 select for_profile            as profile_id,
        'Device-' || eui::text as name,
-       eui                    as dev_eui,
-       eui                    as aws_device_id
+       eui                    as dev_eui
 from (select generate_series(1, num), generate_eui() as eui) as ids;
 
 update device_meta

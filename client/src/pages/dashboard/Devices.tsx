@@ -24,13 +24,13 @@ export function Devices() {
     [devices]);
 
   const handleRowClick = (params: any) => {
-    console.log(params);
+    // console.log(params);
     navigate(`${params.row.device_id}`);
   }
 
   return (
     <Box sx={{ height: '100vh', m: 2  }}>
-      <Button variant='outlined'>Add Device</Button>
+      <Button variant='outlined' onClick={() => navigate('new')}>Add Device</Button>
       <BasePanel contentSx={{ height: '60vh', flexGrow: 1 }}>
         <DataGrid 
           columns={columns} 

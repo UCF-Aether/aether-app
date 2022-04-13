@@ -1,8 +1,7 @@
-import { useQuery } from "react-query";
-
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { supabase } from "../supabaseClient";
 
-export type ActivationMethod = 'OTAA' | 'ABP';
+export type ActivationMethod = "OTAA" | "ABP";
 
 export interface Device {
   device_id: number;
@@ -41,11 +40,52 @@ const fetchDevice = async (deviceId: number) => {
 };
 
 export function useDevices() {
-  const { isLoading, isError, data: devices, error } = useQuery<Device[], Error>("devices", () => fetchDeviceList());
+  const {
+    isLoading,
+    isError,
+    data: devices,
+    error,
+  } = useQuery<Device[], Error>("devices", () => fetchDeviceList());
   return { isLoading, isError, devices, error };
 }
 
 export function useDeviceInfo(deviceId: number) {
-  const { isLoading, isError, data: device, error } = useQuery<Device, Error>(["device", deviceId], () => fetchDevice(deviceId));
+  const {
+    isLoading,
+    isError,
+    data: device,
+    error,
+  } = useQuery<Device, Error>(["device", deviceId], () => fetchDevice(deviceId));
   return { isLoading, isError, device, error };
+}
+
+interface CreateDeviceProps {
+  name: string;
+  devEui: string;
+  lat: number;
+  lng: number;
+}
+
+async function createDevice(props: CreateDeviceProps) {
+  const { name, devEui, lat, lng } = props;
+  console.log(props);
+
+  const { data, error } = await supabase.rpc("create_device", {
+    device_name: name,
+    device_eui: devEui,
+    lng,
+    lat,
+  });
+
+  if (error) throw new Error("Error creating device: " + error);
+  return data;
+}
+
+export function useNewDevice() {
+  const queryClient = useQueryClient();
+  const mutation = useMutation(createDevice, {
+    onSuccess: () => queryClient.invalidateQueries(["devices"]),
+  });
+
+  return mutation;
 }
