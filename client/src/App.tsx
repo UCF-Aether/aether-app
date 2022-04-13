@@ -21,12 +21,9 @@ import { supabase } from "./supabaseClient";
 import { AlertModal } from "./components/AlertModal";
 import { NewAlertModal } from "./components/NewAlertModal";
 import { NewDeviceModal } from "./components/NewDeviceModal";
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { useLayerSubscriptions } from "./hooks/layers";
 
 console.log(supabase);
-
-
-const queryClient = new QueryClient();
 
 // https://github.com/mui/material-ui/issues/29942
 const LinkBehavior = forwardRef<any, Omit<LinkProps, "to"> & { href: LinkProps["to"] }>(
@@ -57,7 +54,10 @@ const linkTheme = createTheme({
   },
 });
 
+
+
 export default function App() {
+  const subs = useLayerSubscriptions();
   const [mode, setMode] = useState<"light" | "dark">("light");
   const colorMode = useMemo(
     () => ({
@@ -87,18 +87,7 @@ export default function App() {
     [mode]
   );
 
-  const Clients = (props: { children?: JSX.Element[] | JSX.Element }) => {
-    return (
-      <SupabaseProvider supabaseClient={supabase}>
-        <QueryClientProvider client={queryClient}>
-            {props.children}
-          <ReactQueryDevtools initialIsOpen />
-        </QueryClientProvider>
-      </SupabaseProvider>
-    );
-  }
-
-  const Providers = (props: { children?: JSX.Element[] | JSX.Element }) => {
+  const ThemeProviders = (props: { children?: JSX.Element[] | JSX.Element }) => {
     return (
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={linkTheme}>
@@ -111,8 +100,7 @@ export default function App() {
   }
 
   return (
-    <Clients>
-      <Providers>
+      <ThemeProviders>
         <div className="App">
           <Routes>
             <Route path="/*" element={<MainPage />}>
@@ -135,7 +123,6 @@ export default function App() {
             </Route>
           </Routes>
         </div>
-      </Providers>
-    </Clients>
+      </ThemeProviders>
   );
 }

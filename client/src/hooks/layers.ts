@@ -4,7 +4,7 @@ import {
   SupabaseRealtimePayload,
 } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import { QueryClient, useQueries, useQuery, useQueryClient } from "react-query";
+import { QueryClient, QueryKey, useQueries, useQuery, useQueryClient } from "react-query";
 import { supabase } from "../supabaseClient";
 
 export type LayerType =
@@ -18,7 +18,14 @@ export type LayerType =
   | "O3"
   | "TEMPERATURE"
   | "REL_HUMIDITY"
-  | "PRESSURE";
+  | "PRESSURE"
+  | "RAW_PM2_5"
+  | "RAW_PM10"
+  | "RAW_NO2"
+  | "RAW_O3"
+  | "RAW_TEMPERATURE"
+  | "RAW_REL_HUMIDITY"
+  | "RAW_PRESSURE";
 
 interface Layer {
   domain: Array<number>;
@@ -125,6 +132,13 @@ interface BaseLayerPayload {
   loc_id: number;
 }
 
+interface RawReadingPayload extends BaseLayerPayload {
+  sensor_chan_id: number;
+  taken_at: string;
+  received_at: string;
+  val: number;
+}
+
 interface ChannelReadingPayload extends BaseLayerPayload {
   chan_id: number; // These shouldn't change -> hard code them here for lookup
   hour: number;
@@ -181,7 +195,6 @@ export interface LayerResult extends Layer {
   isError: boolean;
   error: any;
   data: LayerData[];
-  subscription?: RealtimeSubscription;
 }
 
 const pollutantIdToLayers: { [key: number]: LayerType[] } = {
@@ -291,7 +304,6 @@ function findUpsertIndex(readings: LayerReading[], utcDate: UTCDateArray, locId:
 }
 
 function updateReading(
-  client: QueryClient,
   oldData: FetchResult,
   payload: ChannelReadingPayload
 ): FetchResult {
@@ -318,7 +330,6 @@ function updateReading(
 }
 
 function updateAqi(
-  client: QueryClient,
   oldData: FetchResult,
   payload: AqiReadingPayload
 ): FetchResult {
@@ -343,7 +354,7 @@ function updateAqi(
   return { locations, readings };
 }
 
-function insertReading(client: QueryClient, oldData: FetchResult, payload: ChannelReadingPayload) {
+function insertReading(oldData: FetchResult, payload: ChannelReadingPayload) {
   const { locations, readings } = oldData;
   const datesAreAnnoying = new Date(payload.day);
   const year = datesAreAnnoying.getUTCFullYear();
@@ -363,7 +374,7 @@ function insertReading(client: QueryClient, oldData: FetchResult, payload: Chann
   return { locations, readings };
 }
 
-function insertAqi(client: QueryClient, oldData: FetchResult, payload: AqiReadingPayload) {
+function insertAqi(oldData: FetchResult, payload: AqiReadingPayload) {
   const { locations, readings } = oldData;
   const datesAreAnnoying = new Date(payload.timestamp);
   const year = datesAreAnnoying.getUTCFullYear();
@@ -382,26 +393,51 @@ function insertAqi(client: QueryClient, oldData: FetchResult, payload: AqiReadin
   return { locations, readings };
 }
 
-function updateLayer(
-  client: QueryClient,
-  subscribeTo: string,
-  oldData: FetchResult,
-  payload: SupabaseRealtimePayload<any>
-): FetchResult {
-  if (subscribeTo === "hourly_reading_stats" || subscribeTo === "reading")
-    return updateReading(client, oldData, payload.new as ChannelReadingPayload);
-  return updateAqi(client, oldData, payload.new as AqiReadingPayload);
+// Raw readings are NEVER updated
+function updateRawReading(oldData: FetchResult, payload: RawReadingPayload) {
+  console.warn('got raw reading update ', payload);
+  return oldData;
 }
 
-function insertIntoLayer(
-  client: QueryClient,
+function insertRawReading(oldData: FetchResult, payload: RawReadingPayload) {
+  const { locations, readings } = oldData;
+  const datesAreAnnoying = new Date(payload.taken_at);
+  const year = datesAreAnnoying.getUTCFullYear();
+  const month = datesAreAnnoying.getUTCMonth();
+  const date = datesAreAnnoying.getUTCDate();
+  const hours = datesAreAnnoying.getUTCHours();
+  const stupidDate = new Date(Date.UTC(year, month, date, hours));
+
+  console.log("got raw reading payload insert ", payload, stupidDate);
+  readings.unshift({
+    timestamp: stupidDate,
+    loc_id: payload.loc_id,
+    device_id: payload.device_id,
+    val: payload.val,
+  });
+  return { locations, readings };
+}
+
+function updateLayer(
   subscribeTo: string,
   oldData: FetchResult,
   payload: SupabaseRealtimePayload<any>
 ): FetchResult {
   if (subscribeTo === "hourly_reading_stats")
-    return insertReading(client, oldData, payload.new as ChannelReadingPayload);
-  return insertAqi(client, oldData, payload.new as AqiReadingPayload);
+    return updateReading(oldData, payload.new as ChannelReadingPayload);
+  else if (subscribeTo === 'reading') return updateRawReading(oldData, payload.new as RawReadingPayload);
+  return updateAqi(oldData, payload.new as AqiReadingPayload);
+}
+
+function insertIntoLayer(
+  subscribeTo: string,
+  oldData: FetchResult,
+  payload: SupabaseRealtimePayload<any>
+): FetchResult {
+  if (subscribeTo === "hourly_reading_stats")
+    return insertReading(oldData, payload.new as ChannelReadingPayload);
+  else if (subscribeTo === 'reading') return insertRawReading(oldData, payload.new as RawReadingPayload);
+  return insertAqi(oldData, payload.new as AqiReadingPayload);
 }
 
 function filterPayload(layer: string, payload: any) {
@@ -414,7 +450,6 @@ function filterPayload(layer: string, payload: any) {
 
 export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResult {
   const client = useQueryClient();
-  const [subscription, setSubscription] = useState<RealtimeSubscription>();
   const { isError, isLoading, data, error } = useQuery(
     layerQueryKeys(layer, options),
     () => fetchLayerData(layer, options),
@@ -423,57 +458,6 @@ export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResu
 
   const layerInfo = layersInfo[layer];
 
-  useEffect(() => {
-    if (options?.subscribe) {
-      console.log("subscribing to", layer, layerInfo.subscribeTo);
-
-      let channel = layerInfo.subscribeTo;
-      if (options?.deviceId) channel += `:device_id=eq.${options.deviceId}`;
-
-      const sub = supabase
-        .from(channel)
-        .on("INSERT", async (payload: SupabaseRealtimePayload<BaseLayerPayload>) => {
-          const queryKeys = layerQueryKeys(layer, options);
-          const { locations } = client.getQueryData<FetchResult>(queryKeys);
-
-          // Filter based on the layer
-          if (!filterPayload(layer, payload)) return;
-
-          // Check if new reading is using a new location -> get lat, lng
-          const locId = payload.new.loc_id;
-          if (locId != undefined && !locations[locId]) {
-            console.log("unknown loc_id ", locId, " fetching...");
-            try {
-              const { lat, lng } = await fetchLocation(locId);
-              locations[locId] = { lat, lng };
-              client.setQueryData<FetchResult>(queryKeys, (oldData) => ({
-                ...oldData,
-                locations,
-              }));
-            } catch {
-              console.error("Error fetching location for payload", payload);
-              return;
-            }
-          }
-
-          client.setQueryData<FetchResult>(queryKeys, (old) =>
-            insertIntoLayer(client, layerInfo.subscribeTo, old, payload)
-          );
-        })
-        .on("UPDATE", (payload) => {
-          client.setQueryData<FetchResult>(layerQueryKeys(layer, options), (old) =>
-            updateLayer(client, layerInfo.subscribeTo, old, payload)
-          );
-        })
-        .subscribe();
-
-      setSubscription(sub);
-
-      return () => {
-        sub.unsubscribe();
-      };
-    }
-  }, [options?.subscribe, layer]);
 
   return {
     isError,
@@ -481,7 +465,6 @@ export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResu
     error,
     ...layerInfo,
     data: flattenData(data),
-    subscription,
   };
 }
 
@@ -517,4 +500,114 @@ export function useLayerInfo(layer: LayerType): Layer {
 
 export function useLayersInfo() {
   return layersInfo;
+}
+
+
+function useSubscriptionChannel(channel: string, getLayer: (payload: SupabaseRealtimePayload<any>) => LayerType | LayerType[]) {
+  const client = useQueryClient();
+  const [subscription, setSubscription] = useState<RealtimeSubscription>();
+
+  console.log('opening subscription to', channel);
+  useEffect( () => {
+    const sub = supabase
+      .from(channel)
+      .on("INSERT", async (payload: SupabaseRealtimePayload<BaseLayerPayload>) => {
+        const layer = getLayer(payload);
+        if (!layer) {
+          console.error(`Invalid error from payload ${payload}`);
+          return;
+        }
+
+        let queries: [QueryKey, FetchResult][] = []
+        if (Array.isArray(layer)) {
+          queries = layer.flatMap(lyr => client.getQueriesData<FetchResult>(['layer', lyr]));
+        }
+        else {
+          queries = client.getQueriesData<FetchResult>(['layer', layer]);
+        }
+
+        queries.forEach(async ([queryKey, data]) => {
+          const { locations } = data;
+
+          // Check if new reading is using a new location -> get lat, lng
+          const locId = payload.new.loc_id;
+          if (locId != undefined && !locations[locId]) {
+            console.log("unknown loc_id ", locId, " fetching...");
+            try {
+              const { lat, lng } = await fetchLocation(locId);
+              locations[locId] = { lat, lng };
+              client.setQueryData<FetchResult>(queryKey, (oldData) => ({
+                ...oldData,
+                locations,
+              }));
+            } catch {
+              console.error("Error fetching location for payload", payload);
+              return;
+            }
+          }
+
+          client.setQueryData<FetchResult>(queryKey, (old) =>
+            insertIntoLayer(channel, old, payload)
+          );
+        });
+      })
+      .on("UPDATE", (payload) => {
+        const layer = getLayer(payload);
+        if (!layer) {
+          console.error(`Invalid error from payload ${payload}`);
+          return;
+        }
+
+        let queries: [QueryKey, FetchResult][] = []
+        if (Array.isArray(layer)) {
+          queries = layer.flatMap(lyr => client.getQueriesData<FetchResult>(['layer', lyr]));
+        }
+        else {
+          queries = client.getQueriesData<FetchResult>(['layer', layer]);
+        }
+
+        queries.forEach(([queryKey, data]) => {
+          client.setQueryData<FetchResult>(queryKey, (old) =>
+            updateLayer(channel, old, payload)
+          );
+        });
+      })
+      .subscribe();
+
+      setSubscription(sub);
+      return () => { sub.unsubscribe() };
+  }, []);
+
+  return subscription;
+}
+
+function layerFromRawPayload(payload: SupabaseRealtimePayload<RawReadingPayload>) {
+  const layer = channelIdToLayer[payload.new.sensor_chan_id];
+  if (!layer) return null;
+  return 'RAW_' + layer as LayerType;
+}
+
+function layerFromHourlyReadingPayload(payload: SupabaseRealtimePayload<ChannelReadingPayload>) {
+  const layer = channelIdToLayer[payload.new.chan_id];
+  if (!layer) return null;
+  return layer;
+}
+
+function layersFromHourlyAqiPayload(payload: SupabaseRealtimePayload<AqiReadingPayload>) {
+  const layer = pollutantIdToLayers[payload.new.pollutant_id];
+  if (!layer) return null;
+  return layer;
+}
+
+export function useLayerSubscriptions() {
+  const rawSub = useSubscriptionChannel('reading', layerFromRawPayload)
+  const hourlyReadingSub = useSubscriptionChannel('hourly_reading_stats', layerFromHourlyReadingPayload);
+  const hourlyAqiSub = useSubscriptionChannel('raw_hourly_aqi', layersFromHourlyAqiPayload);
+
+  return [rawSub, hourlyReadingSub, hourlyAqiSub];
+}
+
+// true - online ... ish
+export function useSubscriptionStatus() {
+  return supabase.getSubscriptions().length > 0;
 }

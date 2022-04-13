@@ -3,7 +3,7 @@ import { Auth } from "@supabase/ui";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../aether.png";
-import { ColorModeToggle } from "../components/ColorModeToggle";
+import { OnlineIndicator } from "../components/icons/OnlineIndicator";
 import { Map } from "../components/map/Map";
 import { LayerPanel } from "../components/panels/LayerPanel";
 import { LoginSignupPanel } from "../components/panels/LoginSignupPanel";
@@ -11,6 +11,7 @@ import { NodePanel } from "../components/panels/NodePanel";
 import { YouPanel } from "../components/panels/YouPanel";
 import { Sidebar } from "../components/Sidebar";
 import { LayerType, useLayer } from "../hooks/layers";
+import { useSubscriptionStatus } from '../hooks/layers';
 
 // https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf
 
@@ -46,6 +47,7 @@ export function MainPage() {
   return (
     <Sidebar drawer={Drawer}>
       <Map data={data} isLoading={isLoading} isError={isError} legend={{ title, domain, range, units }}/>
+      <OnlineIndicator online={useSubscriptionStatus()}/>
     </Sidebar>
   );
 }
