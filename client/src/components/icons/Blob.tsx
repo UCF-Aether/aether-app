@@ -6,6 +6,7 @@ export interface BlobProps {
   animate?: boolean;
 }
 
+// CSS source -> https://www.florin-pop.com/blog/2019/03/css-pulse-effect/
 export const Blob = styled('div')<BlobProps>(({ theme, size, color, animate }) => {
   if (!color) color = theme.palette.success.light;
   const colorAlpha = alph => alpha(theme.palette.success.light, alph);
