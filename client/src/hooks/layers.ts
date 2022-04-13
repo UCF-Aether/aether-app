@@ -174,6 +174,7 @@ export interface LayerReadingLocation {
 interface FetchResult {
   locations: { [key: number]: LayerReadingLocation };
   readings: LayerReading[];
+  updatedAt?: Date;
 }
 
 export interface LayerData<TS = Date> {
@@ -254,7 +255,7 @@ function layerQueryKeys(layer: string, options?: UseLayerOptions) {
   const keys = ["layer", layer];
   if (options?.type === "raw") keys[1] = 'RAW_' + keys[1];
   if (options?.deviceId) keys.push(`${options.deviceId}`);
-  console.log('keys', keys);
+  // console.log('keys', keys);
   return keys;
 }
 
@@ -349,6 +350,7 @@ function updateAqi(
     readings[upsertIndex].val = payload.aqi;
   } else {
     console.log("Error finding update index ");
+    console.log(readings);
   }
 
   return { locations, readings };
@@ -514,7 +516,7 @@ function useSubscriptionChannel(channel: string, getLayer: (payload: SupabaseRea
       .on("INSERT", async (payload: SupabaseRealtimePayload<BaseLayerPayload>) => {
         const layer = getLayer(payload);
         if (!layer) {
-          console.error(`Invalid error from payload ${payload}`);
+          console.warn(`unsupported layer from payload ${JSON.stringify(payload)}`);
           return;
         }
 
@@ -546,15 +548,15 @@ function useSubscriptionChannel(channel: string, getLayer: (payload: SupabaseRea
             }
           }
 
-          client.setQueryData<FetchResult>(queryKey, (old) =>
-            insertIntoLayer(channel, old, payload)
+          client.setQueryData<FetchResult>(queryKey, (old) => 
+            ({ ...insertIntoLayer(channel, old, payload), updatedAt: new Date() })
           );
         });
       })
       .on("UPDATE", (payload) => {
         const layer = getLayer(payload);
         if (!layer) {
-          console.error(`Invalid error from payload ${payload}`);
+          console.error(`Unsupported layer from payload ${JSON.stringify(payload)}`);
           return;
         }
 
@@ -568,7 +570,7 @@ function useSubscriptionChannel(channel: string, getLayer: (payload: SupabaseRea
 
         queries.forEach(([queryKey, data]) => {
           client.setQueryData<FetchResult>(queryKey, (old) =>
-            updateLayer(channel, old, payload)
+            ({ ...updateLayer(channel, old, payload), updatedAt: new Date })
           );
         });
       })

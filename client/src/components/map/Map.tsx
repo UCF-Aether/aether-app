@@ -6,7 +6,7 @@ import { DeckGL } from "@deck.gl/react";
 import { Backdrop, Box, Card, CircularProgress, Slider, Typography } from "@mui/material";
 import Color from "colorjs.io";
 import { format } from "d3-format";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import StaticMap from "react-map-gl";
 import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
@@ -217,14 +217,22 @@ const f = format(".3s");
 export function Map(props: MapProps) {
   const { data, isLoading, legend } = props;
   const { title, units, domain, range } = legend;
+  const [curTime, setCurTime] = useState(new Date());
 
   const [slider, setSlider] = useState<number>(new Date().getTime());
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
-  const mapData = useMemo(
-    () => data.map((d) => ({ ...d, timestamp: d.timestamp.getTime() })),
-    [data]
-  );
+  // const mapData = useMemo(
+  //   () => data.map((d) => ({ ...d, timestamp: d.timestamp.getTime() })),
+  //   [data, data.length]
+  // );
+  // const mapData = data.map((d) => ({ ...d, timestamp: d.timestamp.getTime() }));
+
+  // useEffect(() => { 
+  //   const interval = setInterval(() => setCurTime(new Date), 1000);
+  //   
+  //   return () => clearInterval(interval);
+  // }, []);
 
   // Each function takes a domain [0, 1] and returns a Color object
   const colorRanges = useMemo(() => genColorRanges(range, domain), [domain, range]);
@@ -239,14 +247,14 @@ export function Map(props: MapProps) {
   const unixCurHour = unixHourTrunc(new Date().getTime());
   const layers = [
     data &&
-      new ScatterplotLayer<LayerData<number>>({
+      new ScatterplotLayer<LayerData>({
         id: "scatterplot-layer",
-        data: mapData,
+        data: data,
         wrapLongitude: true,
         getPosition: (d) => [d.lng, d.lat],
         getFillColor: (d) => getColor(colorRanges, d.val),
         // @ts-ignore
-        getFilterValue: (d) => d.timestamp,
+        getFilterValue: (d) => d.timestamp.getTime(),
         filterEnabled: true,
         filterRange: [slider - UNIX_MS_HOUR / 2, slider + UNIX_MS_HOUR / 2],
         radiusMaxPixels: 100,
@@ -259,14 +267,14 @@ export function Map(props: MapProps) {
         },
         extensions: [dataFilter],
       }),
-    new TextLayer<LayerData<number>>({
+    new TextLayer<LayerData>({
       id: "text-layer",
-      data: mapData,
+      data: data,
       pickable: false,
       getPosition: (d) => [d.lng, d.lat],
       getText: (d) => `${f(d.val)}`.replace("−", "-"), // I'm too lazy to properly load fonts for deck.gl
       // @ts-ignore
-      getFilterValue: (d) => d.timestamp,
+      getFilterValue: (d) => d.timestamp.getTime(),
       filterEnabled: true,
       filterRange: [slider - UNIX_MS_HOUR / 2, slider + UNIX_MS_HOUR / 2],
       getSize: viewState.zoom > 3 ? viewState.zoom * 2.5 : 0,

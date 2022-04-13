@@ -1,6 +1,7 @@
 {
   "name": "db",
   "version": "1.0.0",
+  "type": "module",
   "description": "Aether supabase database configuration and schemas",
   "author": "Paul Wood",
   "main": "",
@@ -8,5 +9,9 @@
     "start": "supabase start || true",
     "stop": "supabase stop",
     "reset": "supabase db reset"
+  },
+  "devDependencies": {
+    "@supabase/supabase-js": "^1.29.4",
+    "node": "^17.7.2"
   }
 }
