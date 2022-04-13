@@ -50,7 +50,6 @@ jobs:
         version: 6.26.1 
         run_install: |
           - recursive: true
-            args: [--frozen-lockfile]
             
     - name: Test
       run: pnpm test -r 
