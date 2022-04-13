@@ -253,7 +253,7 @@ const fetchLayerData = async (layer: LayerType, options?: UseLayerOptions) => {
 
 function layerQueryKeys(layer: string, options?: UseLayerOptions) {
   const keys = ["layer", layer];
-  if (options?.type === "raw") keys[1] = 'RAW_' + keys[1];
+  if (options?.type === "raw") keys[1] = "RAW_" + keys[1];
   if (options?.deviceId) keys.push(`${options.deviceId}`);
   // console.log('keys', keys);
   return keys;
@@ -285,7 +285,12 @@ function convertToDates(result: FetchResult): FetchResult {
 //
 //
 type UTCDateArray = [number, number, number, number];
-function findUpsertIndex(readings: LayerReading[], utcDate: UTCDateArray, locId: number, deviceId: number) {
+function findUpsertIndex(
+  readings: LayerReading[],
+  utcDate: UTCDateArray,
+  locId: number,
+  deviceId: number
+) {
   const year = utcDate[0];
   const month = utcDate[1];
   const date = utcDate[2];
@@ -304,10 +309,7 @@ function findUpsertIndex(readings: LayerReading[], utcDate: UTCDateArray, locId:
   });
 }
 
-function updateReading(
-  oldData: FetchResult,
-  payload: ChannelReadingPayload
-): FetchResult {
+function updateReading(oldData: FetchResult, payload: ChannelReadingPayload): FetchResult {
   // Day doesn't have a timezone and I don't feel like changing it in the db and possibly breaking
   // something.
   const { locations, readings } = oldData;
@@ -318,7 +320,12 @@ function updateReading(
   const hours = payload.hour;
 
   console.log(readings, payload, year, month, date, hours);
-  const upsertIndex = findUpsertIndex(readings, [year, month, date, hours], payload.loc_id, payload.device_id);
+  const upsertIndex = findUpsertIndex(
+    readings,
+    [year, month, date, hours],
+    payload.loc_id,
+    payload.device_id
+  );
   if (upsertIndex > -1) {
     console.log("updating ", upsertIndex, " new avg", payload.avg);
     // Do update
@@ -330,10 +337,7 @@ function updateReading(
   return { locations, readings };
 }
 
-function updateAqi(
-  oldData: FetchResult,
-  payload: AqiReadingPayload
-): FetchResult {
+function updateAqi(oldData: FetchResult, payload: AqiReadingPayload): FetchResult {
   const { locations, readings } = oldData;
 
   console.log("got aqi payload update ", payload);
@@ -343,14 +347,18 @@ function updateAqi(
   const date = datesAreAnnoying.getUTCDate();
   const hours = payload.hour;
 
-  const upsertIndex = findUpsertIndex(readings, [year, month, date, hours], payload.loc_id, payload.device_id);
+  const upsertIndex = findUpsertIndex(
+    readings,
+    [year, month, date, hours],
+    payload.loc_id,
+    payload.device_id
+  );
   if (upsertIndex > -1) {
     console.log("updating ", upsertIndex, " new avg", payload.aqi);
     // Do update
     readings[upsertIndex].val = payload.aqi;
   } else {
-    console.log("Error finding update index ");
-    console.log(readings);
+    console.warn("Error finding update index");
   }
 
   return { locations, readings };
@@ -397,7 +405,7 @@ function insertAqi(oldData: FetchResult, payload: AqiReadingPayload) {
 
 // Raw readings are NEVER updated
 function updateRawReading(oldData: FetchResult, payload: RawReadingPayload) {
-  console.warn('got raw reading update ', payload);
+  console.warn("got raw reading update ", payload);
   return oldData;
 }
 
@@ -408,7 +416,8 @@ function insertRawReading(oldData: FetchResult, payload: RawReadingPayload) {
   const month = datesAreAnnoying.getUTCMonth();
   const date = datesAreAnnoying.getUTCDate();
   const hours = datesAreAnnoying.getUTCHours();
-  const stupidDate = new Date(Date.UTC(year, month, date, hours));
+  const minutes = datesAreAnnoying.getMinutes();
+  const stupidDate = new Date(Date.UTC(year, month, date, hours, minutes));
 
   console.log("got raw reading payload insert ", payload, stupidDate);
   readings.unshift({
@@ -427,7 +436,8 @@ function updateLayer(
 ): FetchResult {
   if (subscribeTo === "hourly_reading_stats")
     return updateReading(oldData, payload.new as ChannelReadingPayload);
-  else if (subscribeTo === 'reading') return updateRawReading(oldData, payload.new as RawReadingPayload);
+  else if (subscribeTo === "reading")
+    return updateRawReading(oldData, payload.new as RawReadingPayload);
   return updateAqi(oldData, payload.new as AqiReadingPayload);
 }
 
@@ -438,7 +448,8 @@ function insertIntoLayer(
 ): FetchResult {
   if (subscribeTo === "hourly_reading_stats")
     return insertReading(oldData, payload.new as ChannelReadingPayload);
-  else if (subscribeTo === 'reading') return insertRawReading(oldData, payload.new as RawReadingPayload);
+  else if (subscribeTo === "reading")
+    return insertRawReading(oldData, payload.new as RawReadingPayload);
   return insertAqi(oldData, payload.new as AqiReadingPayload);
 }
 
@@ -459,7 +470,6 @@ export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResu
   );
 
   const layerInfo = layersInfo[layer];
-
 
   return {
     isError,
@@ -504,13 +514,15 @@ export function useLayersInfo() {
   return layersInfo;
 }
 
-
-function useSubscriptionChannel(channel: string, getLayer: (payload: SupabaseRealtimePayload<any>) => LayerType | LayerType[]) {
+function useSubscriptionChannel(
+  channel: string,
+  getLayer: (payload: SupabaseRealtimePayload<any>) => LayerType | LayerType[]
+) {
   const client = useQueryClient();
   const [subscription, setSubscription] = useState<RealtimeSubscription>();
 
-  console.log('opening subscription to', channel);
-  useEffect( () => {
+  console.log("opening subscription to", channel);
+  useEffect(() => {
     const sub = supabase
       .from(channel)
       .on("INSERT", async (payload: SupabaseRealtimePayload<BaseLayerPayload>) => {
@@ -520,12 +532,11 @@ function useSubscriptionChannel(channel: string, getLayer: (payload: SupabaseRea
           return;
         }
 
-        let queries: [QueryKey, FetchResult][] = []
+        let queries: [QueryKey, FetchResult][] = [];
         if (Array.isArray(layer)) {
-          queries = layer.flatMap(lyr => client.getQueriesData<FetchResult>(['layer', lyr]));
-        }
-        else {
-          queries = client.getQueriesData<FetchResult>(['layer', layer]);
+          queries = layer.flatMap((lyr) => client.getQueriesData<FetchResult>(["layer", lyr]));
+        } else {
+          queries = client.getQueriesData<FetchResult>(["layer", layer]);
         }
 
         queries.forEach(async ([queryKey, data]) => {
@@ -548,9 +559,10 @@ function useSubscriptionChannel(channel: string, getLayer: (payload: SupabaseRea
             }
           }
 
-          client.setQueryData<FetchResult>(queryKey, (old) => 
-            ({ ...insertIntoLayer(channel, old, payload), updatedAt: new Date() })
-          );
+          client.setQueryData<FetchResult>(queryKey, (old) => ({
+            ...insertIntoLayer(channel, old, payload),
+            updatedAt: new Date(),
+          }));
         });
       })
       .on("UPDATE", (payload) => {
@@ -560,24 +572,26 @@ function useSubscriptionChannel(channel: string, getLayer: (payload: SupabaseRea
           return;
         }
 
-        let queries: [QueryKey, FetchResult][] = []
+        let queries: [QueryKey, FetchResult][] = [];
         if (Array.isArray(layer)) {
-          queries = layer.flatMap(lyr => client.getQueriesData<FetchResult>(['layer', lyr]));
-        }
-        else {
-          queries = client.getQueriesData<FetchResult>(['layer', layer]);
+          queries = layer.flatMap((lyr) => client.getQueriesData<FetchResult>(["layer", lyr]));
+        } else {
+          queries = client.getQueriesData<FetchResult>(["layer", layer]);
         }
 
         queries.forEach(([queryKey, data]) => {
-          client.setQueryData<FetchResult>(queryKey, (old) =>
-            ({ ...updateLayer(channel, old, payload), updatedAt: new Date })
-          );
+          client.setQueryData<FetchResult>(queryKey, (old) => ({
+            ...updateLayer(channel, old, payload),
+            updatedAt: new Date(),
+          }));
         });
       })
       .subscribe();
 
-      setSubscription(sub);
-      return () => { sub.unsubscribe() };
+    setSubscription(sub);
+    return () => {
+      sub.unsubscribe();
+    };
   }, []);
 
   return subscription;
@@ -586,7 +600,7 @@ function useSubscriptionChannel(channel: string, getLayer: (payload: SupabaseRea
 function layerFromRawPayload(payload: SupabaseRealtimePayload<RawReadingPayload>) {
   const layer = channelIdToLayer[payload.new.sensor_chan_id];
   if (!layer) return null;
-  return 'RAW_' + layer as LayerType;
+  return ("RAW_" + layer) as LayerType;
 }
 
 function layerFromHourlyReadingPayload(payload: SupabaseRealtimePayload<ChannelReadingPayload>) {
@@ -602,9 +616,12 @@ function layersFromHourlyAqiPayload(payload: SupabaseRealtimePayload<AqiReadingP
 }
 
 export function useLayerSubscriptions() {
-  const rawSub = useSubscriptionChannel('reading', layerFromRawPayload)
-  const hourlyReadingSub = useSubscriptionChannel('hourly_reading_stats', layerFromHourlyReadingPayload);
-  const hourlyAqiSub = useSubscriptionChannel('raw_hourly_aqi', layersFromHourlyAqiPayload);
+  const rawSub = useSubscriptionChannel("reading", layerFromRawPayload);
+  const hourlyReadingSub = useSubscriptionChannel(
+    "hourly_reading_stats",
+    layerFromHourlyReadingPayload
+  );
+  const hourlyAqiSub = useSubscriptionChannel("raw_hourly_aqi", layersFromHourlyAqiPayload);
 
   return [rawSub, hourlyReadingSub, hourlyAqiSub];
 }

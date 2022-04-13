@@ -11,40 +11,66 @@ export interface LayerSerie extends Serie {
 export interface LayersLineProps {
   layers: LayerType[];
   deviceId?: number;
-  title: string;
+  title?: string;
+  realtime?: boolean;
 }
 
 const FetchingContent = () => (
   <Skeleton animation="wave" variant="rectangular" width="100%" height="30%" sx={{ my: 2 }} />
 );
 
-const toSerie = (layerQueries: {[key: string]: LayerResult }) =>
-  Object.entries(layerQueries).map(([layer, result]) => ({ id: layer, data: result.data.map(d => ({ x: d.timestamp, y: d.val })) }));
+const UNIX_MS_MIN = 1000 * 60;
+
+const toSerie = (layerQueries: { [key: string]: LayerResult }) =>
+  Object.entries(layerQueries).map(([layer, result]) => ({
+    id: layer,
+    data: result.data.map((d) => ({ x: d.timestamp, y: d.val })),
+  }));
 
 export function LayersLine(props: LayersLineProps) {
-  const { layers, deviceId } = props;
+  const { layers, deviceId, realtime } = props;
   const layerQueries = useLayers(layers, { deviceId });
 
   const anyLoading = (layers: LayerType[]) =>
-      layers.reduce<Boolean>((prev, next) => prev || layerQueries[next].isLoading, false);
+    layers.reduce<Boolean>((prev, next) => prev || layerQueries[next].isLoading, false);
 
   const anyError = (layers: LayerType[]) =>
-      layers.reduce<Boolean>((prev, next) => prev || layerQueries[next].isError, false);
+    layers.reduce<Boolean>((prev, next) => prev || layerQueries[next].isError, false);
 
-  if (anyError(layers)) return <Error/>;
+  if (realtime) {
+    Object.entries(layerQueries).forEach(([layer, result]) => {
+      layerQueries[layer] = {
+        ...result,
+        data: result.data.filter(d => (new Date().getTime() - d.timestamp.getTime()) <= UNIX_MS_MIN * 30)
+      }
+    })
+  }
+
+  if (anyError(layers)) return <Error />;
   if (anyLoading(layers)) return <FetchingContent />;
 
-  let max = Object.values(layerQueries)
-    .reduce<number>((prev, next) => Math.max(prev, ...next.domain), 0);
+  // let max = Object.values(layerQueries).reduce<number>(
+  //   (prev, next) => Math.max(prev, ...next.domain),
+  //   0
+  // );
 
-  max = Math.max(max, ...Object.values(layerQueries).flatMap(l => l.data!).map(d => d.val));
+  let max = Math.max(
+    0,
+    ...Object.values(layerQueries)
+      .flatMap((l) => l.data!)
+      .map((d) => d.val)
+  );
+  console.log(layerQueries);
 
   return (
     <Panel title={props.title} contentSx={{ height: 400 }}>
       <ResponsiveLine
         data={toSerie(layerQueries)}
         margin={{ top: 50, right: 40, bottom: 60, left: 60 }}
-        xScale={{ type: "time", format: "native" }}
+        xScale={{ 
+          type: "time", 
+          format: "native",
+        }}
         curve="linear"
         yScale={{
           type: "linear",
@@ -57,8 +83,8 @@ export function LayersLine(props: LayersLineProps) {
         axisTop={null}
         axisRight={null}
         axisBottom={{
-          format: "%m/%d",
-          tickValues: "every 1 day",
+          format: realtime ? "%H:%M" : "%m/%d",
+          tickValues: !realtime && "every 1 day",
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,

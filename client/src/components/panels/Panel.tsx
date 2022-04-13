@@ -4,7 +4,7 @@ import { BasePanel } from './BasePanel';
 
 export interface PanelProps {
   children: JSX.Element[] | JSX.Element;
-  title: string;
+  title?: string;
   contentSx?: SxProps;
 }
 

@@ -2,7 +2,7 @@
 create or replace view raw_no2_view as
   select loc_id,
          device_id,
-         taken_at as timestamp,
+         taken_at::timestamp as timestamp,
          val
   from reading
   where sensor_chan_id = get_sensor_chan_id('NO2');
@@ -10,7 +10,7 @@ create or replace view raw_no2_view as
 create or replace view raw_o3_view as
 select loc_id,
        device_id,
-       taken_at as timestamp,
+       taken_at::timestamp as timestamp,
        val
 from reading
 where sensor_chan_id = get_sensor_chan_id('O3');
@@ -18,7 +18,7 @@ where sensor_chan_id = get_sensor_chan_id('O3');
 create or replace view raw_pm2_5_view as
 select loc_id,
        device_id,
-       taken_at as timestamp,
+       taken_at::timestamp as timestamp,
        val
 from reading
 where sensor_chan_id = get_sensor_chan_id('PM2_5');
@@ -26,7 +26,7 @@ where sensor_chan_id = get_sensor_chan_id('PM2_5');
 create or replace view raw_pm10_view as
 select loc_id,
        device_id,
-       taken_at as timestamp,
+       taken_at::timestamp as timestamp,
        val
 from reading
 where sensor_chan_id = get_sensor_chan_id('PM10');
@@ -34,7 +34,7 @@ where sensor_chan_id = get_sensor_chan_id('PM10');
 create or replace view raw_rel_humidity_view as
 select loc_id,
        device_id,
-       taken_at as timestamp,
+       taken_at::timestamp as timestamp,
        val
 from reading
 where sensor_chan_id = get_sensor_chan_id('REL_HUMIDITY');
@@ -42,7 +42,7 @@ where sensor_chan_id = get_sensor_chan_id('REL_HUMIDITY');
 create or replace view raw_temperature_view as
 select loc_id,
        device_id,
-       taken_at as timestamp,
+       taken_at::timestamp as timestamp,
        val
 from reading
 where sensor_chan_id = get_sensor_chan_id('TEMPERATURE');
