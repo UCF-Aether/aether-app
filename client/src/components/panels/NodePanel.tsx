@@ -6,7 +6,6 @@ import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
 import { styled } from '@mui/material/styles';
 import { BasePanel } from './BasePanel';
 import { DevicePanelContent } from './DevicePanelContent';
-import { GatewayPanelContent } from './GatewayPanelContent';
 
 const blue = {
   50: '#F0F7FF',

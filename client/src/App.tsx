@@ -1,27 +1,25 @@
 // import logo from "./logo.svg";
 import { createTheme, LinkProps as MuiLinkProps, ThemeProvider } from "@mui/material";
 import { forwardRef, useMemo, useState } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
 import { Link, LinkProps, Route, Routes } from "react-router-dom";
 import "./App.css";
+import { AlertModal } from "./components/AlertModal";
 import { ColorModeContext } from "./components/ColorModeContext";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
-import { SupabaseProvider } from "./components/SupabaseContext";
-import { LoginSignup } from "./pages/LoginSignup";
-import { MainPage } from "./pages/Main";
-import { Dashboard } from "./pages/Dashboard";
-import { Overview } from "./pages/dashboard/Overview";
-import { Devices } from "./pages/dashboard/Devices";
-import { Gateways } from "./pages/dashboard/Gateways";
-import { Alerts } from "./pages/dashboard/Alerts";
-import { Account } from "./pages/dashboard/Account";
-import { RequireAuth } from "./components/RequireAuth";
-import { supabase } from "./supabaseClient";
-import { AlertModal } from "./components/AlertModal";
 import { NewAlertModal } from "./components/NewAlertModal";
 import { NewDeviceModal } from "./components/NewDeviceModal";
+import { RequireAuth } from "./components/RequireAuth";
 import { useLayerSubscriptions } from "./hooks/layers";
+import { Dashboard } from "./pages/Dashboard";
+import { Account } from "./pages/dashboard/Account";
+import { Alerts } from "./pages/dashboard/Alerts";
+import { Devices } from "./pages/dashboard/Devices";
+import { Gateways } from "./pages/dashboard/Gateways";
+import { Overview } from "./pages/dashboard/Overview";
+import { LoginSignup } from "./pages/LoginSignup";
+import { MainPage } from "./pages/Main";
+import { supabase } from "./supabaseClient";
 
 console.log(supabase);
 
@@ -57,7 +55,7 @@ const linkTheme = createTheme({
 
 
 export default function App() {
-  const subs = useLayerSubscriptions();
+  useLayerSubscriptions();
   const [mode, setMode] = useState<"light" | "dark">("light");
   const colorMode = useMemo(
     () => ({

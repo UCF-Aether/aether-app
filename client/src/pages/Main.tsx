@@ -10,8 +10,7 @@ import { LoginSignupPanel } from "../components/panels/LoginSignupPanel";
 import { NodePanel } from "../components/panels/NodePanel";
 import { YouPanel } from "../components/panels/YouPanel";
 import { Sidebar } from "../components/Sidebar";
-import { LayerType, useLayer } from "../hooks/layers";
-import { useSubscriptionStatus } from '../hooks/layers';
+import { LayerType, useLayer, useSubscriptionStatus } from "../hooks/layers";
 
 // https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf
 

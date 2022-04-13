@@ -6,7 +6,7 @@ import { DeckGL } from "@deck.gl/react";
 import { Backdrop, Box, Card, CircularProgress, Slider, Typography } from "@mui/material";
 import Color from "colorjs.io";
 import { format } from "d3-format";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import StaticMap from "react-map-gl";
 import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
@@ -217,7 +217,7 @@ const f = format(".3s");
 export function Map(props: MapProps) {
   const { data, isLoading, legend } = props;
   const { title, units, domain, range } = legend;
-  const [curTime, setCurTime] = useState(new Date());
+  // const [curTime, setCurTime] = useState(new Date());
 
   const [slider, setSlider] = useState<number>(new Date().getTime());
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);

@@ -1,10 +1,9 @@
 import {
-  RealtimeClient,
-  RealtimeSubscription,
-  SupabaseRealtimePayload,
+    RealtimeSubscription,
+    SupabaseRealtimePayload
 } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
-import { QueryClient, QueryKey, useQueries, useQuery, useQueryClient } from "react-query";
+import { QueryKey, useQueries, useQuery, useQueryClient } from "react-query";
 import { supabase } from "../supabaseClient";
 
 export type LayerType =
@@ -291,7 +290,7 @@ function findUpsertIndex(
   locId: number,
   deviceId: number
 ) {
-  const year = utcDate[0];
+  // const year = utcDate[0];
   const month = utcDate[1];
   const date = utcDate[2];
   const hours = utcDate[3];
@@ -453,16 +452,15 @@ function insertIntoLayer(
   return insertAqi(oldData, payload.new as AqiReadingPayload);
 }
 
-function filterPayload(layer: string, payload: any) {
-  if (payload.new.chan_id != undefined) return channelIdToLayer[payload.new.chan_id] === layer;
-  // AQI is generated from multiple gases
-  return pollutantIdToLayers[payload.new.pollutant_id].findIndex(
-    (layerName) => layerName === layer
-  );
-}
+// function filterPayload(layer: string, payload: any) {
+//   if (payload.new.chan_id != undefined) return channelIdToLayer[payload.new.chan_id] === layer;
+//   // AQI is generated from multiple gases
+//   return pollutantIdToLayers[payload.new.pollutant_id].findIndex(
+//     (layerName) => layerName === layer
+//   );
+// }
 
 export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResult {
-  const client = useQueryClient();
   const { isError, isLoading, data, error } = useQuery(
     layerQueryKeys(layer, options),
     () => fetchLayerData(layer, options),
@@ -579,6 +577,7 @@ function useSubscriptionChannel(
           queries = client.getQueriesData<FetchResult>(["layer", layer]);
         }
 
+        // eslint-disable-next-line
         queries.forEach(([queryKey, data]) => {
           client.setQueryData<FetchResult>(queryKey, (old) => ({
             ...updateLayer(channel, old, payload),
@@ -592,6 +591,7 @@ function useSubscriptionChannel(
     return () => {
       sub.unsubscribe();
     };
+    // eslint-disable-next-line
   }, []);
 
   return subscription;
