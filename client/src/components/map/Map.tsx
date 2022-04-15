@@ -16,6 +16,7 @@ import Color from "colorjs.io";
 import { format } from "d3-format";
 import { PickInfo } from "deck.gl";
 import { memo, useCallback, useMemo, useState } from "react";
+// eslint-disable-next-line
 import StaticMap, { GeolocateControl, Popup, _MapContext as MapContext } from "react-map-gl";
 import { useNavigate } from "react-router-dom";
 import { Device } from "../../hooks/devices";
@@ -263,6 +264,7 @@ export function Map(props: MapProps) {
     [setSlider]
   );
 
+  // eslint-disable-next-line
   const handleDevicePopupOnclick = useCallback((info: PickInfo<any>, event: any) => {
     setShowDevicePopup(true);
     setPopupCoords(info.coordinate);
@@ -297,7 +299,8 @@ export function Map(props: MapProps) {
         getPosition: (d) => [d.lng, d.lat],
         getFillColor: (d) => getColor(colorRanges, d.val),
         // @ts-ignore
-        getFilterValue: (d) => d.timestamp.getTime(),
+        // eslint-disable-next-line
+        getFilterValue: (d) => d.timestamp.getTime(), 
         filterEnabled: true,
         filterRange: [slider - UNIX_MS_HOUR / 2, slider + UNIX_MS_HOUR / 2],
         radiusMaxPixels: 100,
@@ -341,9 +344,11 @@ export function Map(props: MapProps) {
         iconAtlas:
           "https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png",
         iconMapping: ICON_MAPPING,
+        // eslint-disable-next-line
         getIcon: (d) => "marker",
         sizeScale: 5,
         getPosition: (d) => [d.lng, d.lat],
+        // eslint-disable-next-line
         getSize: (d) => 5,
         onClick: handleDevicePopupOnclick,
       })
