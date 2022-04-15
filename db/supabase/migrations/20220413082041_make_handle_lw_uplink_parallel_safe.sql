@@ -1,0 +1,1 @@
+alter function handle_lorawan_uplink(req jsonb)  parallel safe;
