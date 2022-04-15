@@ -29,5 +29,7 @@ function deviceEventQueryKeys(deviceId?: number) {
 }
 
 export function useDeviceEvents(deviceId?: number) {
-  return useQuery(deviceEventQueryKeys(deviceId), () => fetchDeviceEvents(deviceId));
+  return useQuery(deviceEventQueryKeys(deviceId), () => fetchDeviceEvents(deviceId), {
+    staleTime: 30000,
+  });
 }
