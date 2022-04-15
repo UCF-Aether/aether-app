@@ -3,11 +3,12 @@ import { DataFilterExtension } from "@deck.gl/extensions";
 import { ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
-import { Backdrop, Box, Card, CircularProgress, Slider, Typography } from "@mui/material";
+import MyLocationIcon from '@mui/icons-material/MyLocation';
+import { Backdrop, Box, Card, CircularProgress, IconButton, Slider, Typography } from "@mui/material";
 import Color from "colorjs.io";
 import { format } from "d3-format";
 import { memo, useCallback, useMemo, useState } from "react";
-import StaticMap from "react-map-gl";
+import { Map as ReactMap } from "react-map-gl";
 import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
 
@@ -18,6 +19,7 @@ const INITIAL_VIEW_STATE = {
   maxZoom: 16,
   pitch: 0,
   bearing: 0,
+  // transitionInterpolator: interpolator,
 };
 
 const UNIX_MS_HOUR = 3600 * 1000;
@@ -238,6 +240,16 @@ export function Map(props: MapProps) {
     [setSlider]
   );
 
+  const handleGeolocate = useCallback( (event: any) => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      setViewState({
+        ...viewState,
+        longitude: position.coords.longitude,
+        latitude: position.coords.latitude,
+      });
+    })
+  }, [setViewState])
+
   const unixCurHour = unixHourTrunc(new Date().getTime());
   const layers = [
     data &&
@@ -294,15 +306,22 @@ export function Map(props: MapProps) {
         /* @ts-ignore */
       >
         {/* @ts-ignore */}
-        <StaticMap
+        <ReactMap
+          id="mapbox"
           style={{ height: "100%", zIndex: 2000 }}
           reuseMaps
           mapStyle="mapbox://styles/mapbox/streets-v11"
           // @ts-ignore
           preventStyleDiffing={true}
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-        ></StaticMap>
+        >
+        </ReactMap>
       </DeckGL>
+      <Card sx={{ zIndex: 10, position: 'absolute', display: 'flex', left: 10, top: 10 }}>
+        <IconButton color="inherit" size="small" onClick={handleGeolocate}>
+          <MyLocationIcon />
+        </IconButton>
+      </Card>
       <MemoizedLegend title={title} domain={domain} range={range} units={units} />
       <MemoizedMapSlider value={slider} onChange={handleSliderChange} hour={unixCurHour} />
       <MemoizedBackdrop isLoading={isLoading} />
