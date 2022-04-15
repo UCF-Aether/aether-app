@@ -40,11 +40,11 @@ export function DeviceInfoPanel(props: DeviceInfoPanelProps) {
     },
     {
       key: "Created At",
-      value: new Date(info.createdAt).toLocaleString(),
+      value: info.createdAt && new Date(info.createdAt).toLocaleString(),
     },
     {
       key: "Updated At",
-      value: new Date(info.updatedAt).toLocaleString(),
+      value: info.updatedAt && new Date(info.updatedAt).toLocaleString(),
     },
     {
       key: "Activation Method",
@@ -52,11 +52,11 @@ export function DeviceInfoPanel(props: DeviceInfoPanelProps) {
     },
     {
       key: "Last Uplink",
-      value: new Date(info.lastUplink).toLocaleString(),
+      value: info.lastUplink && new Date(info.lastUplink).toLocaleString(),
     },
     {
       key: "Last Downlink",
-      value: new Date(info.lastDownlink).toLocaleString(),
+      value: info.lastDownlink && new Date(info.lastDownlink).toLocaleString(),
     },
     {
       key: "Location (lat, lng)",
@@ -64,7 +64,7 @@ export function DeviceInfoPanel(props: DeviceInfoPanelProps) {
     },
     {
       key: "Location Updated At",
-      value: new Date(info.locUpdatedAt).toLocaleString(),
+      value: info.locUpdatedAt && new Date(info.locUpdatedAt).toLocaleString(),
     },
   ];
 
