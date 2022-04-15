@@ -40,11 +40,11 @@ export function DeviceInfoPanel(props: DeviceInfoPanelProps) {
     },
     {
       key: "Created At",
-      value: info.createdAt,
+      value: new Date(info.createdAt).toLocaleString(),
     },
     {
       key: "Updated At",
-      value: info.updatedAt,
+      value: new Date(info.updatedAt).toLocaleString(),
     },
     {
       key: "Activation Method",
@@ -52,19 +52,19 @@ export function DeviceInfoPanel(props: DeviceInfoPanelProps) {
     },
     {
       key: "Last Uplink",
-      value: info.lastUplink,
+      value: new Date(info.lastUplink).toLocaleString(),
     },
     {
       key: "Last Downlink",
-      value: info.lastDownlink,
+      value: new Date(info.lastDownlink).toLocaleString(),
     },
     {
-      key: "Location",
+      key: "Location (lat, lng)",
       value: info.lat != undefined && info.lng != undefined ? `(${info.lat}, ${info.lng})` : undefined,
     },
     {
       key: "Location Updated At",
-      value: info.locUpdatedAt,
+      value: new Date(info.locUpdatedAt).toLocaleString(),
     },
   ];
 
@@ -77,7 +77,7 @@ export function DeviceInfoPanel(props: DeviceInfoPanelProps) {
           <TableBody>{
             rows.map(r => (
               <TableRow key={r.key}>
-                <TableCell component='th'>{r.key}</TableCell>
+                <TableCell component='th'><b>{r.key}</b></TableCell>
                 <TableCell align='right'>{r.value ?? '-'}</TableCell>
               </TableRow>
             ))
