@@ -6,6 +6,7 @@ import { DetailsModal } from "./DetailsModal";
 import { Error } from "./Error";
 import { LayersLine } from "./LayersLineGraph";
 import { DeviceInfoPanel } from "./panels/DeviceInfoPanel";
+import { DeviceLogsPanel } from "./panels/DeviceLogsPanel";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -44,7 +45,7 @@ export function DeviceDetailsModal() {
     error,
     isLoading,
     isError,
-  } = useDeviceInfo(deviceId);
+  } = useDeviceInfo(deviceId, { poll: false });
 
   const handleClose = () => {
     navigate("..");
@@ -107,6 +108,7 @@ export function DeviceDetailsModal() {
       <LayersLine title="Hourly AQI" deviceId={deviceId} layers={["AQI_O3", "AQI_O3_PM"]} />
       <LayersLine title="Hourly Particulate Matter" deviceId={deviceId} layers={["PM2_5", "PM10"]} />
       <LayersLine title="Hourly Gases" deviceId={deviceId} layers={["O3"]} />
+      <DeviceLogsPanel deviceId={deviceId} />
     </DetailsModal>
   );
 }

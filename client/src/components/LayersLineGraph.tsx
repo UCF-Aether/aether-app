@@ -67,6 +67,7 @@ export function LayersLine(props: LayersLineProps) {
       <ResponsiveLine
         data={toSerie(layerQueries)}
         margin={{ top: 50, right: 40, bottom: 60, left: 60 }}
+        enableSlices="x"
         xScale={{ 
           type: "time", 
           format: "native",
@@ -100,12 +101,14 @@ export function LayersLine(props: LayersLineProps) {
           legendPosition: "middle",
         }}
         colors={{ scheme: "nivo" }}
-        pointSize={5}
-        pointColor={{ theme: "background" }}
+        pointSize={8}
+        pointColor={{ from: "color", modifiers: [] }}
         pointBorderWidth={2}
         pointBorderColor={{ from: "serieColor" }}
         pointLabelYOffset={-12}
         useMesh={true}
+        enableArea
+        areaOpacity={0.05}
       />
     </Panel>
   );

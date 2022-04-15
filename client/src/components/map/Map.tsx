@@ -1,13 +1,24 @@
 import { MapView } from "@deck.gl/core";
 import { DataFilterExtension } from "@deck.gl/extensions";
-import { ScatterplotLayer, TextLayer } from "@deck.gl/layers";
+import { IconLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
-import { Backdrop, Box, Card, CircularProgress, Slider, Typography } from "@mui/material";
+import {
+    Backdrop,
+    Box,
+    Button,
+    Card,
+    CircularProgress, Slider,
+    Stack,
+    Typography
+} from "@mui/material";
 import Color from "colorjs.io";
 import { format } from "d3-format";
+import { PickInfo } from "deck.gl";
 import { memo, useCallback, useMemo, useState } from "react";
-import StaticMap from "react-map-gl";
+import StaticMap, { GeolocateControl, Popup, _MapContext as MapContext } from "react-map-gl";
+import { useNavigate } from "react-router-dom";
+import { Device } from "../../hooks/devices";
 import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
 
@@ -18,6 +29,11 @@ const INITIAL_VIEW_STATE = {
   maxZoom: 16,
   pitch: 0,
   bearing: 0,
+  // transitionInterpolator: interpolator,
+};
+
+const ICON_MAPPING = {
+  marker: { x: 0, y: 10, width: 128, height: 128, mask: true },
 };
 
 const UNIX_MS_HOUR = 3600 * 1000;
@@ -45,7 +61,10 @@ export interface MapLegendProps extends LegendProps {
 }
 
 export interface MapProps {
-  data: Array<LayerData>;
+  readings: Array<LayerData>;
+  layerType?: "scatterplot";
+  devices?: Array<Device>;
+  showDevices?: boolean;
   isLoading?: boolean;
   isError?: boolean;
   legend: MapLegendProps;
@@ -191,7 +210,7 @@ function MapLegend(props: LegendProps) {
         height: 200,
       }}
     >
-      <Legend title={title} domain={domain} range={range} units={units} height={100}/>
+      <Legend title={title} domain={domain} range={range} units={units} height={100} />
     </Card>
   );
 }
@@ -205,7 +224,7 @@ function MapBackdrop({ isLoading }) {
 }
 
 function getTooltip({ object }) {
-  return object && `${object.val}`;
+  return object && `${object.val ?? object.name}`;
 }
 
 const MemoizedMapSlider = memo(MapSlider);
@@ -215,16 +234,22 @@ const MemoizedBackdrop = memo(MapBackdrop);
 const f = format(".3s");
 /* eslint-disable react/no-deprecated */
 export function Map(props: MapProps) {
-  const { data, isLoading, legend } = props;
+  const { readings, isLoading, legend, showDevices, devices } = props;
   const { title, units, domain, range } = legend;
-  // const [curTime, setCurTime] = useState(new Date());
-
-  const [slider, setSlider] = useState<number>(Math.floor(new Date().getTime() / UNIX_MS_HOUR) * UNIX_MS_HOUR);
+  const navigate = useNavigate();
+  const [showDevicePopup, setShowDevicePopup] = useState(false);
+  const [device, setDevice] = useState<Device | null>(null);
+  const [popupCoords, setPopupCoords] = useState([0, 0]);
+  const [slider, setSlider] = useState<number>(
+    Math.floor(new Date().getTime() / UNIX_MS_HOUR) * UNIX_MS_HOUR
+  );
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+  const layers: Array<any> = [];
 
-  // useEffect(() => { 
+  // const [curTime, setCurTime] = useState(new Date());
+  // useEffect(() => {
   //   const interval = setInterval(() => setCurTime(new Date), 1000);
-  //   
+  //
   //   return () => clearInterval(interval);
   // }, []);
 
@@ -238,12 +263,36 @@ export function Map(props: MapProps) {
     [setSlider]
   );
 
+  const handleDevicePopupOnclick = useCallback((info: PickInfo<any>, event: any) => {
+    setShowDevicePopup(true);
+    setPopupCoords(info.coordinate);
+    setDevice(info.object as Device);
+  }, []);
+
+  const DevicePopup = (
+    showDevicePopup &&
+    <Popup 
+      longitude={popupCoords[0]} 
+      latitude={popupCoords[1]}
+      anchor="bottom"
+      onClose={() => setShowDevicePopup(false)}
+    >
+      <Typography variant="subtitle2">{device?.name}</Typography>
+      <Stack>
+        <Typography variant="caption"><b>Lat:</b> {device?.lat}</Typography>
+        <Typography variant="caption"><b>Lng:</b> {device?.lng}</Typography>
+        <Typography variant="caption"><b>Last Uplink:</b> {new Date(device?.last_uplink_at).toLocaleString() ?? '-'}</Typography>
+        <Button size="small" onClick={() => navigate("device/" + device.device_id)}>Show More</Button>
+      </Stack>
+    </Popup>
+  );
+
   const unixCurHour = unixHourTrunc(new Date().getTime());
-  const layers = [
-    data &&
+  if (readings) {
+    layers.push([
       new ScatterplotLayer<LayerData>({
         id: "scatterplot-layer",
-        data: data,
+        data: readings,
         wrapLongitude: true,
         getPosition: (d) => [d.lng, d.lat],
         getFillColor: (d) => getColor(colorRanges, d.val),
@@ -261,24 +310,45 @@ export function Map(props: MapProps) {
         },
         extensions: [dataFilter],
       }),
-    new TextLayer<LayerData>({
-      id: "text-layer",
-      data: data,
-      pickable: false,
-      getPosition: (d) => [d.lng, d.lat],
-      getText: (d) => `${f(d.val)}`.replace("−", "-"), // I'm too lazy to properly load fonts for deck.gl
-      // @ts-ignore
-      getFilterValue: (d) => d.timestamp.getTime(),
-      filterEnabled: true,
-      filterRange: [slider - UNIX_MS_HOUR / 2, slider + UNIX_MS_HOUR / 2],
-      getSize: viewState.zoom > 3 ? viewState.zoom * 2.5 : 0,
-      getTextAnchor: "middle",
-      getAlignmentBaseline: "center",
-      sizeMaxPixels: 15,
-      sizeMinPixels: 0,
-      extensions: [dataFilter],
-    }),
-  ];
+      new TextLayer<LayerData>({
+        id: "text-layer",
+        data: readings,
+        pickable: false,
+        getPosition: (d) => [d.lng, d.lat],
+        getText: (d) => `${f(d.val)}`.replace("−", "-"), // I'm too lazy to properly load fonts for deck.gl
+        // @ts-ignore
+        getFilterValue: (d) => d.timestamp.getTime(),
+        filterEnabled: true,
+        filterRange: [slider - UNIX_MS_HOUR / 2, slider + UNIX_MS_HOUR / 2],
+        getSize: viewState.zoom > 3 ? viewState.zoom * 2.5 : 0,
+        getTextAnchor: "middle",
+        getAlignmentBaseline: "center",
+        sizeMaxPixels: 15,
+        sizeMinPixels: 0,
+        extensions: [dataFilter],
+      }),
+    ]);
+  }
+
+  if (showDevices && devices) {
+    layers.push(
+      new IconLayer<Device>({
+        id: "icon-layer",
+        data: devices,
+        pickable: true,
+        // iconAtlas and iconMapping are required
+        // getIcon: return a string
+        iconAtlas:
+          "https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png",
+        iconMapping: ICON_MAPPING,
+        getIcon: (d) => "marker",
+        sizeScale: 5,
+        getPosition: (d) => [d.lng, d.lat],
+        getSize: (d) => 5,
+        onClick: handleDevicePopupOnclick,
+      })
+    );
+  }
 
   return (
     <Box sx={{ width: "100%", height: "100%" }}>
@@ -292,6 +362,8 @@ export function Map(props: MapProps) {
         getTooltip={getTooltip}
         style={{ position: "relative" }}
         /* @ts-ignore */
+        ContextProvider={MapContext.Provider}
+        /* @ts-ignore */
       >
         {/* @ts-ignore */}
         <StaticMap
@@ -300,8 +372,10 @@ export function Map(props: MapProps) {
           mapStyle="mapbox://styles/mapbox/streets-v11"
           // @ts-ignore
           preventStyleDiffing={true}
-          mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
+          mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
         ></StaticMap>
+        <GeolocateControl />
+        {DevicePopup}
       </DeckGL>
       <MemoizedLegend title={title} domain={domain} range={range} units={units} />
       <MemoizedMapSlider value={slider} onChange={handleSliderChange} hour={unixCurHour} />

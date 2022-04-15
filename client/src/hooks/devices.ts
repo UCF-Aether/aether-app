@@ -21,6 +21,10 @@ export interface UseDevicesOptions {
   deviceId?: number;
 }
 
+export interface UseDeviceInfoOptions {
+  poll?: boolean;
+}
+
 const fetchDeviceList = async () => {
   const { data, error } = await supabase.from<Device>("devices").select("*");
 
@@ -39,23 +43,27 @@ const fetchDevice = async (deviceId: number) => {
   return data;
 };
 
+
 export function useDevices() {
   const {
     isLoading,
     isError,
     data: devices,
     error,
+    refetch,
   } = useQuery<Device[], Error>("devices", () => fetchDeviceList());
-  return { isLoading, isError, devices, error };
+  return { isLoading, isError, devices, error, refetch };
 }
 
-export function useDeviceInfo(deviceId: number) {
+export function useDeviceInfo(deviceId: number, options?: UseDeviceInfoOptions) {
   const {
     isLoading,
     isError,
     data: device,
     error,
-  } = useQuery<Device, Error>(["device", deviceId], () => fetchDevice(deviceId));
+  } = useQuery<Device, Error>(["device", deviceId], () => fetchDevice(deviceId), {
+    refetchInterval: options?.poll && 3000,
+  });
   return { isLoading, isError, device, error };
 }
 

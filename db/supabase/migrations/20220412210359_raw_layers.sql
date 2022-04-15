@@ -55,4 +55,4 @@ values
        ('RAW_PM2_5', 'Raw PM 2.5', 'raw_pm2_5_view', '{"PM2_5"}', 'reading'),
        ('RAW_PM10', 'Raw PM 10', 'raw_pm10_view', '{"PM10"}', 'reading'),
        ('RAW_REL_HUMIDITY', 'Raw relative humidity', 'raw_rel_humidity_view', '{"REL_HUMIDITY"}', 'reading'),
-       ('RAW_TEMPERATURE', 'Raw temperature', 'raw_temperature', '{"TEMPERATURE"}', 'reading');
+       ('RAW_TEMPERATURE', 'Raw temperature', 'raw_temperature_view', '{"TEMPERATURE"}', 'reading');

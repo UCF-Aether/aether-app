@@ -102,6 +102,7 @@ export default function App() {
         <div className="App">
           <Routes>
             <Route path="/*" element={<MainPage />}>
+              <Route path='device/new' element={<NewDeviceModal />} />
               <Route path="device/:deviceId" element={<DeviceDetailsModal />} />
               <Route path="gateway/:gatewayId" element={<GatewayDetailsModal />} />
             </Route>
