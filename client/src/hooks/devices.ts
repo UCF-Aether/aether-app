@@ -43,6 +43,7 @@ const fetchDevice = async (deviceId: number) => {
   return data;
 };
 
+
 export function useDevices() {
   const {
     isLoading,
