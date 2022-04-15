@@ -219,14 +219,8 @@ export function Map(props: MapProps) {
   const { title, units, domain, range } = legend;
   // const [curTime, setCurTime] = useState(new Date());
 
-  const [slider, setSlider] = useState<number>(new Date().getTime());
+  const [slider, setSlider] = useState<number>(Math.floor(new Date().getTime() / UNIX_MS_HOUR) * UNIX_MS_HOUR);
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-
-  // const mapData = useMemo(
-  //   () => data.map((d) => ({ ...d, timestamp: d.timestamp.getTime() })),
-  //   [data, data.length]
-  // );
-  // const mapData = data.map((d) => ({ ...d, timestamp: d.timestamp.getTime() }));
 
   // useEffect(() => { 
   //   const interval = setInterval(() => setCurTime(new Date), 1000);

@@ -538,6 +538,7 @@ function useSubscriptionChannel(
         }
 
         queries.forEach(async ([queryKey, data]) => {
+          if (!data) return;
           const { locations } = data;
 
           // Check if new reading is using a new location -> get lat, lng
@@ -579,6 +580,7 @@ function useSubscriptionChannel(
 
         // eslint-disable-next-line
         queries.forEach(([queryKey, data]) => {
+          if (!data) return;
           client.setQueryData<FetchResult>(queryKey, (old) => ({
             ...updateLayer(channel, old, payload),
             updatedAt: new Date(),
