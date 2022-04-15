@@ -339,7 +339,7 @@ function updateReading(oldData: FetchResult, payload: ChannelReadingPayload): Fe
 function updateAqi(oldData: FetchResult, payload: AqiReadingPayload): FetchResult {
   const { locations, readings } = oldData;
 
-  // console.log("got aqi payload update ", payload);
+  console.log("got aqi payload update ", payload);
   const datesAreAnnoying = new Date(payload.day);
   const year = datesAreAnnoying.getUTCFullYear();
   const month = datesAreAnnoying.getUTCMonth();
@@ -357,7 +357,7 @@ function updateAqi(oldData: FetchResult, payload: AqiReadingPayload): FetchResul
     // Do update
     readings[upsertIndex].val = payload.aqi;
   } else {
-    console.warn("Error finding update index");
+    console.error("Error finding update index");
   }
 
   return { locations, readings };
@@ -392,7 +392,7 @@ function insertAqi(oldData: FetchResult, payload: AqiReadingPayload) {
   const hours = payload.hour;
   const stupidDate = new Date(Date.UTC(year, month, date, hours));
 
-  // console.log("got aqi payload insert ", payload, stupidDate);
+  console.log("got aqi payload insert ", payload, stupidDate);
   readings.unshift({
     timestamp: stupidDate,
     loc_id: payload.loc_id,
@@ -538,6 +538,7 @@ function useSubscriptionChannel(
         }
 
         queries.forEach(async ([queryKey, data]) => {
+          if (!data) return;
           const { locations } = data;
 
           // Check if new reading is using a new location -> get lat, lng
@@ -566,7 +567,7 @@ function useSubscriptionChannel(
       .on("UPDATE", (payload) => {
         const layer = getLayer(payload);
         if (!layer) {
-          console.error(`Unsupported layer from payload ${JSON.stringify(payload)}`);
+          console.warn(`Unsupported layer from payload ${JSON.stringify(payload)}`);
           return;
         }
 
@@ -579,6 +580,7 @@ function useSubscriptionChannel(
 
         // eslint-disable-next-line
         queries.forEach(([queryKey, data]) => {
+          if (!data) return;
           client.setQueryData<FetchResult>(queryKey, (old) => ({
             ...updateLayer(channel, old, payload),
             updatedAt: new Date(),

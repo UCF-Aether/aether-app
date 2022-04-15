@@ -11,7 +11,7 @@
     "reset": "supabase db reset"
   },
   "devDependencies": {
-    "@supabase/supabase-js": "^1.29.4",
+    "@supabase/supabase-js": "^1.33.3",
     "node": "^17.7.2"
   }
 }
