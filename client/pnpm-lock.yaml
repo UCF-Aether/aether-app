@@ -55,7 +55,7 @@ specifiers:
   prettier: 2.5.1
   react: ^17.0.2
   react-dom: ^17.0.2
-  react-map-gl: ^7.0.7
+  react-map-gl: ^6.1.19
   react-query: ^3.34.19
   react-router-dom: '6'
   react-scripts: 5.0.0
@@ -106,7 +106,7 @@ dependencies:
   mapbox-gl: 2.8.0
   react: 17.0.2
   react-dom: 17.0.2_react@17.0.2
-  react-map-gl: 7.0.10_mapbox-gl@2.8.0+react@17.0.2
+  react-map-gl: 6.1.19_react@17.0.2
   react-query: 3.34.19_react-dom@17.0.2+react@17.0.2
   react-router-dom: 6.3.0_react-dom@17.0.2+react@17.0.2
   react-scripts: 5.0.0_react@17.0.2+typescript@4.6.3
@@ -9781,15 +9781,21 @@ packages:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
     dev: false
 
-  /react-map-gl/7.0.10_mapbox-gl@2.8.0+react@17.0.2:
-    resolution: {integrity: sha512-4rhkwVa2HG+Uro7sTaVCTRMIF8nhlLjQnDSTUvKkWBLyHdCsKyoKkNqTfVp05OjqDXhcdXuixUDcg8aDvbr4xw==}
+  /react-map-gl/6.1.19_react@17.0.2:
+    resolution: {integrity: sha512-rrDoRyEIGzVLUB5QfgsZ5xCw7jeUtmmYzHUv86xDx8oGp90VTV2KTQJ4RPQiSAmpfIFh6/pPqI28Pguf1u/mOg==}
+    engines: {node: '>= 4', npm: '>= 3'}
     peerDependencies:
-      mapbox-gl: '*'
       react: '>=16.3.0'
     dependencies:
+      '@babel/runtime': 7.17.9
+      '@types/geojson': 7946.0.8
       '@types/mapbox-gl': 2.6.4
       mapbox-gl: 2.8.0
+      mjolnir.js: 2.6.0
+      prop-types: 15.8.1
       react: 17.0.2
+      resize-observer-polyfill: 1.5.1
+      viewport-mercator-project: 7.0.4
     dev: false
 
   /react-query/3.34.19_react-dom@17.0.2+react@17.0.2:
@@ -10121,6 +10127,10 @@ packages:
 
   /reselect/4.1.5:
     resolution: {integrity: sha512-uVdlz8J7OO+ASpBYoz1Zypgx0KasCY20H+N8JD13oUMtPvSHQuscrHop4KbXrbsBcdB9Ds7lVK7eRkBIfO43vQ==}
+    dev: false
+
+  /resize-observer-polyfill/1.5.1:
+    resolution: {integrity: sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==}
     dev: false
 
   /resolve-cwd/3.0.0:
@@ -11303,6 +11313,12 @@ packages:
   /vary/1.1.2:
     resolution: {integrity: sha1-IpnwLG3tMNSllhsLn3RSShj2NPw=}
     engines: {node: '>= 0.8'}
+
+  /viewport-mercator-project/7.0.4:
+    resolution: {integrity: sha512-0jzpL6pIMocCKWg1C3mqi/N4UPgZC3FzwghEm1H+XsUo8hNZAyJc3QR7YqC816ibOR8aWT5pCsV+gCu8/BMJgg==}
+    dependencies:
+      '@math.gl/web-mercator': 3.5.7
+    dev: false
 
   /vt-pbf/3.1.3:
     resolution: {integrity: sha512-2LzDFzt0mZKZ9IpVF2r69G9bXaP2Q2sArJCmcCgvfTdCCZzSyz4aCLoQyUilu37Ll56tCblIZrXFIjNUpGIlmA==}

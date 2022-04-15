@@ -16,7 +16,7 @@ import {
 import Color from "colorjs.io";
 import { format } from "d3-format";
 import { memo, useCallback, useMemo, useState } from "react";
-import { Map as ReactMap } from "react-map-gl";
+import StaticMap, { GeolocateControl, _MapContext as MapContext } from "react-map-gl";
 import { Device } from "../../hooks/devices";
 import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
@@ -346,23 +346,20 @@ export function Map(props: MapProps) {
         getTooltip={getTooltip}
         style={{ position: "relative" }}
         /* @ts-ignore */
+        ContextProvider={MapContext.Provider}
+        /* @ts-ignore */
       >
         {/* @ts-ignore */}
-        <ReactMap
-          id="mapbox"
+        <StaticMap
           style={{ height: "100%", zIndex: 2000 }}
           reuseMaps
           mapStyle="mapbox://styles/mapbox/streets-v11"
           // @ts-ignore
           preventStyleDiffing={true}
-          mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-        ></ReactMap>
+          mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
+        ></StaticMap>
+        <GeolocateControl />
       </DeckGL>
-      <Card sx={{ zIndex: 10, position: "absolute", display: "flex", left: 10, top: 10 }}>
-        <IconButton color="inherit" size="small" onClick={handleGeolocate}>
-          <MyLocationIcon />
-        </IconButton>
-      </Card>
       <MemoizedLegend title={title} domain={domain} range={range} units={units} />
       <MemoizedMapSlider value={slider} onChange={handleSliderChange} hour={unixCurHour} />
       <MemoizedBackdrop isLoading={isLoading} />
