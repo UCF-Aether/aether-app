@@ -354,8 +354,8 @@ function updateAqi(oldData: FetchResult, payload: AqiReadingPayload): FetchResul
   );
   if (upsertIndex > -1) {
     // console.log("updating ", upsertIndex, " new avg", payload.aqi);
-    // Do update
-    readings[upsertIndex].val = payload.aqi;
+    // Do update - updates can come from different pollutants, so take the max as defined by the EPA
+    readings[upsertIndex].val = Math.max(payload.aqi, readings[upsertIndex].val);
   } else {
     console.warn("Error finding update index");
   }
