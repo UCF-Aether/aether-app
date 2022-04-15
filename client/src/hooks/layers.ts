@@ -354,8 +354,8 @@ function updateAqi(oldData: FetchResult, payload: AqiReadingPayload): FetchResul
   );
   if (upsertIndex > -1) {
     // console.log("updating ", upsertIndex, " new avg", payload.aqi);
-    // Do update
-    readings[upsertIndex].val = payload.aqi;
+    // Do update - updates can come from different pollutants, so take the max as defined by the EPA
+    readings[upsertIndex].val = Math.max(payload.aqi, readings[upsertIndex].val);
   } else {
     console.warn("Error finding update index");
   }
@@ -538,6 +538,7 @@ function useSubscriptionChannel(
         }
 
         queries.forEach(async ([queryKey, data]) => {
+          if (!data) return;
           const { locations } = data;
 
           // Check if new reading is using a new location -> get lat, lng
@@ -579,6 +580,7 @@ function useSubscriptionChannel(
 
         // eslint-disable-next-line
         queries.forEach(([queryKey, data]) => {
+          if (!data) return;
           client.setQueryData<FetchResult>(queryKey, (old) => ({
             ...updateLayer(channel, old, payload),
             updatedAt: new Date(),
