@@ -14,16 +14,17 @@ import {
 import { useCallback } from "react";
 import { useQueryClient } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { useDevices } from "../../hooks/devices";
+import { Device, useDevices } from "../../hooks/devices";
 import { NodeListItem as Item } from "../NodeListItem";
 
 export interface DevicePanelContentProps {
   showDevices: boolean;
   onShowDevicesChange: () => void;
+  onDeviceClick?: (device: Device) => void;
 }
 
 export function DevicePanelContent(props: DevicePanelContentProps) {
-  const { showDevices, onShowDevicesChange } = props;
+  const { showDevices, onShowDevicesChange, onDeviceClick } = props;
   const navigate = useNavigate();
   const { devices, isLoading, isError, refetch } = useDevices();
   const client = useQueryClient();
@@ -35,6 +36,10 @@ export function DevicePanelContent(props: DevicePanelContentProps) {
   const handleNew = useCallback(() => {
     navigate("device/new");
   }, []);
+
+  const handleDeviceClick = useCallback((device: Device) => {
+    navigate("device/" + device.device_id)
+  }, [onDeviceClick, navigate]);
 
   if (isError) return <ErrorIcon color="error" />;
   if (isLoading) return <CircularProgress />;
@@ -68,7 +73,7 @@ export function DevicePanelContent(props: DevicePanelContentProps) {
           <Item
             primary={d.name}
             key={d.device_id}
-            onClick={() => navigate("device/" + d.device_id)}
+            onClick={() => handleDeviceClick(d)}
           />
         ))}
       </List>

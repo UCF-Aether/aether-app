@@ -3,20 +3,21 @@ import { DataFilterExtension } from "@deck.gl/extensions";
 import { IconLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
-import MyLocationIcon from "@mui/icons-material/MyLocation";
 import {
     Backdrop,
     Box,
+    Button,
     Card,
-    CircularProgress,
-    IconButton,
-    Slider,
+    CircularProgress, Slider,
+    Stack,
     Typography
 } from "@mui/material";
 import Color from "colorjs.io";
 import { format } from "d3-format";
+import { PickInfo } from "deck.gl";
 import { memo, useCallback, useMemo, useState } from "react";
-import StaticMap, { GeolocateControl, _MapContext as MapContext } from "react-map-gl";
+import StaticMap, { GeolocateControl, Popup, _MapContext as MapContext } from "react-map-gl";
+import { useNavigate } from "react-router-dom";
 import { Device } from "../../hooks/devices";
 import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
@@ -223,7 +224,7 @@ function MapBackdrop({ isLoading }) {
 }
 
 function getTooltip({ object }) {
-  return object && `${object.val}`;
+  return object && `${object.val ?? object.name}`;
 }
 
 const MemoizedMapSlider = memo(MapSlider);
@@ -235,14 +236,17 @@ const f = format(".3s");
 export function Map(props: MapProps) {
   const { readings, isLoading, legend, showDevices, devices } = props;
   const { title, units, domain, range } = legend;
-  // const [curTime, setCurTime] = useState(new Date());
-
+  const navigate = useNavigate();
+  const [showDevicePopup, setShowDevicePopup] = useState(false);
+  const [device, setDevice] = useState<Device | null>(null);
+  const [popupCoords, setPopupCoords] = useState([0, 0]);
   const [slider, setSlider] = useState<number>(
     Math.floor(new Date().getTime() / UNIX_MS_HOUR) * UNIX_MS_HOUR
   );
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const layers: Array<any> = [];
 
+  // const [curTime, setCurTime] = useState(new Date());
   // useEffect(() => {
   //   const interval = setInterval(() => setCurTime(new Date), 1000);
   //
@@ -259,17 +263,28 @@ export function Map(props: MapProps) {
     [setSlider]
   );
 
-  const handleGeolocate = useCallback(
-    (event: any) => {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setViewState({
-          ...viewState,
-          longitude: position.coords.longitude,
-          latitude: position.coords.latitude,
-        });
-      });
-    },
-    [setViewState]
+  const handleDevicePopupOnclick = useCallback((info: PickInfo<any>, event: any) => {
+    setShowDevicePopup(true);
+    setPopupCoords(info.coordinate);
+    setDevice(info.object as Device);
+  }, []);
+
+  const DevicePopup = (
+    showDevicePopup &&
+    <Popup 
+      longitude={popupCoords[0]} 
+      latitude={popupCoords[1]}
+      anchor="bottom"
+      onClose={() => setShowDevicePopup(false)}
+    >
+      <Typography variant="subtitle2">{device?.name}</Typography>
+      <Stack>
+        <Typography variant="caption"><b>Lat:</b> {device?.lat}</Typography>
+        <Typography variant="caption"><b>Lng:</b> {device?.lng}</Typography>
+        <Typography variant="caption"><b>Last Uplink:</b> {device?.last_uplink_at ?? '-'}</Typography>
+        <Button size="small" onClick={() => navigate("device/" + device.device_id)}>Show More</Button>
+      </Stack>
+    </Popup>
   );
 
   const unixCurHour = unixHourTrunc(new Date().getTime());
@@ -330,6 +345,7 @@ export function Map(props: MapProps) {
         sizeScale: 5,
         getPosition: (d) => [d.lng, d.lat],
         getSize: (d) => 5,
+        onClick: handleDevicePopupOnclick,
       })
     );
   }
@@ -359,6 +375,7 @@ export function Map(props: MapProps) {
           mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
         ></StaticMap>
         <GeolocateControl />
+        {DevicePopup}
       </DeckGL>
       <MemoizedLegend title={title} domain={domain} range={range} units={units} />
       <MemoizedMapSlider value={slider} onChange={handleSliderChange} hour={unixCurHour} />
