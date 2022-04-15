@@ -1,14 +1,23 @@
 import { MapView } from "@deck.gl/core";
 import { DataFilterExtension } from "@deck.gl/extensions";
-import { ScatterplotLayer, TextLayer } from "@deck.gl/layers";
+import { IconLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 // @ts-ignore
 import { DeckGL } from "@deck.gl/react";
-import MyLocationIcon from '@mui/icons-material/MyLocation';
-import { Backdrop, Box, Card, CircularProgress, IconButton, Slider, Typography } from "@mui/material";
+import MyLocationIcon from "@mui/icons-material/MyLocation";
+import {
+    Backdrop,
+    Box,
+    Card,
+    CircularProgress,
+    IconButton,
+    Slider,
+    Typography
+} from "@mui/material";
 import Color from "colorjs.io";
 import { format } from "d3-format";
 import { memo, useCallback, useMemo, useState } from "react";
 import { Map as ReactMap } from "react-map-gl";
+import { Device } from "../../hooks/devices";
 import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
 
@@ -20,6 +29,10 @@ const INITIAL_VIEW_STATE = {
   pitch: 0,
   bearing: 0,
   // transitionInterpolator: interpolator,
+};
+
+const ICON_MAPPING = {
+  marker: { x: 0, y: 10, width: 128, height: 128, mask: true },
 };
 
 const UNIX_MS_HOUR = 3600 * 1000;
@@ -47,7 +60,10 @@ export interface MapLegendProps extends LegendProps {
 }
 
 export interface MapProps {
-  data: Array<LayerData>;
+  readings: Array<LayerData>;
+  layerType?: "scatterplot";
+  devices?: Array<Device>;
+  showDevices?: boolean;
   isLoading?: boolean;
   isError?: boolean;
   legend: MapLegendProps;
@@ -193,7 +209,7 @@ function MapLegend(props: LegendProps) {
         height: 200,
       }}
     >
-      <Legend title={title} domain={domain} range={range} units={units} height={100}/>
+      <Legend title={title} domain={domain} range={range} units={units} height={100} />
     </Card>
   );
 }
@@ -217,16 +233,19 @@ const MemoizedBackdrop = memo(MapBackdrop);
 const f = format(".3s");
 /* eslint-disable react/no-deprecated */
 export function Map(props: MapProps) {
-  const { data, isLoading, legend } = props;
+  const { readings, isLoading, legend, showDevices, devices } = props;
   const { title, units, domain, range } = legend;
   // const [curTime, setCurTime] = useState(new Date());
 
-  const [slider, setSlider] = useState<number>(Math.floor(new Date().getTime() / UNIX_MS_HOUR) * UNIX_MS_HOUR);
+  const [slider, setSlider] = useState<number>(
+    Math.floor(new Date().getTime() / UNIX_MS_HOUR) * UNIX_MS_HOUR
+  );
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
+  const layers: Array<any> = [];
 
-  // useEffect(() => { 
+  // useEffect(() => {
   //   const interval = setInterval(() => setCurTime(new Date), 1000);
-  //   
+  //
   //   return () => clearInterval(interval);
   // }, []);
 
@@ -240,22 +259,25 @@ export function Map(props: MapProps) {
     [setSlider]
   );
 
-  const handleGeolocate = useCallback( (event: any) => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      setViewState({
-        ...viewState,
-        longitude: position.coords.longitude,
-        latitude: position.coords.latitude,
+  const handleGeolocate = useCallback(
+    (event: any) => {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setViewState({
+          ...viewState,
+          longitude: position.coords.longitude,
+          latitude: position.coords.latitude,
+        });
       });
-    })
-  }, [setViewState])
+    },
+    [setViewState]
+  );
 
   const unixCurHour = unixHourTrunc(new Date().getTime());
-  const layers = [
-    data &&
+  if (readings) {
+    layers.push([
       new ScatterplotLayer<LayerData>({
         id: "scatterplot-layer",
-        data: data,
+        data: readings,
         wrapLongitude: true,
         getPosition: (d) => [d.lng, d.lat],
         getFillColor: (d) => getColor(colorRanges, d.val),
@@ -273,24 +295,44 @@ export function Map(props: MapProps) {
         },
         extensions: [dataFilter],
       }),
-    new TextLayer<LayerData>({
-      id: "text-layer",
-      data: data,
-      pickable: false,
-      getPosition: (d) => [d.lng, d.lat],
-      getText: (d) => `${f(d.val)}`.replace("−", "-"), // I'm too lazy to properly load fonts for deck.gl
-      // @ts-ignore
-      getFilterValue: (d) => d.timestamp.getTime(),
-      filterEnabled: true,
-      filterRange: [slider - UNIX_MS_HOUR / 2, slider + UNIX_MS_HOUR / 2],
-      getSize: viewState.zoom > 3 ? viewState.zoom * 2.5 : 0,
-      getTextAnchor: "middle",
-      getAlignmentBaseline: "center",
-      sizeMaxPixels: 15,
-      sizeMinPixels: 0,
-      extensions: [dataFilter],
-    }),
-  ];
+      new TextLayer<LayerData>({
+        id: "text-layer",
+        data: readings,
+        pickable: false,
+        getPosition: (d) => [d.lng, d.lat],
+        getText: (d) => `${f(d.val)}`.replace("−", "-"), // I'm too lazy to properly load fonts for deck.gl
+        // @ts-ignore
+        getFilterValue: (d) => d.timestamp.getTime(),
+        filterEnabled: true,
+        filterRange: [slider - UNIX_MS_HOUR / 2, slider + UNIX_MS_HOUR / 2],
+        getSize: viewState.zoom > 3 ? viewState.zoom * 2.5 : 0,
+        getTextAnchor: "middle",
+        getAlignmentBaseline: "center",
+        sizeMaxPixels: 15,
+        sizeMinPixels: 0,
+        extensions: [dataFilter],
+      }),
+    ]);
+  }
+
+  if (showDevices && devices) {
+    layers.push(
+      new IconLayer<Device>({
+        id: "icon-layer",
+        data: devices,
+        pickable: true,
+        // iconAtlas and iconMapping are required
+        // getIcon: return a string
+        iconAtlas:
+          "https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png",
+        iconMapping: ICON_MAPPING,
+        getIcon: (d) => "marker",
+        sizeScale: 5,
+        getPosition: (d) => [d.lng, d.lat],
+        getSize: (d) => 5,
+      })
+    );
+  }
 
   return (
     <Box sx={{ width: "100%", height: "100%" }}>
@@ -314,10 +356,9 @@ export function Map(props: MapProps) {
           // @ts-ignore
           preventStyleDiffing={true}
           mapboxAccessToken={process.env.REACT_APP_MAPBOX_ACCESS_TOKEN}
-        >
-        </ReactMap>
+        ></ReactMap>
       </DeckGL>
-      <Card sx={{ zIndex: 10, position: 'absolute', display: 'flex', left: 10, top: 10 }}>
+      <Card sx={{ zIndex: 10, position: "absolute", display: "flex", left: 10, top: 10 }}>
         <IconButton color="inherit" size="small" onClick={handleGeolocate}>
           <MyLocationIcon />
         </IconButton>

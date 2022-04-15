@@ -5,7 +5,7 @@ import TabsUnstyled from '@mui/base/TabsUnstyled';
 import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
 import { styled } from '@mui/material/styles';
 import { BasePanel } from './BasePanel';
-import { DevicePanelContent } from './DevicePanelContent';
+import { DevicePanelContent, DevicePanelContentProps } from './DevicePanelContent';
 
 const blue = {
   50: '#F0F7FF',
@@ -76,7 +76,10 @@ const TabsList = styled(TabsListUnstyled)`
   /* align-content: space-between; */
 `;
 
-export function NodePanel() {
+export interface NodePanelProps extends DevicePanelContentProps {}
+
+export function NodePanel(props: NodePanelProps) {
+  const { showDevices, onShowDevicesChange } = props;
   const tabs = (
     <TabsList>
       <Tab>Devices</Tab>
@@ -88,7 +91,7 @@ export function NodePanel() {
       <BasePanel top={tabs}>
         <nav>
           <TabPanel value={0}>
-            <DevicePanelContent />
+            <DevicePanelContent showDevices={showDevices} onShowDevicesChange={onShowDevicesChange}/>
           </TabPanel>
         </nav>
       </BasePanel>

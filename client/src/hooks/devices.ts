@@ -50,8 +50,9 @@ export function useDevices() {
     isError,
     data: devices,
     error,
+    refetch,
   } = useQuery<Device[], Error>("devices", () => fetchDeviceList());
-  return { isLoading, isError, devices, error };
+  return { isLoading, isError, devices, error, refetch };
 }
 
 export function useDeviceInfo(deviceId: number, options?: UseDeviceInfoOptions) {
