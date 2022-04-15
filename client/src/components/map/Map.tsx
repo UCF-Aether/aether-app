@@ -281,7 +281,7 @@ export function Map(props: MapProps) {
       <Stack>
         <Typography variant="caption"><b>Lat:</b> {device?.lat}</Typography>
         <Typography variant="caption"><b>Lng:</b> {device?.lng}</Typography>
-        <Typography variant="caption"><b>Last Uplink:</b> {device?.last_uplink_at ?? '-'}</Typography>
+        <Typography variant="caption"><b>Last Uplink:</b> {new Date(device?.last_uplink_at).toLocaleString() ?? '-'}</Typography>
         <Button size="small" onClick={() => navigate("device/" + device.device_id)}>Show More</Button>
       </Stack>
     </Popup>
