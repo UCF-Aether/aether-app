@@ -44,7 +44,7 @@ export function DeviceDetailsModal() {
     error,
     isLoading,
     isError,
-  } = useDeviceInfo(deviceId, { poll: true, });
+  } = useDeviceInfo(deviceId, { poll: true });
 
   const handleClose = () => {
     navigate("..");
