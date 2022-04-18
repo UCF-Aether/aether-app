@@ -21,6 +21,7 @@ jobs:
       SUPABASE_SECRET_JWT: ${{ secrets.SUPABASE_SECRET_JWT }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+      CI: false
 
     runs-on: ubuntu-latest
 
