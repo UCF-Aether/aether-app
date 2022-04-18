@@ -15,12 +15,12 @@ import {
 import Color from "colorjs.io";
 import { format } from "d3-format";
 import { PickInfo } from "deck.gl";
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 // eslint-disable-next-line
 import StaticMap, { GeolocateControl, Popup, _MapContext as MapContext } from "react-map-gl";
 import { useNavigate } from "react-router-dom";
 import { Device } from "../../hooks/devices";
-import { LayerData } from "../../hooks/layers";
+import { LayerData, useLastUpdate } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
 
 const INITIAL_VIEW_STATE = {
@@ -224,6 +224,30 @@ function MapBackdrop({ isLoading }) {
   );
 }
 
+function LastUpdate(props: { curTime: Date }) {
+  const last = useLastUpdate();
+
+  if (!last) return <></>;
+
+  return (
+    <Card
+      sx={{
+        zIndex: 10,
+        alignSelf: "end",
+        justifyContent: "center",
+        display: "flex",
+        position: "absolute",
+        left: 50,
+        top: 5,
+        // width: 140,
+        // height: 200,
+      }}
+    >
+      <Typography>Last Update: {last.toLocaleString()}</Typography>
+    </Card>
+  );
+}
+
 function getTooltip({ object }) {
   return object && `${object.val ?? object.name}`;
 }
@@ -231,6 +255,7 @@ function getTooltip({ object }) {
 const MemoizedMapSlider = memo(MapSlider);
 const MemoizedLegend = memo(MapLegend);
 const MemoizedBackdrop = memo(MapBackdrop);
+const MemoizedLastUpdate = memo(LastUpdate);
 
 const f = format(".3s");
 /* eslint-disable react/no-deprecated */
@@ -244,15 +269,15 @@ export function Map(props: MapProps) {
   const [slider, setSlider] = useState<number>(
     Math.floor(new Date().getTime() / UNIX_MS_HOUR) * UNIX_MS_HOUR
   );
+  const [curTime, setCurTime] = useState<Date>();
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
   const layers: Array<any> = [];
 
-  // const [curTime, setCurTime] = useState(new Date());
-  // useEffect(() => {
-  //   const interval = setInterval(() => setCurTime(new Date), 1000);
-  //
-  //   return () => clearInterval(interval);
-  // }, []);
+  useEffect(() => {
+    const interval = setInterval(() => setCurTime(new Date), 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Each function takes a domain [0, 1] and returns a Color object
   const colorRanges = useMemo(() => genColorRanges(range, domain), [domain, range]);
@@ -382,6 +407,7 @@ export function Map(props: MapProps) {
         <GeolocateControl />
         {DevicePopup}
       </DeckGL>
+      <MemoizedLastUpdate curTime={curTime} />
       <MemoizedLegend title={title} domain={domain} range={range} units={units} />
       <MemoizedMapSlider value={slider} onChange={handleSliderChange} hour={unixCurHour} />
       <MemoizedBackdrop isLoading={isLoading} />

@@ -464,7 +464,7 @@ export function useLayer(layer: LayerType, options?: UseLayerOptions): LayerResu
   const { isError, isLoading, data, error } = useQuery(
     layerQueryKeys(layer, options),
     () => fetchLayerData(layer, options),
-    { select: convertToDates, staleTime: Infinity }
+    { select: convertToDates, staleTime: 3 * 60 * 1000 }
   );
 
   const layerInfo = layersInfo[layer];
@@ -512,6 +512,8 @@ export function useLayersInfo() {
   return layersInfo;
 }
 
+let lastUpdate;
+
 function useSubscriptionChannel(
   channel: string,
   getLayer: (payload: SupabaseRealtimePayload<any>) => LayerType | LayerType[]
@@ -536,6 +538,8 @@ function useSubscriptionChannel(
         } else {
           queries = client.getQueriesData<FetchResult>(["layer", layer]);
         }
+
+        lastUpdate = new Date();
 
         queries.forEach(async ([queryKey, data]) => {
           if (!data) return;
@@ -567,7 +571,7 @@ function useSubscriptionChannel(
       .on("UPDATE", (payload) => {
         const layer = getLayer(payload);
         if (!layer) {
-          console.error(`Unsupported layer from payload ${JSON.stringify(payload)}`);
+          console.warn(`Unsupported layer from payload ${JSON.stringify(payload)}`);
           return;
         }
 
@@ -577,6 +581,8 @@ function useSubscriptionChannel(
         } else {
           queries = client.getQueriesData<FetchResult>(["layer", layer]);
         }
+
+        lastUpdate = new Date();
 
         // eslint-disable-next-line
         queries.forEach(([queryKey, data]) => {
@@ -631,4 +637,8 @@ export function useLayerSubscriptions() {
 // true - online ... ish
 export function useSubscriptionStatus() {
   return supabase.getSubscriptions().length > 0;
+}
+
+export function useLastUpdate() {
+  return lastUpdate;
 }
