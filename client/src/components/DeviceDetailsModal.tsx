@@ -1,4 +1,4 @@
-import { Box, Skeleton, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Skeleton, Tab, Tabs, Typography, Button } from "@mui/material";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDeviceInfo } from "../hooks/devices";
@@ -82,6 +82,7 @@ export function DeviceDetailsModal() {
 
   return (
     <DetailsModal title="Device" subTitle={device?.name} open onClose={handleClose}>
+      <Button onClick={() => navigate('edit')}>Edit</Button>
       <Info />
       <Typography variant='h5' fontWeight='bold'>
       Real-Time

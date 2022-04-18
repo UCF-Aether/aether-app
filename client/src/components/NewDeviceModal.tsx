@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { DetailsModal } from "./DetailsModal";
-import { NewDeviceForm } from "./NewDeviceForm";
+import { DeviceForm } from "./NewDeviceForm";
 
 export function NewDeviceModal() {
   const navigate = useNavigate();
@@ -11,7 +11,7 @@ export function NewDeviceModal() {
 
   return (
     <DetailsModal title='New Device' open onClose={handleClose}>
-      <NewDeviceForm onCancel={handleClose}/>
+      <DeviceForm onCancel={handleClose}/>
     </DetailsModal>
   )
 }

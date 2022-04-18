@@ -1,25 +1,50 @@
 import { Box, Button, FormControl, Grid, TextField } from "@mui/material";
 import { useState } from "react";
-import { useNewDevice } from "../hooks/devices";
+import { useNewDevice, useEditDevice } from "../hooks/devices";
 
-export interface NewDeviceFormProps {
+export interface DeviceFormProps {
   onCancel?: () => void;
+  editing?: boolean;
+  device?: {
+    device_id: number;
+    name?: string;
+    dev_eui?: string;
+    lat?: number;
+    lng?: number;
+  }
 }
 
-export function NewDeviceForm(props?: NewDeviceFormProps) {
-  const [values, setValues] = useState<any>({ lat: 0, lng: 0 });
-  const mutation = useNewDevice();
+export function DeviceForm(props?: DeviceFormProps) {
+  const [values, setValues] = useState<any>({ 
+    lat: props?.device?.lat ?? 0, 
+    lng: props?.device?.lng ?? 0, 
+    deviceName: props?.device?.name,
+    devEui: props?.device?.dev_eui
+  });
+  const newMutation = useNewDevice();
+  const editMutation = useEditDevice();
   const handleCancel = props?.onCancel ?? undefined;
 
   const handleSubmit = (event: any) => {
     event.preventDefault();
     console.log('submit new device');
-    mutation.mutate({
-      name: values.deviceName,
-      devEui: values.devEui,
-      lat: values.lat,
-      lng: values.lng,
-    });
+    if (props?.editing) {
+      editMutation.mutate({
+        deviceId: props?.device?.device_id,
+        name: values.deviceName === props?.device?.name ? undefined : values.deviceName,
+        devEui: values.devEui === props?.device?.dev_eui ? undefined : values.devEui,
+        lat: values.lat === props?.device?.lat ? undefined : values.lat,
+        lng: values.lng === props?.device?.lng ? undefined : values.lng,
+      });
+    }
+    else {
+      newMutation.mutate({
+        name: values.deviceName,
+        devEui: values.devEui,
+        lat: values.lat,
+        lng: values.lng,
+      });
+    }
   }
 
   const updateValue = (id: string, newValue: any) => {
@@ -49,7 +74,7 @@ export function NewDeviceForm(props?: NewDeviceFormProps) {
               id='deviceName'
               fullWidth
               required
-              disabled={mutation.isLoading}
+              disabled={newMutation.isLoading}
               type='text'
               label='Device Name'
               value={values.deviceName ?? ''}
@@ -61,7 +86,7 @@ export function NewDeviceForm(props?: NewDeviceFormProps) {
               id='devEui'
               fullWidth
               required
-              disabled={mutation.isLoading}
+              disabled={newMutation.isLoading}
               type='text'
               label='Device EUI'
               value={values.devEui ?? ''}
@@ -72,23 +97,23 @@ export function NewDeviceForm(props?: NewDeviceFormProps) {
           </Grid>
           <Grid item xs={6}>
             <TextField
-              id='lng'
+              id='lat'
               required
-              disabled={mutation.isLoading}
+              disabled={newMutation.isLoading}
               type='number'
-              label='Device Longitude'
-              value={values.lng}
+              label='Device Latitude'
+              value={values.lat}
               onChange={handleChange}
             />
           </Grid>
           <Grid item xs={6}>
             <TextField
-              id='lat'
+              id='lng'
               required
-              disabled={mutation.isLoading}
+              disabled={newMutation.isLoading}
               type='number'
-              label='Device Latitude'
-              value={values.lat}
+              label='Device Longitude'
+              value={values.lng}
               onChange={handleChange}
             />
           </Grid>
@@ -99,7 +124,7 @@ export function NewDeviceForm(props?: NewDeviceFormProps) {
           </Grid>
           <Grid container item xs={6} justifyContent='center' >
             <Button  variant='contained' type='submit'>
-              Create
+              {props?.editing ? "Edit" : "Create" }
             </Button>
           </Grid>
         </Grid>

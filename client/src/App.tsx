@@ -6,6 +6,7 @@ import "./App.css";
 import { AlertModal } from "./components/AlertModal";
 import { ColorModeContext } from "./components/ColorModeContext";
 import { DeviceDetailsModal } from "./components/DeviceDetailsModal";
+import { EditDeviceModal } from "./components/EditDeviceModal";
 import { GatewayDetailsModal } from "./components/GatewayDetailsModal";
 import { NewAlertModal } from "./components/NewAlertModal";
 import { NewDeviceModal } from "./components/NewDeviceModal";
@@ -104,6 +105,7 @@ export default function App() {
             <Route path="/*" element={<MainPage />}>
               <Route path='device/new' element={<NewDeviceModal />} />
               <Route path="device/:deviceId" element={<DeviceDetailsModal />} />
+              <Route path="device/:deviceId/edit" element={<EditDeviceModal />} />
               <Route path="gateway/:gatewayId" element={<GatewayDetailsModal />} />
             </Route>
             <Route path="/auth" element={<LoginSignup />} />

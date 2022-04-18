@@ -74,6 +74,10 @@ interface CreateDeviceProps {
   lng: number;
 }
 
+interface EditDeviceProps extends Partial<CreateDeviceProps> {
+  deviceId: number;
+}
+
 async function createDevice(props: CreateDeviceProps) {
   const { name, devEui, lat, lng } = props;
   console.log(props);
@@ -92,6 +96,40 @@ async function createDevice(props: CreateDeviceProps) {
 export function useNewDevice() {
   const queryClient = useQueryClient();
   const mutation = useMutation(createDevice, {
+    onSuccess: () => queryClient.invalidateQueries(["devices"]),
+  });
+
+  return mutation;
+}
+
+async function editDevice(props: EditDeviceProps) {
+  const { deviceId, name, devEui, lat, lng } = props;
+
+  if (name || devEui) {
+    const { data, error } = await supabase
+      .from('device')
+      .update({
+        ...(name ? { name } : {}),
+        ...(devEui ? { dev_eui: devEui } : {})
+      })
+      .match({ device_id: deviceId });
+
+    if (error) throw new Error('Error editing device: ' + JSON.stringify(error));
+  }
+
+  if (lat && lng) {
+    const { data, error } = await supabase
+      .rpc('update_device_location', { did: deviceId, lat, lng });
+
+    if (error) throw new Error('Error editing device: ' + JSON.stringify(error));
+  }
+
+  return null;
+}
+
+export function useEditDevice() {
+  const queryClient = useQueryClient();
+  const mutation = useMutation(editDevice, {
     onSuccess: () => queryClient.invalidateQueries(["devices"]),
   });
 
