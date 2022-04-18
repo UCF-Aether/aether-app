@@ -24,9 +24,9 @@ import { LayerData } from "../../hooks/layers";
 import { Legend, LegendProps } from "./Legend";
 
 const INITIAL_VIEW_STATE = {
-  longitude: -73.75,
-  latitude: 40.73,
-  zoom: 9,
+  longitude: -81.1994990097011,
+  latitude: 28.602618358121447,
+  zoom: 14,
   maxZoom: 16,
   pitch: 0,
   bearing: 0,
