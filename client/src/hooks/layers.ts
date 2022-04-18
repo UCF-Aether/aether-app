@@ -345,6 +345,7 @@ function updateAqi(oldData: FetchResult, payload: AqiReadingPayload): FetchResul
   const month = datesAreAnnoying.getUTCMonth();
   const date = datesAreAnnoying.getUTCDate();
   const hours = payload.hour;
+  const stupidDate = new Date(Date.UTC(year, month, date, hours));
 
   const upsertIndex = findUpsertIndex(
     readings,
@@ -357,7 +358,12 @@ function updateAqi(oldData: FetchResult, payload: AqiReadingPayload): FetchResul
     // Do update - updates can come from different pollutants, so take the max as defined by the EPA
     readings[upsertIndex].val = Math.max(payload.aqi, readings[upsertIndex].val);
   } else {
-    console.warn("Error finding update index");
+    readings.unshift({
+      timestamp: stupidDate,
+      loc_id: payload.loc_id,
+      device_id: payload.device_id,
+      val: payload.aqi,
+    });
   }
 
   return { locations, readings };
@@ -449,7 +455,7 @@ function insertIntoLayer(
     return insertReading(oldData, payload.new as ChannelReadingPayload);
   else if (subscribeTo === "reading")
     return insertRawReading(oldData, payload.new as RawReadingPayload);
-  return insertAqi(oldData, payload.new as AqiReadingPayload);
+  return updateAqi(oldData, payload.new as AqiReadingPayload);
 }
 
 // function filterPayload(layer: string, payload: any) {
