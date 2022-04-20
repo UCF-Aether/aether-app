@@ -3,3 +3,4 @@
 </p>
 
 # Aether App
+The repository for the Aether App at [aethersensor.network](https://aethersensor.network/)
